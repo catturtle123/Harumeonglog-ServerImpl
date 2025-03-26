@@ -130,3 +130,23 @@ include::{snippets}/post-controller-test/update-post/response-fields.adoc[]
 ===== Response
 include::{snippets}/post-controller-test/update-post/http-response.adoc[]
 ---
+=== 게시물 신고
+게시물 신고 API
+
+==== 요청
+===== Request Header
+include::{snippets}/post-controller-test/report-post/request-headers.adoc[]
+
+===== Path Parameter
+include::{snippets}/post-controller-test/report-post/path-parameters.adoc[]
+
+===== Request
+include::{snippets}/post-controller-test/report-post/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/post-controller-test/report-post/response-fields.adoc[]
+
+===== Response
+include::{snippets}/post-controller-test/report-post/http-response.adoc[]
+---
