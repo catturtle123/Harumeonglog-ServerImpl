@@ -53,20 +53,26 @@ public class CommentControllerTest extends AbstractRestDocsTest {
                                 parameterWithName("cursor").optional().description("커서 기반 페이징 (댓글 ID)"),
                                 parameterWithName("size").optional().description("페이지 크기")
                         ),
+                        commonResponse,
                         responseFields(
-                                fieldWithPath("isSuccess").description("요청 성공 여부"),
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result.items[].commentId").description("댓글 ID"),
-                                fieldWithPath("result.items[].content").description("댓글 내용"),
-                                fieldWithPath("result.items[].memberInfoResponse.memberId").description("작성자 ID"),
-                                fieldWithPath("result.items[].memberInfoResponse.email").optional().description("작성자 이메일"),
-                                fieldWithPath("result.items[].memberInfoResponse.nickname").description("작성자 닉네임"),
-                                fieldWithPath("result.items[].memberInfoResponse.image").optional().description("작성자 프로필 이미지 URL"),
-                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
-                                fieldWithPath("result.cursor").description("다음 페이지 커서")
+                                beneathPath("result").withSubsectionId("result"),
+                                subsectionWithPath("items").description("알림 목록들").type("CommentListResponse[]"),
+                                fieldWithPath("hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("cursor").description("다음 페이지 커서")
+                        ),
+                        responseFields(
+                                beneathPath("result.items[]").withSubsectionId("CommentListResponse"),
+                                fieldWithPath("commentId").description("작성자 PK"),
+                                fieldWithPath("content").description("댓글 내용"),
+                                subsectionWithPath("memberInfoResponse").description("사용자 정보").type("MemberInfoResponse")
+                        ),
+                        responseFields(
+                                beneathPath("result.items[].memberInfoResponse").withSubsectionId("MemberInfoResponse"),
+                                fieldWithPath("memberId").description("member PK"),
+                                fieldWithPath("email").description("member email"),
+                                fieldWithPath("nickname").description("member nickname"),
+                                fieldWithPath("image").description("member 프로필 이미지")
                         )
-
                 ));
     }
 
@@ -106,7 +112,8 @@ public class CommentControllerTest extends AbstractRestDocsTest {
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("commentId").description("댓글 ID")
-                        )
+                        ),
+                        commonResponse
                 ));
     }
 
@@ -117,7 +124,8 @@ public class CommentControllerTest extends AbstractRestDocsTest {
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("commentId").description("신고할 댓글 ID")
-                        )
+                        ),
+                        commonResponse
                 ));
     }
 
@@ -128,7 +136,8 @@ public class CommentControllerTest extends AbstractRestDocsTest {
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("commentId").description("차단할 댓글 ID")
-                        )
+                        ),
+                        commonResponse
                 ));
     }
 }
