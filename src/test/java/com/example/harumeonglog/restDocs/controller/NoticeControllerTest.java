@@ -59,7 +59,7 @@ public class NoticeControllerTest extends AbstractRestDocsTest {
         given(noticeService.getNotices(size, cursor)).willReturn(noticeSlice);
 
         // when
-        ResultActions result = mockMvc.perform(get("/alarms")
+        ResultActions result = mockMvc.perform(get("/notices")
                 .param("size", String.valueOf(size))
                 .param("cursor", String.valueOf(cursor))
                 .accept(MediaType.APPLICATION_JSON));
@@ -76,7 +76,7 @@ public class NoticeControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("isSuccess").description("요청 성공 여부"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result.items[].id").description("알림 ID"),
+                                fieldWithPath("result.items[].noticeId").description("알림 ID"),
                                 fieldWithPath("result.items[].title").description("알림 제목"),
                                 fieldWithPath("result.items[].content").description("알림 내용"),
                                 fieldWithPath("result.items[].noticeType").description("알림 타입"),
@@ -95,13 +95,13 @@ public class NoticeControllerTest extends AbstractRestDocsTest {
         willDoNothing().given(noticeService).deleteNotice(alarmId);
 
         // when
-        ResultActions result = mockMvc.perform(delete("/alarms/{alarmId}", alarmId));
+        ResultActions result = mockMvc.perform(delete("/notices/{noticeId}", alarmId));
 
         // then
         result.andExpect(status().isOk())
                 .andDo(document("notice-delete",
                         pathParameters(
-                                parameterWithName("alarmId").description("삭제할 알림 ID")
+                                parameterWithName("noticeId").description("삭제할 알림 ID")
                         ),
                         responseFields(
                                 fieldWithPath("isSuccess").description("요청 성공 여부"),
