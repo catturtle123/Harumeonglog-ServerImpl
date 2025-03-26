@@ -23,7 +23,7 @@ public class PostController {
     ) {
         Slice<Post> postSlice = postService.getPosts(cursor, size);
         Long nextCursor = postSlice.toList().get(postSlice.getSize() - 1).getId();
-        PostResponse.PostListResponse from = PostResponse.PostListResponse.from(nextCursor, postSlice);
+        PostResponse.PostListResponse from = PostResponse.PostListResponse.from(nextCursor, postSlice.hasNext(), postSlice.toList());
         return CustomResponse.ok(from);
     }
 
@@ -44,9 +44,10 @@ public class PostController {
 
     @PatchMapping("/{postId}")
     public CustomResponse<PostResponse.PostPreviewResponse> updatePost(
+            @PathVariable Long postId,
             @RequestBody PostRequest.PostUpdateRequest postUpdateRequest
     ) {
-        Post post = postService.updatePost(postUpdateRequest);
+        Post post = postService.updatePost(postId, postUpdateRequest);
         return CustomResponse.ok(PostResponse.PostPreviewResponse.from(post));
     }
 

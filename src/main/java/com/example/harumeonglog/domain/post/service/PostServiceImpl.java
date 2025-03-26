@@ -26,7 +26,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post updatePost(PostRequest.PostUpdateRequest postUpdateRequest) {
+    public Post updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest) {
         return null;
     }
 

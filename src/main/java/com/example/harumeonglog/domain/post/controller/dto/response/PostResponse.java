@@ -18,13 +18,13 @@ public class PostResponse {
     public static class PostListResponse {
         private Long cursor;
         private Boolean hasNext;
-        private List<PostPreviewResponse> postResponseList;
+        private List<PostPreviewResponse> items;
 
-        public static PostListResponse from(Long cursor,Slice<Post> postResponseList) {
+        public static PostListResponse from(Long cursor, Boolean hasNext,List<Post> postResponseList) {
             return PostListResponse.builder()
                     .cursor(cursor)
-                    .hasNext(postResponseList.hasNext())
-                    .postResponseList(postResponseList.stream().map(PostPreviewResponse::from).toList()
+                    .hasNext(hasNext)
+                    .items(postResponseList.stream().map(PostPreviewResponse::from).toList()
                     ).build();
         }
     }
@@ -32,6 +32,7 @@ public class PostResponse {
     @Getter
     @Builder
     public static class PostPreviewResponse {
+        private Long postId;
         private String content;
         private Long likeNum;
         private Long commentNum;
@@ -40,6 +41,7 @@ public class PostResponse {
 
         public static PostPreviewResponse from(Post post) {
             return PostPreviewResponse.builder()
+                    .postId(post.getId())
                     .content(post.getContent())
                     .likeNum(post.getPostLikeNum())
                     .commentNum(post.getCommentNum())
@@ -52,6 +54,7 @@ public class PostResponse {
     @Getter
     @Builder
     public static class PostDetailResponse {
+        private Long postId;
         private String content;
         private Long likeNum;
         private Long commentNum;
@@ -61,6 +64,7 @@ public class PostResponse {
 
         public static PostDetailResponse from(Post post) {
             return PostDetailResponse.builder()
+                    .postId(post.getId())
                     .content(post.getContent())
                     .commentNum(post.getCommentNum())
                     .likeNum(post.getPostLikeNum())

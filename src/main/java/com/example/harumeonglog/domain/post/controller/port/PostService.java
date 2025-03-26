@@ -11,7 +11,7 @@ public interface PostService {
 
     Post createPost(PostRequest.PostCreateRequest postCreateRequest);
 
-    Post updatePost(PostRequest.PostUpdateRequest postUpdateRequest);
+    Post updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest);
 
     void deletePost(Long postId);
 
