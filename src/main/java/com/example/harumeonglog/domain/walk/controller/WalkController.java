@@ -65,4 +65,10 @@ public class WalkController {
         Walk walk = walkService.shareWalk(walkId);
         return CustomResponse.ok(WalkResponse.WalkShareResponse.from(walk));
     }
+
+    @PostMapping("/{walkId}")
+    public CustomResponse<WalkResponse.WalkLikeResponse> likeWalk(@PathVariable Long walkId) {
+        Walk walk = walkService.likeWalk(walkId);
+        return CustomResponse.ok(WalkResponse.WalkLikeResponse.from(walk));
+    }
 }
