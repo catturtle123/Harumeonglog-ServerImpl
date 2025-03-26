@@ -23,8 +23,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -73,16 +72,18 @@ public class NoticeControllerTest extends AbstractRestDocsTest {
                         ),
                         commonResponse,
                         responseFields(
-                                fieldWithPath("isSuccess").description("요청 성공 여부"),
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result.items[].noticeId").description("알림 ID"),
-                                fieldWithPath("result.items[].title").description("알림 제목"),
-                                fieldWithPath("result.items[].content").description("알림 내용"),
-                                fieldWithPath("result.items[].noticeType").description("알림 타입"),
-                                fieldWithPath("result.items[].targetId").description("관련 리소스 ID"),
-                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
-                                fieldWithPath("result.cursor").description("다음 페이지 커서")
+                                beneathPath("result").withSubsectionId("result"),
+                                subsectionWithPath("items").description("알림 목록들").type("NoticeListResponse[]"),
+                                fieldWithPath("hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("cursor").description("다음 페이지 커서")
+                        ),
+                        responseFields(
+                                beneathPath("result.items").withSubsectionId("NoticeListResponse"),
+                                fieldWithPath("noticeId").description("알림 ID"),
+                                fieldWithPath("title").description("알림 제목"),
+                                fieldWithPath("content").description("알림 내용"),
+                                fieldWithPath("noticeType").description("알림 타입"),
+                                fieldWithPath("targetId").description("관련 리소스 ID")
                         )
                 ));
     }
@@ -103,12 +104,7 @@ public class NoticeControllerTest extends AbstractRestDocsTest {
                         pathParameters(
                                 parameterWithName("noticeId").description("삭제할 알림 ID")
                         ),
-                        responseFields(
-                                fieldWithPath("isSuccess").description("요청 성공 여부"),
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result").description("null 반환")
-                        )
+                        commonResponse
                 ));
     }
 
