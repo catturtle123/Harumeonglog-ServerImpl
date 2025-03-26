@@ -424,4 +424,48 @@ public class WalkControllerTest extends AbstractRestDocsTest {
                 ));
 
     }
+
+    @Test
+    @DisplayName("산책 좋아요")
+    void likeWalk() throws Exception {
+        // given
+        given(walkService.likeWalk(anyLong()))
+                .willReturn(
+                        Walk.builder()
+                                .id(1L)
+                                .title("산책")
+                                .distance(2.2)
+                                .time(23)
+                                .startLatitude(34.1262342)
+                                .startLongitude(120.1234123)
+                                .walkLikeNum(23L)
+                                .isShared(true)
+                                .deletedAt(null)
+                                .createdAt(LocalDateTime.now())
+                                .updatedAt(LocalDateTime.now())
+                                .build()
+                );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/walks/{walkId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        // then
+        result
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("walkId").description("좋아요 혹은 좋아요 취소할 산책 ID")
+                        ),
+                        commonResponse,
+                        responseFields(
+                                beneathPath("result").withSubsectionId("result"),
+                                fieldWithPath("walkId").description("산책 ID"),
+                                fieldWithPath("walkLikeNum").description("산책 좋아요 수")
+                        )
+                ));
+
+
+    }
 }
