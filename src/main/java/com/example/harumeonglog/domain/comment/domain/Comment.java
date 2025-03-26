@@ -2,11 +2,13 @@ package com.example.harumeonglog.domain.comment.domain;
 
 import com.example.harumeonglog.domain.member.domain.Member;
 import com.example.harumeonglog.domain.post.domain.Post;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
 public class Comment {
 
     private Long id;

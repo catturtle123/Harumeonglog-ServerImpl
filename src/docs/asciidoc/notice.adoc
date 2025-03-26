@@ -1,0 +1,46 @@
+=== 알림 목록 조회
+알림 목록 조회 API
+
+==== 요청
+===== Request Header
+include::{snippets}/notice-controller-test/get-notices/request-headers.adoc[]
+
+===== Query Parameters
+include::{snippets}/notice-controller-test/get-notices/query-parameters.adoc[]
+
+===== Request
+include::{snippets}/notice-controller-test/get-notices/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/notice-controller-test/get-notices/response-fields.adoc[]
+===== Result
+include::{snippets}/notice-controller-test/get-notices/response-fields-result.adoc[]
+===== NoticeListResponse
+include::{snippets}/notice-controller-test/get-notices/response-fields-NoticeListResponse.adoc[]
+
+===== Response
+include::{snippets}/notice-controller-test/get-notices/http-response.adoc[]
+---
+=== 알림 삭제
+알림 삭제 API
+
+==== 요청
+===== Request Header
+include::{snippets}/notice-controller-test/delete-notice/request-headers.adoc[]
+
+===== Path Parameter
+include::{snippets}/notice-controller-test/delete-notice/path-parameters.adoc[]
+
+===== Request
+include::{snippets}/notice-controller-test/delete-notice/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/notice-controller-test/delete-notice/response-fields.adoc[]
+===== Result
+include::{snippets}/notice-controller-test/delete-notice/response-fields.adoc[]
+
+===== Response
+include::{snippets}/notice-controller-test/delete-notice/http-response.adoc[]
+---

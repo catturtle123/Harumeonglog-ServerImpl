@@ -9,4 +9,5 @@ public interface WalkService {
     Walk shareWalk(Long id);
     WalkResponse.WalkSearchListResponse getWalkList(String sort, Long cursor, int offset);
     WalkResponse.WalkDetailResponse getWalkDetails(Long walkId);
+    Walk likeWalk(Long walkId);
 }

@@ -27,4 +27,9 @@ public class WalkServiceImpl implements WalkService {
     public Walk shareWalk(Long id) {
         return null;
     }
+
+    @Override
+    public Walk likeWalk(Long walkId) {
+        return null;
+    }
 }

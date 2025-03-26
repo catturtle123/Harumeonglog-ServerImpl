@@ -61,6 +61,10 @@ include::{snippets}/walk-controller-test/get-walk-list/http-response.adoc[]
 산책 하나의 세부 정보를 검색하는 API
 
 ==== 요청
+
+===== Request Header
+include::{snippets}/walk-controller-test/get-walk-details/request-headers.adoc[]
+
 ===== Path Parameter
 include::{snippets}/walk-controller-test/get-walk-details/path-parameters.adoc[]
 
@@ -142,6 +146,9 @@ include::{snippets}/walk-controller-test/get-members/http-response.adoc[]
 산책을 공유 설정하는 API
 
 ==== 요청
+===== Request Header
+include::{snippets}/walk-controller-test/share-walk/request-headers.adoc[]
+
 ===== Path Parameter
 include::{snippets}/walk-controller-test/share-walk/path-parameters.adoc[]
 
@@ -157,3 +164,26 @@ include::{snippets}/walk-controller-test/share-walk/response-fields-result.adoc[
 
 ===== Response
 include::{snippets}/walk-controller-test/share-walk/http-response.adoc[]
+
+=== 산책 좋아요 or 좋아요 취소
+산책 좋아요 혹은 좋아요 취소하는 API
+
+==== 요청
+===== Request Header
+include::{snippets}/walk-controller-test/like-walk/request-headers.adoc[]
+
+===== Path Parameter
+include::{snippets}/walk-controller-test/like-walk/path-parameters.adoc[]
+
+===== Request
+include::{snippets}/walk-controller-test/like-walk/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/walk-controller-test/like-walk/response-fields.adoc[]
+
+===== Result
+include::{snippets}/walk-controller-test/like-walk/response-fields-result.adoc[]
+
+===== Response
+include::{snippets}/walk-controller-test/like-walk/http-response.adoc[]

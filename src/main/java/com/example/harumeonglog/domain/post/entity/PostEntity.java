@@ -1,5 +1,6 @@
 package com.example.harumeonglog.domain.post.entity;
 
+import com.example.harumeonglog.domain.comment.entity.CommentEntity;
 import com.example.harumeonglog.domain.member.entity.MemberEntity;
 import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
 import com.example.harumeonglog.domain.common.entity.BaseEntity;
@@ -7,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,6 +32,9 @@ public class PostEntity extends BaseEntity {
     @Column(name = "post_report_num", nullable = false)
     private Long postReportNum;
 
+    @Column(name = "comment_num", nullable = false)
+    private Long commentNum;
+
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
     private PostCategory category;
@@ -40,4 +45,10 @@ public class PostEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity memberEntity;
+
+    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentEntity> commentEntityList;
+
+    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostImageEntity> postImageEntityList;
 }

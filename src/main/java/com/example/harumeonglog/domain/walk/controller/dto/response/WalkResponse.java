@@ -110,6 +110,20 @@ public class WalkResponse {
 
     @Getter
     @Builder
+    public static class WalkLikeResponse {
+        private Long walkId;
+        private Long walkLikeNum;
+
+        public static WalkLikeResponse from(Walk walk) {
+            return WalkLikeResponse.builder()
+                    .walkId(walk.getId())
+                    .walkLikeNum(walk.getWalkLikeNum())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
     public static class Track {
         private Long trackId;
         private List<Position> positions;

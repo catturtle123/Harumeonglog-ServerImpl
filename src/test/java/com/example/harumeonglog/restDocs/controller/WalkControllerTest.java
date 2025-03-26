@@ -130,7 +130,7 @@ public class WalkControllerTest extends AbstractRestDocsTest {
         //given
         final String sort = "RECOMMEND";
         final String cursor = "1";
-        final String offset = "2";
+        final String size = "2";
         given(walkService.getWalkList(anyString(), anyLong(), anyInt()))
                 .willReturn(WalkResponse.WalkSearchListResponse.builder()
                         .items(
@@ -164,7 +164,7 @@ public class WalkControllerTest extends AbstractRestDocsTest {
         ResultActions result = mockMvc.perform(get("/walks")
                 .param("sort", sort)
                 .param("cursor", cursor)
-                .param("offset", offset)
+                .param("size", size)
         );
 
         //then
@@ -174,7 +174,7 @@ public class WalkControllerTest extends AbstractRestDocsTest {
                         queryParameters(
                                 parameterWithName("sort").description("정렬 기준\n(RECOMMEND, DISTANCE, TIME)").attributes(defaultValue("RECOMMEND"), required(false)),
                                 parameterWithName("cursor").description("커서 페이지네이션 적용 시 사용할 커서, 처음 검색은 불필요").attributes(required(false)),
-                                parameterWithName("offset").description("검색할 데이터 개수").attributes(defaultValue("10"), required(false))
+                                parameterWithName("size").description("검색할 데이터 개수").attributes(defaultValue("10"), required(false))
                         ),
                         commonResponse,
                         responseFields(
@@ -422,6 +422,50 @@ public class WalkControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("image").description("사용자 이미지")
                         )
                 ));
+
+    }
+
+    @Test
+    @DisplayName("산책 좋아요")
+    void likeWalk() throws Exception {
+        // given
+        given(walkService.likeWalk(anyLong()))
+                .willReturn(
+                        Walk.builder()
+                                .id(1L)
+                                .title("산책")
+                                .distance(2.2)
+                                .time(23)
+                                .startLatitude(34.1262342)
+                                .startLongitude(120.1234123)
+                                .walkLikeNum(23L)
+                                .isShared(true)
+                                .deletedAt(null)
+                                .createdAt(LocalDateTime.now())
+                                .updatedAt(LocalDateTime.now())
+                                .build()
+                );
+
+        // when
+        ResultActions result = mockMvc.perform(post("/walks/{walkId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        // then
+        result
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("walkId").description("좋아요 혹은 좋아요 취소할 산책 ID")
+                        ),
+                        commonResponse,
+                        responseFields(
+                                beneathPath("result").withSubsectionId("result"),
+                                fieldWithPath("walkId").description("산책 ID"),
+                                fieldWithPath("walkLikeNum").description("산책 좋아요 수")
+                        )
+                ));
+
 
     }
 }

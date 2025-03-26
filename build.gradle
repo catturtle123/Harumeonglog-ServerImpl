@@ -56,6 +56,7 @@ tasks.named('test') {
     finalizedBy asciidoctor
     doFirst {
         delete(snippetsDir)
+        mkdir(snippetsDir)
     }
     useJUnitPlatform()
 }

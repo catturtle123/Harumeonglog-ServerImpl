@@ -1,0 +1,106 @@
+=== 댓글 목록 조회
+댓글 목록 조회 API
+
+==== 요청
+===== Request Header
+include::{snippets}/comment-controller-test/get-comments/request-headers.adoc[]
+
+===== Query Parameters
+include::{snippets}/comment-controller-test/get-comments/query-parameters.adoc[]
+
+===== Request
+include::{snippets}/comment-controller-test/get-comments/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/comment-controller-test/get-comments/response-fields.adoc[]
+===== Result
+include::{snippets}/comment-controller-test/get-comments/response-fields-result.adoc[]
+===== CommentListResponse
+include::{snippets}/comment-controller-test/get-comments/response-fields-CommentListResponse.adoc[]
+===== MemberInfoResponse
+include::{snippets}/comment-controller-test/get-comments/response-fields-MemberInfoResponse.adoc[]
+
+===== Response
+include::{snippets}/comment-controller-test/get-comments/http-response.adoc[]
+---
+=== 댓글 삭제
+댓글 삭제 API
+
+==== 요청
+===== Request Header
+include::{snippets}/comment-controller-test/delete-comment/request-headers.adoc[]
+
+===== Path Parameter
+include::{snippets}/comment-controller-test/delete-comment/path-parameters.adoc[]
+
+===== Request
+include::{snippets}/comment-controller-test/delete-comment/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/comment-controller-test/delete-comment/response-fields.adoc[]
+
+===== Response
+include::{snippets}/comment-controller-test/delete-comment/http-response.adoc[]
+---
+=== 댓글 차단
+댓글 차단 API
+
+==== 요청
+===== Request Header
+include::{snippets}/comment-controller-test/block-comment/request-headers.adoc[]
+
+===== Path Parameter
+include::{snippets}/comment-controller-test/block-comment/path-parameters.adoc[]
+
+===== Request
+include::{snippets}/comment-controller-test/block-comment/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/comment-controller-test/block-comment/response-fields.adoc[]
+
+===== Response
+include::{snippets}/comment-controller-test/block-comment/http-response.adoc[]
+---
+=== 댓글 신고
+댓글 신고 API
+
+==== 요청
+===== Request Header
+include::{snippets}/comment-controller-test/report-comment/request-headers.adoc[]
+
+===== Path Parameter
+include::{snippets}/comment-controller-test/report-comment/path-parameters.adoc[]
+
+===== Request
+include::{snippets}/comment-controller-test/report-comment/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/comment-controller-test/report-comment/response-fields.adoc[]
+
+===== Response
+include::{snippets}/comment-controller-test/report-comment/http-response.adoc[]
+---
+=== 댓글 생성
+댓글 생성 API
+
+==== 요청
+===== Request Header
+include::{snippets}/comment-controller-test/create-comment/request-headers.adoc[]
+
+===== Request Body
+include::{snippets}/comment-controller-test/create-comment/request-body.adoc[]
+
+===== Request
+include::{snippets}/comment-controller-test/create-comment/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/comment-controller-test/create-comment/response-fields.adoc[]
+
+===== Response
+include::{snippets}/comment-controller-test/create-comment/http-response.adoc[]
+---
