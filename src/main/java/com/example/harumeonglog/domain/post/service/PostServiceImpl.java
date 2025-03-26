@@ -39,4 +39,9 @@ public class PostServiceImpl implements PostService {
     public void likePost(Long postId) {
 
     }
+
+    @Override
+    public void reportPost(Long postId) {
+
+    }
 }

@@ -16,4 +16,6 @@ public interface PostService {
     void deletePost(Long postId);
 
     void likePost(Long postId);
+
+    void reportPost(Long postId);
 }

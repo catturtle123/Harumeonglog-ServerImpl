@@ -67,4 +67,12 @@ public class PostController {
         return CustomResponse.ok(null);
     }
 
+    @PostMapping("/{postId}/reports")
+    public CustomResponse<Void> reportPost(
+            @PathVariable Long postId
+    ) {
+        postService.reportPost(postId);
+        return CustomResponse.ok(null);
+    }
+
 }
