@@ -1,0 +1,88 @@
+=== 로그인
+사용자 로그인 API
+
+==== 요청
+===== Request Field
+include::{snippets}/member-controller-test/login/request-fields.adoc[]
+
+===== Request
+include::{snippets}/member-controller-test/login/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/member-controller-test/login/response-fields.adoc[]
+
+===== Result
+include::{snippets}/member-controller-test/login/response-fields-result.adoc[]
+
+===== Response
+include::{snippets}/member-controller-test/login/http-response.adoc[]
+
+---
+
+=== 로그아웃
+로그아웃 API
+
+==== 요청
+===== Request Header
+include::{snippets}/member-controller-test/logout/request-headers.adoc[]
+
+===== Request
+include::{snippets}/member-controller-test/logout/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/member-controller-test/logout/response-fields.adoc[]
+
+===== Result
+include::{snippets}/member-controller-test/logout/response-fields-result.adoc[]
+
+===== Response
+include::{snippets}/member-controller-test/logout/http-response.adoc[]
+
+---
+
+=== 사용자 정보 가져오기
+사용자 정보를 불러오는 API
+
+==== 요청
+===== Request Header
+include::{snippets}/member-controller-test/get-info/request-headers.adoc[]
+
+===== Request
+include::{snippets}/member-controller-test/get-info/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/member-controller-test/get-info/response-fields.adoc[]
+
+===== Result
+include::{snippets}/member-controller-test/get-info/response-fields-result.adoc[]
+
+===== Response
+include::{snippets}/member-controller-test/get-info/http-response.adoc[]
+
+---
+
+=== 사용자 정보 수정하기
+사용자 정보 수정하는 API
+
+==== 요청
+===== Request Header
+include::{snippets}/member-controller-test/update-info/request-headers.adoc[]
+
+===== Request Field
+include::{snippets}/member-controller-test/update-info/request-fields.adoc[]
+
+===== Request
+include::{snippets}/member-controller-test/update-info/http-request.adoc[]
+
+==== 응답
+===== Response Field
+include::{snippets}/member-controller-test/update-info/response-fields.adoc[]
+
+===== Result
+include::{snippets}/member-controller-test/update-info/response-fields-result.adoc[]
+
+===== Response
+include::{snippets}/member-controller-test/update-info/http-response.adoc[]

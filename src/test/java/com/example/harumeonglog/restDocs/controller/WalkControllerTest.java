@@ -130,7 +130,7 @@ public class WalkControllerTest extends AbstractRestDocsTest {
         //given
         final String sort = "RECOMMEND";
         final String cursor = "1";
-        final String offset = "2";
+        final String size = "2";
         given(walkService.getWalkList(anyString(), anyLong(), anyInt()))
                 .willReturn(WalkResponse.WalkSearchListResponse.builder()
                         .items(
@@ -164,7 +164,7 @@ public class WalkControllerTest extends AbstractRestDocsTest {
         ResultActions result = mockMvc.perform(get("/walks")
                 .param("sort", sort)
                 .param("cursor", cursor)
-                .param("offset", offset)
+                .param("size", size)
         );
 
         //then
@@ -174,7 +174,7 @@ public class WalkControllerTest extends AbstractRestDocsTest {
                         queryParameters(
                                 parameterWithName("sort").description("정렬 기준\n(RECOMMEND, DISTANCE, TIME)").attributes(defaultValue("RECOMMEND"), required(false)),
                                 parameterWithName("cursor").description("커서 페이지네이션 적용 시 사용할 커서, 처음 검색은 불필요").attributes(required(false)),
-                                parameterWithName("offset").description("검색할 데이터 개수").attributes(defaultValue("10"), required(false))
+                                parameterWithName("size").description("검색할 데이터 개수").attributes(defaultValue("10"), required(false))
                         ),
                         commonResponse,
                         responseFields(
