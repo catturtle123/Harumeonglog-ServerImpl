@@ -337,4 +337,184 @@ public class PostControllerTest extends AbstractRestDocsTest {
                         commonResponse
                 ));
     }
+
+    @Test
+    @DisplayName("내가 쓴 게시글 리스트 조회")
+    void getMyPost() throws Exception {
+        final Long cursor = 0L;
+        final int size = 2;
+        final Boolean hasNext = false;
+
+        final Member member = Member.builder()
+                .id(1L)
+                .birth(LocalDate.of(2011,11,11))
+                .email("a@naver.com")
+                .createdAt(LocalDateTime.of(2022,11,11,0,0))
+                .updatedAt(LocalDateTime.of(2022,11,11,0,0))
+                .deletedAt(null)
+                .socialType(SocialType.APPLE)
+                .provider_id("123")
+                .nickname("jamey")
+                .image("image")
+                .build();
+
+        final Post post1 = Post.builder()
+                .id(1L)
+                .content("내용")
+                .category(PostCategory.INFO)
+                .commentNum(0L)
+                .postLikeNum(0L)
+                .postReportNum(0L)
+                .createdAt(LocalDateTime.of(2022,11,11,0,0))
+                .deletedAt(null)
+                .updatedAt(LocalDateTime.of(2022,11,11,0,0))
+                .commentList(null)
+                .postImageList(null)
+                .member(member)
+                .build();
+
+        final Post post2 = Post.builder()
+                .id(2L)
+                .content("내용")
+                .category(PostCategory.INFO)
+                .commentNum(0L)
+                .postLikeNum(0L)
+                .postReportNum(0L)
+                .createdAt(LocalDateTime.of(2023,11,11,0,0))
+                .deletedAt(null)
+                .updatedAt(LocalDateTime.of(2023,11,11,0,0))
+                .commentList(null)
+                .postImageList(null)
+                .member(member)
+                .build();
+
+        Slice<Post> postSlice = new SliceImpl<>(List.of(post1, post2), PageRequest.of(0, size), hasNext);
+
+        given(postService.getPosts(anyLong(), anyInt())).willReturn(postSlice);
+
+        ResultActions result = mockMvc.perform(get("/posts")
+                .param("cursor", cursor.toString())
+                .param("size", String.valueOf(size)));
+
+        result.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        queryParameters(
+                                parameterWithName("cursor").description("커서 (마지막으로 본 게시글 ID)").optional(),
+                                parameterWithName("size").description("불러올 게시글 수").optional()
+                        ),
+                        commonResponse,
+                        responseFields(
+                                beneathPath("result").withSubsectionId("result"),
+                                fieldWithPath("cursor").description("다음 요청에 사용할 커서"),
+                                fieldWithPath("hasNext").description("다음 게시글이 더 있는지 여부"),
+                                subsectionWithPath("items").description("게시글 리스트").type("PostPreviewResponse[]")
+                        ),
+                        responseFields(
+                                beneathPath("result.items[]").withSubsectionId("PostPreviewResponse"),
+                                fieldWithPath("postId").description("게시글 ID"),
+                                fieldWithPath("content").description("게시글 내용").type("String"),
+                                fieldWithPath("likeNum").description("좋아요 수"),
+                                fieldWithPath("commentNum").description("댓글 수"),
+                                fieldWithPath("postCategory").description("게시글 카테고리 (INFO, HUMOR, QNA, SNS, ETC)"),
+                                subsectionWithPath("memberInfoResponse").description("작성자 정보").type("MemberInfo")
+                        ),
+                        responseFields(
+                                beneathPath("result.items[].memberInfoResponse").withSubsectionId("MemberInfo"),
+                                fieldWithPath("memberId").description("작성자 ID"),
+                                fieldWithPath("email").description("작성자 이메일"),
+                                fieldWithPath("nickname").description("작성자 닉네임"),
+                                fieldWithPath("image").description("작성자 이미지 URL")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("내가 좋아요 단 게시글 리스트 조회")
+    void getMyLikePost() throws Exception {
+        final Long cursor = 0L;
+        final int size = 2;
+        final Boolean hasNext = false;
+
+        final Member member = Member.builder()
+                .id(1L)
+                .birth(LocalDate.of(2011,11,11))
+                .email("a@naver.com")
+                .createdAt(LocalDateTime.of(2022,11,11,0,0))
+                .updatedAt(LocalDateTime.of(2022,11,11,0,0))
+                .deletedAt(null)
+                .socialType(SocialType.APPLE)
+                .provider_id("123")
+                .nickname("jamey")
+                .image("image")
+                .build();
+
+        final Post post1 = Post.builder()
+                .id(1L)
+                .content("내용")
+                .category(PostCategory.INFO)
+                .commentNum(0L)
+                .postLikeNum(0L)
+                .postReportNum(0L)
+                .createdAt(LocalDateTime.of(2022,11,11,0,0))
+                .deletedAt(null)
+                .updatedAt(LocalDateTime.of(2022,11,11,0,0))
+                .commentList(null)
+                .postImageList(null)
+                .member(member)
+                .build();
+
+        final Post post2 = Post.builder()
+                .id(2L)
+                .content("내용")
+                .category(PostCategory.INFO)
+                .commentNum(0L)
+                .postLikeNum(0L)
+                .postReportNum(0L)
+                .createdAt(LocalDateTime.of(2023,11,11,0,0))
+                .deletedAt(null)
+                .updatedAt(LocalDateTime.of(2023,11,11,0,0))
+                .commentList(null)
+                .postImageList(null)
+                .member(member)
+                .build();
+
+        Slice<Post> postSlice = new SliceImpl<>(List.of(post1, post2), PageRequest.of(0, size), hasNext);
+
+        given(postService.getPosts(anyLong(), anyInt())).willReturn(postSlice);
+
+        ResultActions result = mockMvc.perform(get("/posts")
+                .param("cursor", cursor.toString())
+                .param("size", String.valueOf(size)));
+
+        result.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        queryParameters(
+                                parameterWithName("cursor").description("커서 (마지막으로 본 게시글 ID)").optional(),
+                                parameterWithName("size").description("불러올 게시글 수").optional()
+                        ),
+                        commonResponse,
+                        responseFields(
+                                beneathPath("result").withSubsectionId("result"),
+                                fieldWithPath("cursor").description("다음 요청에 사용할 커서"),
+                                fieldWithPath("hasNext").description("다음 게시글이 더 있는지 여부"),
+                                subsectionWithPath("items").description("게시글 리스트").type("PostPreviewResponse[]")
+                        ),
+                        responseFields(
+                                beneathPath("result.items[]").withSubsectionId("PostPreviewResponse"),
+                                fieldWithPath("postId").description("게시글 ID"),
+                                fieldWithPath("content").description("게시글 내용").type("String"),
+                                fieldWithPath("likeNum").description("좋아요 수"),
+                                fieldWithPath("commentNum").description("댓글 수"),
+                                fieldWithPath("postCategory").description("게시글 카테고리 (INFO, HUMOR, QNA, SNS, ETC)"),
+                                subsectionWithPath("memberInfoResponse").description("작성자 정보").type("MemberInfo")
+                        ),
+                        responseFields(
+                                beneathPath("result.items[].memberInfoResponse").withSubsectionId("MemberInfo"),
+                                fieldWithPath("memberId").description("작성자 ID"),
+                                fieldWithPath("email").description("작성자 이메일"),
+                                fieldWithPath("nickname").description("작성자 닉네임"),
+                                fieldWithPath("image").description("작성자 이미지 URL")
+                        )
+                ));
+    }
 }
