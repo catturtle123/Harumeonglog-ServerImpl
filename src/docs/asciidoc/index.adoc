@@ -21,3 +21,12 @@ include::{docfile}/../post.adoc[]
 
 == 댓글 API
 include::{docfile}/../comment.adoc[]
+
+== 일정 API
+include::{docfile}/../event.adoc[]
+
+== 반려견 API
+include::{docfile}/../pet.adoc[]
+
+== 반려견 이미지 API
+include::{docfile}/../petImage.adoc[]

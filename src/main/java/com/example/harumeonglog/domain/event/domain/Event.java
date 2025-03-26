@@ -4,11 +4,13 @@ import com.example.harumeonglog.domain.event.domain.enums.EventCategory;
 import com.example.harumeonglog.domain.member.entity.MemberEntity;
 import com.example.harumeonglog.domain.pet.domain.Pet;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 public class Event {
 
     private Long id;
