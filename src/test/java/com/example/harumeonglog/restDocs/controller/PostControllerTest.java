@@ -323,4 +323,18 @@ public class PostControllerTest extends AbstractRestDocsTest {
                         )
                 ));
     }
+
+    @Test
+    @DisplayName("게시물 신고")
+    void reportPost() throws Exception {
+        ResultActions result = mockMvc.perform(post("/posts/{postId}/reports", 1L));
+
+        result.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("postId").description("post PK")
+                        ),
+                        commonResponse
+                ));
+    }
 }
