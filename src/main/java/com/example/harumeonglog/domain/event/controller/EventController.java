@@ -45,7 +45,7 @@ public class EventController {
     @DeleteMapping("/{eventId}")
     public CustomResponse<String> deleteEvent(@PathVariable Long eventId){
         eventService.deleteEvent(eventId);
-        return CustomResponse.ok("일정 삭제가 완료돼었습니다.");
+        return CustomResponse.ok("일정 삭제가 완료되었습니다.");
     }
 
     @PatchMapping("/{eventId}")

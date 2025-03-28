@@ -23,6 +23,7 @@ import java.util.List;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,6 +63,8 @@ public class EventControllerTest extends AbstractRestDocsTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(requestBody));
 
+
+
         // then
         result
                 .andExpect(status().isCreated())  // 201 기대
@@ -80,6 +83,7 @@ public class EventControllerTest extends AbstractRestDocsTest {
                                 beneathPath("result").withSubsectionId("result"),
                                 fieldWithPath("eventId").description("생성된 이벤트 ID")
                         )
+
                 ));
     }
 
