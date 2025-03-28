@@ -1,8 +1,9 @@
-=== 이미지 추가 (다중)
+=== 이미지 추가
 펫에 이미지를 다중으로 추가하는 API
 
 ==== 요청
 ===== Request Header
+include::{snippets}/pet-image-controller-test/add-images/request-headers.adoc[]
 
 ===== Request Field
 include::{snippets}/pet-image-controller-test/add-images/request-fields.adoc[]
@@ -23,11 +24,15 @@ include::{snippets}/pet-image-controller-test/add-images/http-response.adoc[]
 
 
 
-=== 펫 별 이미지 조회 (커서 기반)
+=== 펫 별 이미지 조회
 특정 펫의 이미지를 커서 기반으로 조회하는 API
 
 ==== 요청
 ===== Request Header
+include::{snippets}/pet-image-controller-test/get-images/request-headers.adoc[]
+
+===== Path Parameters
+include::{snippets}/pet-image-controller-test/get-images/path-parameters.adoc[]
 
 ===== Query Parameters
 include::{snippets}/pet-image-controller-test/get-images/query-parameters.adoc[]
@@ -42,8 +47,8 @@ include::{snippets}/pet-image-controller-test/get-images/response-fields.adoc[]
 ===== Result
 include::{snippets}/pet-image-controller-test/get-images/response-fields-result.adoc[]
 
-// ===== ImageInfo
-// include::{snippets}/pet-image-controller-test/get-images/res
+===== ImageInfo
+include::{snippets}/pet-image-controller-test/get-images/response-fields-ImageInfo.adoc[]
 
 ===== Response
 include::{snippets}/pet-image-controller-test/get-images/http-response.adoc[]
@@ -55,6 +60,7 @@ include::{snippets}/pet-image-controller-test/get-images/http-response.adoc[]
 
 ==== 요청
 ===== Request Header
+include::{snippets}/pet-image-controller-test/recent-images/request-headers.adoc[]
 
 ===== Request
 include::{snippets}/pet-image-controller-test/recent-images/http-request.adoc[]
@@ -78,6 +84,9 @@ include::{snippets}/pet-image-controller-test/recent-images/http-response.adoc[]
 특정 이미지를 조회하는 API
 
 ==== 요청
+===== Request Header
+include::{snippets}/pet-image-controller-test/get-image/request-headers.adoc[]
+
 ===== Path Parameter
 include::{snippets}/pet-image-controller-test/get-image/path-parameters.adoc[]
 
@@ -100,6 +109,9 @@ include::{snippets}/pet-image-controller-test/get-image/http-response.adoc[]
 특정 이미지를 삭제하는 API
 
 ==== 요청
+===== Request Header
+include::{snippets}/pet-image-controller-test/delete-image/request-headers.adoc[]
+
 ===== Path Parameter
 include::{snippets}/pet-image-controller-test/delete-image/path-parameters.adoc[]
 
@@ -110,7 +122,6 @@ include::{snippets}/pet-image-controller-test/delete-image/http-request.adoc[]
 ===== Response Field
 include::{snippets}/pet-image-controller-test/delete-image/response-fields.adoc[]
 
-
 ===== Response
 include::{snippets}/pet-image-controller-test/delete-image/http-response.adoc[]
 
@@ -120,14 +131,9 @@ include::{snippets}/pet-image-controller-test/delete-image/http-response.adoc[]
 특정 펫의 여러 이미지를 삭제하는 API
 
 ==== 요청
-===== Request Field
-include::{snippets}/pet-image-controller-test/delete-images/request-fields.adoc[]
+===== Request Header
+include::{snippets}/pet-image-controller-test/delete-image/request-headers.adoc[]
 
-===== Request
-include::{snippets}/pet-image-controller-test/delete-images/http-request.adoc[]
-
-==== 응답
-===== Response Field
 ===== Request Field
 include::{snippets}/pet-image-controller-test/delete-images/request-fields.adoc[]
 

@@ -74,7 +74,7 @@ public class PetImageControllerTest extends AbstractRestDocsTest {
     }
 
     @Test
-    @DisplayName("펫 별 이미지 조회 (커서 기반)")
+    @DisplayName("펫 별 이미지 조회")
     void getImages() throws Exception {
         // given
         Long petId = 1L;
@@ -113,12 +113,12 @@ public class PetImageControllerTest extends AbstractRestDocsTest {
                         commonResponse,
                         responseFields(
                                 beneathPath("result").withSubsectionId("result"),
-                                subsectionWithPath("images").description("이미지 목록"), // type 추가
+                                subsectionWithPath("images").description("이미지 목록").type("ImageInfo[]"),
                                 fieldWithPath("cursor").description("").type("Long"),
                                 fieldWithPath("hasNext").description("").type("boolean")
                         ),
                         responseFields(
-                                beneathPath("result.images[]").withSubsectionId("image"),
+                                beneathPath("result.images[]").withSubsectionId("ImageInfo"),
                                 fieldWithPath("imageId").description("이미지 ID").type(JsonFieldType.NUMBER),
                                 fieldWithPath("imageKey").description("이미지 키").type(JsonFieldType.STRING),
                                 fieldWithPath("createdAt").description("생성 시간").type(JsonFieldType.STRING)
