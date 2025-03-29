@@ -39,12 +39,8 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public PetResponse.SearchMemberResponse searchMember(PetRequest.SearchMemberRequest request) {
+    public PetResponse.SearchMemberResponse searchMember(String email, Long cursor, int size) {
         return null;
     }
 
-    @Override
-    public PetResponse.GetMembersResponse getMembers(Long petId) {
-        return null;
-    }
 }

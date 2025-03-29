@@ -10,6 +10,5 @@ public interface PetService {
     PetResponse.ChangeCurrentPetResponse changeCurrentPet(PetRequest.ChangeCurrentPetRequest request);
     void deletePet(Long petId);
     void invite(Long petId, PetRequest.InviteRequest request);
-    PetResponse.SearchMemberResponse searchMember(PetRequest.SearchMemberRequest request);
-    PetResponse.GetMembersResponse getMembers(Long petId);
+    PetResponse.SearchMemberResponse searchMember(String email, Long cursor, int size);
 }

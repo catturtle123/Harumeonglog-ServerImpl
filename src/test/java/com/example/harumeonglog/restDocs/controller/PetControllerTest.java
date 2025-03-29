@@ -15,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -29,6 +28,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PetController.class)
@@ -143,13 +143,14 @@ public class PetControllerTest extends AbstractRestDocsTest {
     }
 
     @Test
-    @DisplayName("보유 펫 조회 (커서 기반)")
+    @DisplayName("보유 펫 조회")
     void getPets() throws Exception {
         // given
         given(petService.getPets(null, 10))
                 .willReturn(PetResponse.GetPetsResponse.builder()
                         .pets(List.of(
-                                PetResponse.GetPetsResponse.PetInfo.builder()
+                                PetResponse.PetInfo.builder()
+                                        .role("OWNER")
                                         .petId(1L)
                                         .name("Max")
                                         .size(PetSize.MEDIUM)
@@ -157,9 +158,17 @@ public class PetControllerTest extends AbstractRestDocsTest {
                                         .gender(Gender.MALE)
                                         .birth(LocalDate.of(2020, 1, 1))
                                         .mainImage("max.jpg")
+                                        .people(List.of(
+                                                PetResponse.PeopleInfo.builder()
+                                                        .id(1L)
+                                                        .name("test")
+                                                        .role("GUEST")
+                                                        .build()
+                                        ))
                                         .build()
                         ))
-                        .nextCursor(1L)
+                        .cursor(1L)
+                        .hasNext(true)
                         .build());
 
         // when
@@ -178,21 +187,31 @@ public class PetControllerTest extends AbstractRestDocsTest {
                         commonResponse,
                         responseFields(
                                 beneathPath("result").withSubsectionId("result"),
-                                subsectionWithPath("pets").description("펫 목록").type("PetInfo[]"),
-                                fieldWithPath("nextCursor").description("다음 페이지 커서 (null이면 마지막 페이지)")
+                                fieldWithPath("hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("cursor").description("다음 페이지 커서"),
+                                subsectionWithPath("pets").description("펫 목록").type("PetInfo[]")
                         ),
                         responseFields(
-                                beneathPath("result.pets").withSubsectionId("PetInfo"),
+                                beneathPath("result.pets[]").withSubsectionId("PetInfo"),
+                                fieldWithPath("role").description("권한"),
                                 fieldWithPath("petId").description("펫 ID"),
                                 fieldWithPath("name").description("펫 이름"),
                                 fieldWithPath("size").description("펫 크기"),
                                 fieldWithPath("type").description("펫 종류"),
                                 fieldWithPath("gender").description("펫 성별"),
                                 fieldWithPath("birth").description("펫 생일").type("LocalDate"),
-                                fieldWithPath("mainImage").description("펫 대표 이미지 URL")
+                                fieldWithPath("mainImage").description("펫 대표 이미지 URL"),
+                                subsectionWithPath("people").description("관련 사람 정보").type("PeopleInfo[]")
+                        ),
+                        responseFields(
+                                beneathPath("result.pets[].people").withSubsectionId("PeopleInfo"),
+                                fieldWithPath("[].id").description("사람 id"),
+                                fieldWithPath("[].name").description("사람 이름"),
+                                fieldWithPath("[].role").description("사람 권한")
                         )
                 ));
     }
+
 
     @Test
     @DisplayName("현재 펫 변경")
@@ -297,83 +316,49 @@ public class PetControllerTest extends AbstractRestDocsTest {
     @DisplayName("펫에 초대할 멤버 검색")
     void searchMember() throws Exception {
         // given
-        PetRequest.SearchMemberRequest request = new PetRequest.SearchMemberRequest();
-        request.setNickname("John");
+        PetResponse.SearchMemberResponse response = PetResponse.SearchMemberResponse.builder()
+                .members(List.of(
+                        PetResponse.SearchMemberResponse.MemberInfo.builder()
+                                .memberId(2L)
+                                .name("John Doe")
+                                .build()
+                ))
+                .cursor(1L)
+                .hasNext(true)
+                .build();
 
-        given(petService.searchMember(any(PetRequest.SearchMemberRequest.class)))
-                .willReturn(PetResponse.SearchMemberResponse.builder()
-                        .members(List.of(
-                                PetResponse.SearchMemberResponse.MemberInfo.builder()
-                                        .memberId(2L)
-                                        .name("John Doe")
-                                        .build()
-                        ))
-                        .build());
+        given(petService.searchMember("test@test.com", null, 10))
+                .willReturn(response);
 
-        String requestBody = objectMapper.writeValueAsString(request);
 
         // when
         ResultActions result = mockMvc.perform(get("/pets/search-member")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(requestBody));
+                .param("cursor", "")
+                .param("size", "10")
+                .param("email", "test@test.com"));
 
         // then
         result
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
-                        requestFields(
-                                fieldWithPath("nickname").description("검색할 멤버 닉네임")
+                        queryParameters(
+                                parameterWithName("cursor").optional().description("커서 기반 페이징 (댓글 ID)"),
+                                parameterWithName("size").optional().description("페이지 크기"),
+                                parameterWithName("email").optional().description("검색 이메일")
                         ),
                         commonResponse,
                         responseFields(
                                 beneathPath("result").withSubsectionId("result"),
-                                subsectionWithPath("members").description("검색된 멤버 목록").type("MemberInfo[]")
+                                subsectionWithPath("members").description("검색된 멤버 목록").type("MemberInfo[]"),
+                                fieldWithPath("hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("cursor").description("다음 페이지 커서")
                         ),
                         responseFields(
-                                beneathPath("result.members").withSubsectionId("MemberInfo"),
+                                beneathPath("result.members[]").withSubsectionId("MemberInfo"),
                                 fieldWithPath("memberId").description("멤버 ID"),
                                 fieldWithPath("name").description("멤버 이름")
                         )
                 ));
     }
 
-    @Test
-    @DisplayName("펫 멤버 조회")
-    void getMembers() throws Exception {
-        // given
-        Long petId = 1L;
-        given(petService.getMembers(anyLong()))
-                .willReturn(PetResponse.GetMembersResponse.builder()
-                        .members(List.of(
-                                PetResponse.GetMembersResponse.MemberPetInfo.builder()
-                                        .memberId(2L)
-                                        .name("John Doe")
-                                        .role(MemberPetRole.OWNER)
-                                        .build()
-                        ))
-                        .build());
-
-        // when
-        ResultActions result = mockMvc.perform(get("/pets/{petId}/members", petId));
-
-        // then
-        result
-                .andExpect(status().isOk())
-                .andDo(restDocs.document(
-                        pathParameters(
-                                parameterWithName("petId").description("멤버를 조회할 펫 ID")
-                        ),
-                        commonResponse,
-                        responseFields(
-                                beneathPath("result").withSubsectionId("result"),
-                                subsectionWithPath("members").description("펫 멤버 목록").type("MemberPetInfo[]")
-                        ),
-                        responseFields(
-                                beneathPath("result.members").withSubsectionId("MemberPetInfo"),
-                                fieldWithPath("memberId").description("멤버 ID"),
-                                fieldWithPath("name").description("멤버 이름"),
-                                fieldWithPath("role").description("멤버 역할 (OWNER, GUEST)")
-                        )
-                ));
-    }
 }

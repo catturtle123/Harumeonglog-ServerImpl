@@ -3,6 +3,8 @@
 
 ==== 요청
 ===== Request Header
+include::{snippets}/pet-controller-test/add-pet/request-headers.adoc[]
+
 ===== Request Field
 include::{snippets}/pet-controller-test/add-pet/request-fields.adoc[]
 
@@ -26,6 +28,8 @@ include::{snippets}/pet-controller-test/add-pet/http-response.adoc[]
 
 ==== 요청
 ===== Request Header
+include::{snippets}/pet-controller-test/change-pet-info/request-headers.adoc[]
+
 ===== Path Parameter
 include::{snippets}/pet-controller-test/change-pet-info/path-parameters.adoc[]
 
@@ -46,11 +50,13 @@ include::{snippets}/pet-controller-test/change-pet-info/response-fields-result.a
 include::{snippets}/pet-controller-test/change-pet-info/http-response.adoc[]
 
 
-=== 보유 펫 조회 (커서 기반)
+=== 보유 펫 조회
 사용자가 보유한 펫 목록을 커서 기반으로 조회하는 API
 
 ==== 요청
 ===== Request Header
+include::{snippets}/pet-controller-test/get-pets/request-headers.adoc[]
+
 ===== Query Parameters
 include::{snippets}/pet-controller-test/get-pets/query-parameters.adoc[]
 
@@ -67,14 +73,21 @@ include::{snippets}/pet-controller-test/get-pets/response-fields-result.adoc[]
 ==== PetInfo
 include::{snippets}/pet-controller-test/get-pets/response-fields-PetInfo.adoc[]
 
+==== PeopleInfo
+include::{snippets}/pet-controller-test/get-pets/response-fields-PeopleInfo.adoc[]
+
 ==== Response
 include::{snippets}/pet-controller-test/get-pets/http-response.adoc[]
+
+
 
 === 현재 펫 변경
 현재 선택된 펫을 변경하는 API
 
 ==== 요청
 ===== Request Header
+include::{snippets}/pet-controller-test/change-current-pet/request-headers.adoc[]
+
 ===== Request Field
 include::{snippets}/pet-controller-test/change-current-pet/request-fields.adoc[]
 
@@ -98,6 +111,8 @@ include::{snippets}/pet-controller-test/change-current-pet/http-response.adoc[]
 
 ==== 요청
 ===== Request Header
+include::{snippets}/pet-controller-test/delete-pet/request-headers.adoc[]
+
 ===== Path Parameter
 include::{snippets}/pet-controller-test/delete-pet/path-parameters.adoc[]
 
@@ -108,9 +123,6 @@ include::{snippets}/pet-controller-test/delete-pet/http-request.adoc[]
 ===== Response Field
 include::{snippets}/pet-controller-test/delete-pet/response-fields.adoc[]
 
-// ===== Result
-// include::{snippets}/pet-controller-test/delete-pet/response-fields-result.adoc[]
-
 ===== Response
 include::{snippets}/pet-controller-test/delete-pet/http-response.adoc[]
 
@@ -120,6 +132,8 @@ include::{snippets}/pet-controller-test/delete-pet/http-response.adoc[]
 
 ==== 요청
 ===== Request Header
+include::{snippets}/pet-controller-test/invite/request-headers.adoc[]
+
 ===== Path Parameter
 include::{snippets}/pet-controller-test/invite/path-parameters.adoc[]
 
@@ -129,24 +143,24 @@ include::{snippets}/pet-controller-test/invite/request-fields.adoc[]
 ===== Request
 include::{snippets}/pet-controller-test/invite/http-request.adoc[]
 
-
 ==== 응답
 ===== Response Field
 include::{snippets}/pet-controller-test/invite/response-fields.adoc[]
-
-// ===== Result
-// include::{snippets}/pet-controller-test/invite/response-fields-result.adoc[]
 
 ===== Response
 include::{snippets}/pet-controller-test/invite/http-response.adoc[]
 
 === 펫에 초대할 멤버 검색
+
+
 펫에 초대할 멤버를 닉네임으로 검색하는 API
 
 ==== 요청
 ===== Request Header
-===== Request Field
-include::{snippets}/pet-controller-test/search-member/request-fields.adoc[]
+include::{snippets}/pet-controller-test/search-member/request-headers.adoc[]
+
+===== Query Parameters
+include::{snippets}/pet-controller-test/search-member/query-parameters.adoc[]
 
 ==== Request
 include::{snippets}/pet-controller-test/search-member/http-request.adoc[]
@@ -165,27 +179,3 @@ include::{snippets}/pet-controller-test/search-member/response-fields-MemberInfo
 include::{snippets}/pet-controller-test/search-member/http-response.adoc[]
 
 
-
-=== 펫 멤버 조회
-특정 펫의 멤버 목록을 조회하는 API
-
-==== 요청
-===== Request Header
-====== Path Parameter
-include::{snippets}/pet-controller-test/get-members/path-parameters.adoc[]
-
-===== Request
-include::{snippets}/pet-controller-test/get-members/http-request.adoc[]
-
-==== 응답
-===== Response Field
-include::{snippets}/pet-controller-test/get-members/response-fields.adoc[]
-
-===== Result
-include::{snippets}/pet-controller-test/get-members/response-fields-result.adoc[]
-
-===== MemberPetInfo
-include::{snippets}/pet-controller-test/get-members/response-fields-MemberPetInfo.adoc[]
-
-===== Response
-include::{snippets}/pet-controller-test/get-members/http-response.adoc[]

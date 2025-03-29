@@ -2,7 +2,10 @@ package com.example.harumeonglog.domain.pet.controller;
 
 
 import com.example.harumeonglog.domain.common.controller.response.CustomResponse;
-import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest.*;
+import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest.AddPetRequest;
+import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest.ChangeCurrentPetRequest;
+import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest.ChangePetInfoRequest;
+import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest.InviteRequest;
 import com.example.harumeonglog.domain.pet.controller.dto.response.PetResponse.*;
 import com.example.harumeonglog.domain.pet.controller.port.PetService;
 import lombok.RequiredArgsConstructor;
@@ -57,13 +60,13 @@ public class PetController {
     }
 
     @GetMapping("/search-member")
-    public CustomResponse<SearchMemberResponse> searchMember(@RequestBody SearchMemberRequest request) {
-        return CustomResponse.ok(petService.searchMember(request));
-    }
-
-    @GetMapping("/{petId}/members")
-    public CustomResponse<GetMembersResponse> getMembers(@PathVariable Long petId) {
-        return CustomResponse.ok(petService.getMembers(petId));
+    public CustomResponse<SearchMemberResponse> searchMember(
+            @RequestParam String email,
+            @RequestParam(required = false) Long cursor, // 커서 (마지막 펫 ID)
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        SearchMemberResponse result = petService.searchMember(email, cursor, size);
+        return CustomResponse.ok(result);
     }
 
 }
