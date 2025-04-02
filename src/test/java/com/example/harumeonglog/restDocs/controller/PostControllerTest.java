@@ -28,7 +28,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.reset;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -59,7 +58,7 @@ public class PostControllerTest extends AbstractRestDocsTest {
                 .updatedAt(LocalDateTime.of(2022,11,11,0,0))
                 .deletedAt(null)
                 .socialType(SocialType.APPLE)
-                .provider_id("123")
+                .providerId("123")
                 .nickname("jamey")
                 .image("image")
                 .build();
@@ -278,7 +277,7 @@ public class PostControllerTest extends AbstractRestDocsTest {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .socialType(SocialType.APPLE)
-                .provider_id("123")
+                .providerId("123")
                 .build();
 
         Post post = Post.builder()
@@ -353,7 +352,7 @@ public class PostControllerTest extends AbstractRestDocsTest {
                 .updatedAt(LocalDateTime.of(2022,11,11,0,0))
                 .deletedAt(null)
                 .socialType(SocialType.APPLE)
-                .provider_id("123")
+                .providerId("123")
                 .nickname("jamey")
                 .image("image")
                 .build();
@@ -443,7 +442,7 @@ public class PostControllerTest extends AbstractRestDocsTest {
                 .updatedAt(LocalDateTime.of(2022,11,11,0,0))
                 .deletedAt(null)
                 .socialType(SocialType.APPLE)
-                .provider_id("123")
+                .providerId("123")
                 .nickname("jamey")
                 .image("image")
                 .build();

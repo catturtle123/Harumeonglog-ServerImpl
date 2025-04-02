@@ -168,7 +168,7 @@ class MemberControllerTest extends AbstractRestDocsTest {
                         .birth(birth)
                         .socialType(SocialType.KAKAO)
                         .image("https://www.google.com")
-                        .provider_id("346257443")
+                        .providerId("346257443")
                         .deletedAt(null)
                         .createdAt(LocalDateTime.now().minusDays(4))
                         .updatedAt(LocalDateTime.now())

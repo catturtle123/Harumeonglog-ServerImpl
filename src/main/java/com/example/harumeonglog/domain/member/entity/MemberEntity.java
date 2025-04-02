@@ -1,7 +1,8 @@
 package com.example.harumeonglog.domain.member.entity;
 
-import com.example.harumeonglog.domain.member.entity.enums.SocialType;
+import com.example.harumeonglog.domain.member.domain.Member;
 import com.example.harumeonglog.domain.common.entity.BaseEntity;
+import com.example.harumeonglog.domain.member.domain.enums.SocialType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,8 +39,21 @@ public class MemberEntity extends BaseEntity {
     private String image;
 
     @Column(name = "provider_id", nullable = false)
-    private String provider_id;
+    private String providerId;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    public Member toModel() {
+        return Member.builder()
+                .id(this.id)
+                .email(this.email)
+                .nickname(this.nickname)
+                .birth(this.birth)
+                .socialType(this.socialType)
+                .image(this.image)
+                .providerId(this.providerId)
+                .deletedAt(this.deletedAt)
+                .build();
+    }
 }

@@ -24,7 +24,7 @@ public class Member {
 
     private String image;
 
-    private String provider_id;
+    private String providerId;
 
     private LocalDateTime deletedAt;
 

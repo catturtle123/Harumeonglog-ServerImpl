@@ -28,7 +28,6 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.timeout;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -379,7 +378,7 @@ public class WalkControllerTest extends AbstractRestDocsTest {
                                 .birth(LocalDate.of(2002, 2, 2))
                                 .socialType(SocialType.KAKAO)
                                 .image("https://www.naver.com")
-                                .provider_id("342543342")
+                                .providerId("342543342")
                                 .createdAt(LocalDateTime.now())
                                 .updatedAt(LocalDateTime.now())
                                 .build(),
@@ -390,7 +389,7 @@ public class WalkControllerTest extends AbstractRestDocsTest {
                                 .birth(LocalDate.of(2002, 2, 2))
                                 .socialType(SocialType.KAKAO)
                                 .image("https://www.kakao.com")
-                                .provider_id("34276842")
+                                .providerId("34276842")
                                 .createdAt(LocalDateTime.now())
                                 .updatedAt(LocalDateTime.now())
                                 .build()
