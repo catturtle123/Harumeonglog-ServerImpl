@@ -4,7 +4,8 @@ import com.example.harumeonglog.domain.member.domain.Member;
 import com.example.harumeonglog.domain.member.domain.enums.SocialType;
 import com.example.harumeonglog.domain.post.controller.PostController;
 import com.example.harumeonglog.domain.post.controller.dto.request.PostRequest;
-import com.example.harumeonglog.domain.post.controller.port.PostService;
+import com.example.harumeonglog.domain.post.controller.port.PostCommandService;
+import com.example.harumeonglog.domain.post.controller.port.PostQueryService;
 import com.example.harumeonglog.domain.post.domain.Post;
 import com.example.harumeonglog.domain.post.domain.enums.PostCategory;
 import com.example.harumeonglog.restDocs.base.AbstractRestDocsTest;
@@ -38,7 +39,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PostControllerTest extends AbstractRestDocsTest {
 
     @MockitoBean
-    private PostService postService;
+    private PostCommandService postCommandService;
+
+    @MockitoBean
+    private PostQueryService postQueryService;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -95,7 +99,7 @@ public class PostControllerTest extends AbstractRestDocsTest {
 
         Slice<Post> postSlice = new SliceImpl<>(List.of(post1, post2), PageRequest.of(0, size), hasNext);
 
-        given(postService.getPosts(anyLong(), anyInt())).willReturn(postSlice);
+        given(postQueryService.getPosts(anyLong(), anyInt())).willReturn(postSlice);
 
         ResultActions result = mockMvc.perform(get("/posts")
                 .param("cursor", cursor.toString())
@@ -151,7 +155,7 @@ public class PostControllerTest extends AbstractRestDocsTest {
                 .image("image")
                 .build();
 
-        given(postService.createPost(any())).willReturn(
+        given(postCommandService.createPost(any())).willReturn(
                 Post.builder()
                         .id(1L)
                         .content("내용")
@@ -193,7 +197,7 @@ public class PostControllerTest extends AbstractRestDocsTest {
                 .image("image")
                 .build();
 
-        given(postService.updatePost(anyLong(), any())).willReturn(
+        given(postCommandService.updatePost(anyLong(), any())).willReturn(
                 Post.builder()
                         .id(1L)
                         .postImageList(null)
@@ -293,7 +297,7 @@ public class PostControllerTest extends AbstractRestDocsTest {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        given(postService.getPost()).willReturn(post);
+        given(postQueryService.getPost()).willReturn(post);
 
         ResultActions result = mockMvc.perform(get("/posts/{postId}", 1L));
 
@@ -389,9 +393,9 @@ public class PostControllerTest extends AbstractRestDocsTest {
 
         Slice<Post> postSlice = new SliceImpl<>(List.of(post1, post2), PageRequest.of(0, size), hasNext);
 
-        given(postService.getPosts(anyLong(), anyInt())).willReturn(postSlice);
+        given(postQueryService.getMyPost(anyLong(), anyInt())).willReturn(postSlice);
 
-        ResultActions result = mockMvc.perform(get("/posts")
+        ResultActions result = mockMvc.perform(get("/posts/me")
                 .param("cursor", cursor.toString())
                 .param("size", String.valueOf(size)));
 
@@ -479,9 +483,9 @@ public class PostControllerTest extends AbstractRestDocsTest {
 
         Slice<Post> postSlice = new SliceImpl<>(List.of(post1, post2), PageRequest.of(0, size), hasNext);
 
-        given(postService.getPosts(anyLong(), anyInt())).willReturn(postSlice);
+        given(postQueryService.getMyLikePost(anyLong(), anyInt())).willReturn(postSlice);
 
-        ResultActions result = mockMvc.perform(get("/posts")
+        ResultActions result = mockMvc.perform(get("/posts/me/likes")
                 .param("cursor", cursor.toString())
                 .param("size", String.valueOf(size)));
 
