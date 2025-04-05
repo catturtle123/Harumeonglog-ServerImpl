@@ -3,7 +3,7 @@ package com.example.harumeonglog.domain.post.service;
 import com.example.harumeonglog.domain.post.controller.dto.request.PostRequest;
 import com.example.harumeonglog.domain.post.controller.dto.request.PostRequest.PostCreateRequest;
 import com.example.harumeonglog.domain.post.controller.port.PostCommandService;
-import com.example.harumeonglog.domain.post.domain.Post;
+import com.example.harumeonglog.domain.post.domain.*;
 import com.example.harumeonglog.domain.post.domain.enums.PostCategory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +32,8 @@ class PostCommandServiceImplTest {
                 .postImageList(postImageList)
                 .content("test content")
                 .build();
+
+        PostImage postImage = new PostImage();
 
         //when
         Post post = postCommandService.createPost(postCreateRequest);
@@ -74,6 +76,7 @@ class PostCommandServiceImplTest {
     @DisplayName("제대로 게시물이 좋아요 되는 가")
     void canLikePost() {
         //given
+        PostLike postLike = new PostLike();
 
         //when
         postCommandService.likePost(1L);
@@ -85,6 +88,8 @@ class PostCommandServiceImplTest {
     @DisplayName("제대로 게시물이 신고 되는 가")
     void canReportPost() {
         //given
+        PostReport postReport = new PostReport();
+        PostBlock postBlock = new PostBlock();
 
         //when
         postCommandService.reportPost(1L);
