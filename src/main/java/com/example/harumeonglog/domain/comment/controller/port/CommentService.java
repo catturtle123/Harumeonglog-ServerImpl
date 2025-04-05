@@ -14,4 +14,6 @@ public interface CommentService {
     Comment createComment(CommentRequest.CommentCreateRequest commentCreateRequest);
 
     void deleteComment(Long commentId);
+
+    void likeComment(Long commentId);
 }
