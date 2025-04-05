@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum AuthErrorCode implements BaseErrorCode {
     FAIL_LOGOUT(HttpStatus.BAD_REQUEST, "AUTH400", "로그아웃에 실패했습니다."),
-    FAIL_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "AUTH401", "인증에 실패했습니다."),
+    FAIL_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "AUTH401", "인증에 실패했습니다."),
+    FAIL_AUTHORIZATION(HttpStatus.FORBIDDEN, "AUTH403", "인가에 실패했습니다."),
     ;
 
     private final HttpStatus httpStatus;

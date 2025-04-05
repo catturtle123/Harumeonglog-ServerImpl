@@ -4,6 +4,8 @@ import com.example.harumeonglog.domain.common.auth.filter.AbstractTokenFilter;
 import com.example.harumeonglog.domain.common.auth.filter.AbstractTokenLogoutFilter;
 import com.example.harumeonglog.domain.common.auth.filter.JwtTokenFilter;
 import com.example.harumeonglog.domain.common.auth.filter.JwtTokenLogoutFilter;
+import com.example.harumeonglog.domain.common.auth.handler.CustomAccessDeniedHandler;
+import com.example.harumeonglog.domain.common.auth.handler.CustomAuthorizationEntryPoint;
 import com.example.harumeonglog.domain.common.auth.handler.JwtTokenLogoutHandler;
 import com.example.harumeonglog.domain.common.auth.service.CustomDetailService;
 import com.example.harumeonglog.domain.common.auth.util.JwtUtil;
@@ -29,6 +31,8 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final CustomDetailService customDetailService;
     private final JwtTokenLogoutHandler jwtTokenLogoutHandler;
+    private final CustomAuthorizationEntryPoint customAuthorizationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     private final String[] allowUrl = {
             "/login",
@@ -48,6 +52,10 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtTokenLogoutFilter(), JwtTokenFilter.class)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthorizationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                )
                 .csrf(CsrfConfigurer::disable)
                 .formLogin(FormLoginConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
