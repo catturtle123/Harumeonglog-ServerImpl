@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Builder
+@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "event")
@@ -38,12 +38,12 @@ public class EventEntity extends BaseEntity {
     @Column(name = "has_notice", nullable = false)
     private Boolean hasNotice;
 
+    @Column(name = "done", nullable = false)
+    private Boolean done;
+
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
     private EventCategory category;
-
-    @Column(name = "details")
-    private String details;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
