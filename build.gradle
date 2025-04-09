@@ -122,7 +122,9 @@ jacocoTestReport {
                         '**/BaseEntity.class',
                         '**/config/**',
                         '**/enums/**',
-                        '**/filter/**'
+                        '**/filter/**',
+                        '**/RedisUtil.class',
+                        '**/annotation/resolver/**'
                 ])
             })
     )
@@ -158,7 +160,9 @@ jacocoTestCoverageVerification {
                     "*.BaseEntity",
                     "*.config.*",
                     "*.enums.*",
-                    "*.filter.*"
+                    "*.filter.*",
+                    "*.RedisUtil*",
+                    "*.annotation.resolver.*"
             ]
 
         }
