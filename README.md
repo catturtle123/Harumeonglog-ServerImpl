@@ -69,7 +69,7 @@
 
 
 # 🏭 시스템 아키텍처
-
+<img width="592" alt="harumeonglog_architecture" src="https://github.com/user-attachments/assets/1389e4e2-629c-4db0-bd41-7d9e3c6ed516" />
 
 
 # 📋 Commit Message Convention (이모지 + 소문자 적용)
