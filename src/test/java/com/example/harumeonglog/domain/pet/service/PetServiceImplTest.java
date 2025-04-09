@@ -3,6 +3,8 @@ package com.example.harumeonglog.domain.pet.service;
 import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest;
 import com.example.harumeonglog.domain.pet.controller.dto.response.PetResponse;
 import com.example.harumeonglog.domain.pet.controller.port.PetService;
+import com.example.harumeonglog.domain.pet.domain.MemberPet;
+import com.example.harumeonglog.domain.pet.domain.PetImage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,9 @@ class PetServiceImplTest {
 
         // when
         PetResponse.AddPetResponse response = petService.addPet(request);
+        MemberPet memberPet = new MemberPet();
+        PetImage petImage = new PetImage();
+
 
         // then
         assertThat(response).isNull();

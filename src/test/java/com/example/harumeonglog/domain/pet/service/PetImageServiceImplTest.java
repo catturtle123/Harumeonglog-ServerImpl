@@ -3,6 +3,7 @@ package com.example.harumeonglog.domain.pet.service;
 import com.example.harumeonglog.domain.pet.controller.dto.request.PetImageRequest;
 import com.example.harumeonglog.domain.pet.controller.dto.response.PetImageResponse;
 import com.example.harumeonglog.domain.pet.controller.port.PetImageService;
+import com.example.harumeonglog.domain.pet.domain.PetImage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ class PetImageServiceImplTest {
         // given
         Long petId = 1L;
         PetImageRequest.AddImagesRequest request = new PetImageRequest.AddImagesRequest(/* 예시로 빈 생성자 */);
+        PetImage petImage = new PetImage();
 
         // when
         PetImageResponse.AddImagesResponse response = petImageService.addImages(petId, request);
