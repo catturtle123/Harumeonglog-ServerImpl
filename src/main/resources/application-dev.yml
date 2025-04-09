@@ -1,12 +1,12 @@
 spring:
   config:
     activate:
-      on-profile: local
+      on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${LOCAL_DB_URL}
-    username: ${LOCAL_DB_USERNAME}
-    password: ${LOCAL_DB_PW}
+    url: ${DB_URL}
+    username: ${DB_username}
+    password: ${DB_PW}
 
   jpa:
     hibernate:
@@ -40,5 +40,5 @@ springdoc:
     path: /swagger-ui.html
     enabled: true
     authentication:
-      username: ${LOCAL_SWAGGER_USERNAME}
-      password: ${LOCAL_SWAGGER_PW}
+      username: ${SWAGGER_USERNAME}
+      password: ${SWAGGER_PW}
