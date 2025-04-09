@@ -4,9 +4,11 @@ import com.example.harumeonglog.domain.member.controller.dto.request.MemberReque
 import com.example.harumeonglog.domain.member.controller.dto.response.MemberResponse;
 import com.example.harumeonglog.domain.member.controller.port.MemberService;
 import com.example.harumeonglog.domain.member.domain.Member;
+import lombok.Builder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Builder
 public class MemberServiceImpl implements MemberService {
 
     @Override

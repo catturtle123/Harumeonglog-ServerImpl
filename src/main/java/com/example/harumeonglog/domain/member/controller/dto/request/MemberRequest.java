@@ -1,6 +1,7 @@
 package com.example.harumeonglog.domain.member.controller.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 public class MemberRequest {
 
     @Getter
+    @Builder
     public static class MemberLoginRequest {
         private final String email;
         private final String nickname;
@@ -38,6 +40,7 @@ public class MemberRequest {
     }
 
     @Getter
+    @Builder
     public static class MemberInfoUpdateRequest {
         private final String image;
         private final String nickname;
