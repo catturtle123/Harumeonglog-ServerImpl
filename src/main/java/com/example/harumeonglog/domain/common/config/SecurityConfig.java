@@ -51,7 +51,7 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     private final String[] allowUrl = {
-
+        "/health"
     };
 
     private final String[] apiUrl = {
