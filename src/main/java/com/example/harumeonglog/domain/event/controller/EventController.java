@@ -26,17 +26,17 @@ public class EventController {
     }
 
     @GetMapping
-    public CustomResponse<EventResponse.EventListResponse> getDayEvent(@RequestParam("date") String date){
+    public CustomResponse<EventResponse.EventDayResponse> getDayEvent(@RequestParam("date") String date){
         return CustomResponse.ok(eventService.getDayEvents(date));
     }
 
     @GetMapping("/{eventId}")
-    public CustomResponse<EventResponse.EventDetailResponse> getEvent(@PathVariable Long eventId){
+    public CustomResponse<EventResponse.BaseEventResponse> getEvent(@PathVariable Long eventId){
         return CustomResponse.ok(eventService.getEvent(eventId));
     }
 
     @PutMapping("/{eventId}")
-    public CustomResponse<EventResponse.EventUpdateResponse> updateEvent(
+    public CustomResponse<EventResponse.BaseEventResponse> updateEvent(
             @PathVariable Long eventId,
             @RequestBody EventRequest.EventUpdateRequest request){
         return CustomResponse.ok(eventService.updateEvent(eventId, request));

@@ -43,8 +43,8 @@ include::{snippets}/event-controller-test/get-day-event/response-fields.adoc[]
 ==== Result
 include::{snippets}/event-controller-test/get-day-event/response-fields-result.adoc[]
 
-==== EventDetailResponse
-include::{snippets}/event-controller-test/get-day-event/response-fields-EventDetailResponse.adoc[]
+==== EventShortResponse
+include::{snippets}/event-controller-test/get-day-event/response-fields-EventShortResponse.adoc[]
 
 ===== Response
 include::{snippets}/event-controller-test/get-day-event/http-response.adoc[]

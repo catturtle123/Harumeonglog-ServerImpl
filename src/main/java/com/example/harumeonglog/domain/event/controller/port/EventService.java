@@ -6,9 +6,9 @@ import com.example.harumeonglog.domain.event.controller.dto.response.EventRespon
 
 public interface EventService {
     EventResponse.EventCreateResponse createEvent(EventRequest.EventCreateRequest request);
-    EventResponse.EventListResponse getDayEvents(String date);
-    EventResponse.EventDetailResponse getEvent(Long eventId);
-    EventResponse.EventUpdateResponse updateEvent(Long eventId, EventRequest.EventUpdateRequest request);
+    EventResponse.EventDayResponse getDayEvents(String date);
+    EventResponse.BaseEventResponse getEvent(Long eventId);
+    EventResponse.BaseEventResponse updateEvent(Long eventId, EventRequest.EventUpdateRequest request);
     void deleteEvent(Long eventId);
     EventResponse.EventCompleteResponse completeEvent(Long eventId);
 }

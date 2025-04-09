@@ -13,17 +13,17 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventResponse.EventListResponse getDayEvents(String date) {
+    public EventResponse.EventDayResponse getDayEvents(String date) {
         return null;
     }
 
     @Override
-    public EventResponse.EventDetailResponse getEvent(Long eventId) {
+    public EventResponse.BaseEventResponse getEvent(Long eventId) {
         return null;
     }
 
     @Override
-    public EventResponse.EventUpdateResponse updateEvent(Long eventId, EventRequest.EventUpdateRequest request) {
+    public EventResponse.BaseEventResponse updateEvent(Long eventId, EventRequest.EventUpdateRequest request) {
         return null;
     }
 

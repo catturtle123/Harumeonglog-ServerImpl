@@ -1,16 +1,19 @@
 package com.example.harumeonglog.domain.event.domain;
 
 import com.example.harumeonglog.domain.event.domain.enums.EventCategory;
+import com.example.harumeonglog.domain.member.domain.Member;
 import com.example.harumeonglog.domain.member.entity.MemberEntity;
 import com.example.harumeonglog.domain.pet.domain.Pet;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
+@SuperBuilder
 public class Event {
 
     private Long id;
@@ -25,13 +28,13 @@ public class Event {
 
     private Boolean hasNotice;
 
-    private EventCategory category;
+    private Boolean done;
 
-    private String details;
+    private EventCategory category;
 
     private LocalDateTime deletedAt;
 
-    private MemberEntity memberEntity;
+    private Member member;
 
     private Pet pet;
 
