@@ -6,6 +6,7 @@ import com.example.harumeonglog.domain.common.controller.code.BaseErrorCode;
 import com.example.harumeonglog.domain.common.controller.code.GeneralErrorCode;
 import com.example.harumeonglog.domain.common.domain.exception.GeneralException;
 import com.example.harumeonglog.domain.common.util.discord.service.DiscordService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -66,14 +67,14 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<CustomResponse<String>> exception(Exception e, WebRequest webRequest) {
+    public ResponseEntity<CustomResponse<String>> exception(Exception e, HttpServletRequest request) {
         loggingError(e);
 
         BaseErrorCode code = GeneralErrorCode._INTERNAL_SERVER_ERROR;
         String message = e.getClass().getSimpleName() + ": " + e.getMessage();
 
         if (!profileConfigData.getOnProfile().equals("local")) {
-            sendDiscordMessage(webRequest, e);
+            sendDiscordMessage(request, e);
         }
 
         return ResponseEntity.status(code.getHttpStatus()).body(CustomResponse.fail(code, message));
@@ -88,7 +89,7 @@ public class ExceptionAdvice {
         log.error(getErrorMethodAndClass(e));
     }
 
-    private void sendDiscordMessage(WebRequest webRequest, Exception exception) {
+    private void sendDiscordMessage(HttpServletRequest webRequest, Exception exception) {
         discordService.sendErrorMessage(webRequest, exception, getErrorMethodAndClass(exception));
     }
 

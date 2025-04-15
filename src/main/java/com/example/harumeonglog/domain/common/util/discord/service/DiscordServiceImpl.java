@@ -5,8 +5,6 @@ import com.example.harumeonglog.domain.common.util.discord.dto.DiscordMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.context.request.WebRequest;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -25,18 +23,17 @@ public class DiscordServiceImpl implements DiscordService {
     private final DiscordApiUtil discordApiUtil;
 
     @Override
-    public void sendErrorMessage(WebRequest webRequest, Exception exception, String... message) {
-        DiscordMessage discordMessage = createDiscordMessage(webRequest, exception, String.join("\n", message));
+    public void sendErrorMessage(HttpServletRequest request, Exception exception, String... message) {
+        DiscordMessage discordMessage = createDiscordMessage(request, exception, String.join("\n", message));
         discordApiUtil.sendAlarm(discordMessage);
     }
 
-    private DiscordMessage createDiscordMessage(WebRequest webRequest, Exception exception, String message) {
-        String description = String.format(DISCORD_DESCRIPTION_FORMAT, LocalDateTime.now(), createRequestFullPath(webRequest), message);
+    private DiscordMessage createDiscordMessage(HttpServletRequest request, Exception exception, String message) {
+        String description = String.format(DISCORD_DESCRIPTION_FORMAT, LocalDateTime.now(), createRequestFullPath(request), message);
         return DiscordMessage.from(DISCORD_CONTENT, DISCORD_TITLE, description, DISCORD_STACK_TRACE_TITLE, String.format(DISCORD_STACK_TRACE_DESCRIPTION_FORMAT, getStackTrace(exception).substring(0, 1000)));
     }
 
-    private String createRequestFullPath(WebRequest webRequest) {
-        HttpServletRequest request = ((ServletWebRequest) webRequest).getRequest();
+    private String createRequestFullPath(HttpServletRequest request) {
         String fullPath = request.getMethod() + " " + request.getRequestURL();
 
         String queryString = request.getQueryString();

@@ -1,7 +1,7 @@
 package com.example.harumeonglog.domain.common.util.discord.service;
 
-import org.springframework.web.context.request.WebRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface DiscordService {
-    void sendErrorMessage(WebRequest webRequest, Exception exception, String... message);
+    void sendErrorMessage(HttpServletRequest request, Exception exception, String... message);
 }
