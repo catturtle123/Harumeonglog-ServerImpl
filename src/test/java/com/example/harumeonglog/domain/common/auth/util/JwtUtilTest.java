@@ -1,6 +1,7 @@
 package com.example.harumeonglog.domain.common.auth.util;
 
 import com.example.harumeonglog.domain.common.auth.domain.CustomUserDetails;
+import com.example.harumeonglog.domain.common.config.data.JwtConfigData;
 import com.example.harumeonglog.domain.member.domain.Member;
 import com.example.harumeonglog.domain.mock.FakeJwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,13 +18,14 @@ class JwtUtilTest {
     private final String testSecret = "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest";
     private final long accessExpiration = 100000L;
     private final long refreshExpiration = 10000000L;
+
     private final String email = "email@email.com";
 
     private JwtUtil jwtUtil;
 
     @BeforeEach
     void init() {
-        this.jwtUtil = new JwtUtil(testSecret, accessExpiration, refreshExpiration);
+        this.jwtUtil = new JwtUtil(getJwtConfigData());
     }
 
     @Test
@@ -142,5 +144,15 @@ class JwtUtilTest {
 
         // then
         assertThat(expiration).hasMillis(refreshExpiration);
+    }
+
+    private JwtConfigData getJwtConfigData() {
+        JwtConfigData.JwtTime jwtTime = new JwtConfigData.JwtTime();
+        jwtTime.setAccess(accessExpiration);
+        jwtTime.setRefresh(refreshExpiration);
+        JwtConfigData jwtConfigData = new JwtConfigData();
+        jwtConfigData.setTime(jwtTime);
+        jwtConfigData.setSecret(testSecret);
+        return jwtConfigData;
     }
 }

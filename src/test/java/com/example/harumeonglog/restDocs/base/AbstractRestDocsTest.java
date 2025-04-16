@@ -1,5 +1,7 @@
 package com.example.harumeonglog.restDocs.base;
 
+import com.example.harumeonglog.domain.common.config.data.ProfileConfigData;
+import com.example.harumeonglog.domain.common.util.discord.service.DiscordService;
 import com.example.harumeonglog.restDocs.config.RestDocsTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +13,7 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.restdocs.snippet.Attributes;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -38,6 +41,13 @@ public abstract class AbstractRestDocsTest {
 
     @Autowired
     protected RestDocumentationResultHandler restDocs;
+
+    // ExceptionAdvice Bean
+    @MockitoBean
+    DiscordService discordService;
+
+    @MockitoBean
+    ProfileConfigData profileConfigData;
 
     protected MockMvc mockMvc;
 

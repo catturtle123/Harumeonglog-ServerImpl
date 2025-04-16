@@ -1,11 +1,11 @@
 package com.example.harumeonglog.domain.common.auth.util;
 
+import com.example.harumeonglog.domain.common.config.data.JwtConfigData;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -22,12 +22,10 @@ public class JwtUtil {
     private final Duration accessExpiration;
     private final Duration refreshExpiration;
 
-    public JwtUtil(@Value("${jwt.secret}") String secret,
-                   @Value("${jwt.time.access}") long accessExpiration,
-                   @Value("${jwt.time.refresh}") long refreshExpiration) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.accessExpiration = Duration.ofMillis(accessExpiration);
-        this.refreshExpiration = Duration.ofMillis(refreshExpiration);
+    public JwtUtil(JwtConfigData jwtConfigData) {
+        this.secretKey = Keys.hmacShaKeyFor(jwtConfigData.getSecret().getBytes(StandardCharsets.UTF_8));
+        this.accessExpiration = Duration.ofMillis(jwtConfigData.getTime().getAccess());
+        this.refreshExpiration = Duration.ofMillis(jwtConfigData.getTime().getRefresh());
     }
 
     public String createAccessToken(UserDetails details) {
