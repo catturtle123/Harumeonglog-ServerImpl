@@ -2,7 +2,6 @@ package com.example.harumeonglog.domain.member.converter;
 
 import com.example.harumeonglog.domain.member.dto.response.MemberResponse;
 import com.example.harumeonglog.domain.member.entity.Member;
-import com.example.harumeonglog.domain.pet.dto.response.PetResponse;
 
 public class MemberConverter {
 
@@ -12,6 +11,23 @@ public class MemberConverter {
                 .image(member.getImage())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
+                .build();
+    }
+
+    public static MemberResponse.MemberInfoUpdateResponse toMemberInfoUpdateResponse(Member member) {
+        return MemberResponse.MemberInfoUpdateResponse.builder()
+                .memberId(member.getId())
+                .image(member.getImage())
+                .nickname(member.getNickname())
+                .birth(member.getBirth())
+                .build();
+    }
+
+    public static MemberResponse.MemberLoginResponse toMemberLoginResponse(Long memberId, String accessToken, String refreshToken) {
+        return MemberResponse.MemberLoginResponse.builder()
+                .memberId(memberId)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }

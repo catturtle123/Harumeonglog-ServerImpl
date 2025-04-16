@@ -48,7 +48,8 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     private final String[] allowUrl = {
-        "/health"
+            "/health",
+            "/members/*/login"
     };
 
     private final String[] apiUrl = {

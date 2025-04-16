@@ -29,6 +29,13 @@ spring:
     ansi:
       enabled: always
 
+  security:
+    oauth2:
+      kakao:
+        public-key-url: ${KAKAO_PUBLIC_KEY_URL}
+        iss: ${KAKAO_ISS}
+        app-key: ${KAKAO_APP_KEY}
+
 jwt:
   secret: ${JWT_SECRET}
   time:

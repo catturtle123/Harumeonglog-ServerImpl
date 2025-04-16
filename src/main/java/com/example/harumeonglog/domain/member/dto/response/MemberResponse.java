@@ -1,6 +1,5 @@
 package com.example.harumeonglog.domain.member.dto.response;
 
-import com.example.harumeonglog.domain.member.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,15 +14,6 @@ public class MemberResponse {
         private String email;
         private String nickname;
         private String image;
-
-        public static MemberInfoResponse from(Member member) {
-            return MemberInfoResponse.builder()
-                    .memberId(member.getId())
-                    .email(member.getEmail())
-                    .nickname(member.getNickname())
-                    .image(member.getImage())
-                    .build();
-        }
     }
 
     @Getter
@@ -47,14 +37,5 @@ public class MemberResponse {
         private String image;
         private String nickname;
         private LocalDate birth;
-
-        public static MemberInfoUpdateResponse from(Member member) {
-            return MemberInfoUpdateResponse.builder()
-                    .memberId(member.getId())
-                    .image(member.getImage())
-                    .nickname(member.getNickname())
-                    .birth(member.getBirth())
-                    .build();
-        }
     }
 }
