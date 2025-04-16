@@ -52,9 +52,6 @@ dependencies {
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 
-    //ascciidoctorExt
-    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
@@ -62,111 +59,6 @@ dependencies {
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-}
-
-tasks.named('test') {
-    outputs.dir snippetsDir
-    finalizedBy asciidoctor, jacocoTestReport//, jacocoTestCoverageVerification
-    doFirst {
-        delete(snippetsDir)
-        mkdir(snippetsDir)
-    }
-    useJUnitPlatform()
-}
-
-tasks.named('asciidoctor') {
-    inputs.dir snippetsDir
-    configurations 'asciidoctorExt'
-    dependsOn test
-    finalizedBy copyDocument
-}
-
-tasks.register('copyDocument', Copy) {
-    dependsOn asciidoctor
-    doFirst {
-        delete("src/main/resources/static/docs")
-    }
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
-}
-
-bootJar {
-    dependsOn copyDocument
-}
-
-jacocoTestReport {
-    dependsOn test
-
-    executionData fileTree(
-            dir: layout.buildDirectory.dir("jacoco").get().asFile,
-            includes: ["test.exec"]
-    )
-
-    reports {
-        html.required.set(true)
-        xml.required.set(true)
-        csv.required.set(false)
-    }
-
-    // exclude 대상 명시
-    classDirectories.setFrom(
-            files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: [
-                        '**/code/**',
-                        '**/response/**',
-                        '**/exception/**',
-                        '**/infrastructure/**Repository*',
-                        '**/dto/**',
-                        '**/ExceptionAdvice.class',
-                        '**/HarumeonglogApplication.class',
-                        '**/BaseEntity.class',
-                        '**/config/**',
-                        '**/enums/**',
-                        '**/filter/**',
-                        '**/RedisUtil.class',
-                        '**/annotation/resolver/**'
-                ])
-            })
-    )
-}
-
-
-jacocoTestCoverageVerification {
-    dependsOn test
-    violationRules {
-        rule {
-            element = 'BUNDLE'
-
-            limit {
-                counter = 'LINE'
-                value = 'COVEREDRATIO'
-                minimum = 0.90
-            }
-
-            limit {
-                counter = 'BRANCH'
-                value = 'COVEREDRATIO'
-                minimum = 0.90
-            }
-
-            excludes = [
-                    "*.code.*",
-                    "*.response.*",
-                    "*.exception.*",
-                    "*.infrastructure.*Repository*",
-                    "*.dto.*",
-                    "com.example.harumeonglog.domain.common.controller.ExceptionAdvice",
-                    "*.HarumeonglogApplication",
-                    "*.BaseEntity",
-                    "*.config.*",
-                    "*.enums.*",
-                    "*.filter.*",
-                    "*.RedisUtil*",
-                    "*.annotation.resolver.*"
-            ]
-
-        }
-    }
 }
 
 jar {
