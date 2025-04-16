@@ -36,7 +36,6 @@ import org.springframework.security.web.context.SecurityContextRepository;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
     private final SwaggerConfigData swaggerConfigData;
