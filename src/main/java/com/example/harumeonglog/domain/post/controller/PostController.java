@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/posts")
-@Tag(name = "Post 관련 Controller")
+@Tag(name = "Post", description = "Post 관련 API")
 public class PostController {
 
     private final PostCommandService postCommandService;
     private final PostQueryService postQueryService;
 
-    @Operation(description = "게시물 조회 by 김준환")
+    @Operation(summary = "게시물 조회 API by 김준환", description = "게시물 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
@@ -41,7 +41,7 @@ public class PostController {
         return CustomResponse.ok(postListResponse);
     }
 
-    @Operation(description = "게시물 상세 조회 by 김준환")
+    @Operation(summary = "게시물 상세 조회 API by 김준환",description = "게시물 상세 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "POST404", description = "게시물을 찾지 못했습니다.")
@@ -54,7 +54,7 @@ public class PostController {
         return CustomResponse.ok(postDetailResponse);
     }
 
-    @Operation(description = "게시물 생성 by 김준환")
+    @Operation(summary = "게시물 생성 API by 김준환",description = "게시물 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
@@ -66,7 +66,7 @@ public class PostController {
         return CustomResponse.ok(post.getId());
     }
 
-    @Operation(description = "게시물 수정 by 김준환")
+    @Operation(summary = "게시물 수정 API by 김준환",description = "게시물 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "POST404", description = "게시물을 찾지 못했습니다.")
@@ -80,7 +80,7 @@ public class PostController {
         return CustomResponse.ok(post.getId());
     }
 
-    @Operation(description = "게시물 삭제 by 김준환")
+    @Operation(summary = "게시물 삭제 API by 김준환",description = "게시물 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "POST404", description = "게시물을 찾지 못했습니다.")
@@ -93,7 +93,7 @@ public class PostController {
         return CustomResponse.ok(null);
     }
 
-    @Operation(description = "게시물 좋아요 생성/삭제 by 김준환")
+    @Operation(summary = "게시물 좋아요 API by 김준환",description = "게시물 좋아요 생성/삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "POST404", description = "게시물을 찾지 못했습니다.")
@@ -107,7 +107,7 @@ public class PostController {
         return CustomResponse.ok(null);
     }
 
-    @Operation(description = "게시물 신고 생성/삭제 by 김준환")
+    @Operation(summary = "게시물 신고 API by 김준환",description = "게시물 신고 생성/삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "POST404", description = "게시물을 찾지 못했습니다.")
@@ -121,7 +121,7 @@ public class PostController {
         return CustomResponse.ok(null);
     }
 
-    @Operation(description = "내가 쓴 게시물 조회 by 김준환")
+    @Operation(summary = "내가 쓴 게시물 조회 API by 김준환",description = "내가 쓴 게시물 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
@@ -135,7 +135,7 @@ public class PostController {
         return CustomResponse.ok(postPreviewListResponse);
     }
 
-    @Operation(description = "내가 좋아요 누른 게시물 조회 by 김준환")
+    @Operation(summary = "내가 좋아요 누른 게시물 조회 API by 김준환",description = "내가 좋아요 누른 게시물 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
