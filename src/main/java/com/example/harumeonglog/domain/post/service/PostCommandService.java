@@ -1,6 +1,7 @@
 package com.example.harumeonglog.domain.post.service;
 
 import com.example.harumeonglog.domain.post.dto.request.PostRequest;
+import com.example.harumeonglog.domain.post.dto.response.PostResponse;
 import com.example.harumeonglog.domain.post.entity.Post;
 
 
