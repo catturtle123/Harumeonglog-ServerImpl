@@ -42,3 +42,8 @@ springdoc:
     authentication:
       username: ${SWAGGER_USERNAME}
       password: ${SWAGGER_PW}
+      profile-scope:
+        - dev
+
+discord:
+  web-hook-url: ${DISCORD_WEBHOOK_URL}

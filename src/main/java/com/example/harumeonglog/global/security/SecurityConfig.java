@@ -10,8 +10,10 @@ import com.example.harumeonglog.global.security.handler.JwtTokenLogoutHandler;
 import com.example.harumeonglog.global.security.service.CustomDetailService;
 import com.example.harumeonglog.global.security.util.JwtUtil;
 import com.example.harumeonglog.global.security.util.RedisUtil;
+
+import com.example.harumeonglog.domain.common.config.data.ProfileConfigData;
+import com.example.harumeonglog.domain.common.config.data.SwaggerConfigData;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -37,12 +39,8 @@ import org.springframework.security.web.context.SecurityContextRepository;
 @EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
-    @Value("${springdoc.swagger-ui.authentication.username}")
-    private String apiUsername;
-
-    @Value("${springdoc.swagger-ui.authentication.password}")
-    private String apiPassword;
-
+    private final SwaggerConfigData swaggerConfigData;
+    private final ProfileConfigData profileConfigData;
     private final RedisUtil redisUtil;
     private final JwtUtil jwtUtil;
     private final CustomDetailService customDetailService;
@@ -92,6 +90,13 @@ public class SecurityConfig {
     @Bean
     @Order(0)
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+        if (!swaggerConfigData.getAuthentication().getProfileScope().contains(profileConfigData.getOnProfile())) {
+
+            http.securityMatchers(matchers -> matchers.requestMatchers(apiUrl))
+                    .authorizeHttpRequests(request -> request.anyRequest().permitAll())
+            ;
+            return http.build();
+        }
         http
                 .securityMatchers(matchers -> matchers
                         .requestMatchers(apiUrl)
@@ -117,8 +122,8 @@ public class SecurityConfig {
     public UserDetailsService inMemoryUserDetailsManager() {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         UserDetails userDetails = User.builder()
-                .username(apiUsername)
-                .password(passwordEncoder().encode(apiPassword))
+                .username(swaggerConfigData.getAuthentication().getUsername())
+                .password(passwordEncoder().encode(swaggerConfigData.getAuthentication().getPassword()))
                 .roles("API")
                 .build();
         manager.createUser(userDetails);
