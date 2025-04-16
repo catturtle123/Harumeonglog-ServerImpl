@@ -51,4 +51,19 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostImage> postImageList;
+
+    // 비즈니스 함수
+    public void update(String content, PostCategory category, List<PostImage> postImageList) {
+        this.content = content;
+        this.category = category;
+        this.postImageList = postImageList;
+    }
+
+    public void fixLikeNum(Long number) {
+        this.postLikeNum += number;
+    }
+
+    public void fixReportNum(Long number) {
+        this.postReportNum += number;
+    }
 }

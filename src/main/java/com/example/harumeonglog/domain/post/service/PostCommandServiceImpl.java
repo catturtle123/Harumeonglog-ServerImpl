@@ -1,36 +1,85 @@
 package com.example.harumeonglog.domain.post.service;
 
+import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.post.converter.PostConverter;
+import com.example.harumeonglog.domain.post.converter.PostLikeConverter;
+import com.example.harumeonglog.domain.post.converter.PostReportConverter;
 import com.example.harumeonglog.domain.post.dto.request.PostRequest;
+import com.example.harumeonglog.domain.post.dto.response.PostResponse;
 import com.example.harumeonglog.domain.post.entity.Post;
+import com.example.harumeonglog.domain.post.entity.PostImage;
+import com.example.harumeonglog.domain.post.entity.PostLike;
+import com.example.harumeonglog.domain.post.entity.PostReport;
+import com.example.harumeonglog.domain.post.repository.PostImageRepository;
+import com.example.harumeonglog.domain.post.repository.PostLikeRepository;
+import com.example.harumeonglog.domain.post.repository.PostReportRepository;
+import com.example.harumeonglog.domain.post.repository.PostRepository;
+import com.example.harumeonglog.global.error.code.PostErrorCode;
+import com.example.harumeonglog.global.error.exception.PostException;
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
-@Builder
+@Transactional
+@RequiredArgsConstructor
 public class PostCommandServiceImpl implements PostCommandService {
+    private final PostRepository postRepository;
+    private final PostImageRepository postImageRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final PostReportRepository postReportRepository;
 
     @Override
     public Post createPost(PostRequest.PostCreateRequest postCreateRequest) {
-        return null;
+        Post post = postRepository.save(PostConverter.toPost(postCreateRequest));
+        List<PostImage> postImageList = postCreateRequest.getPostImageList().stream().map((s)-> PostImage.builder().post(post).postImageKeyName(s).build()).toList();
+        postImageRepository.saveAll(postImageList);
+        return post;
     }
 
     @Override
     public Post updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest) {
-        return null;
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
+        List<PostImage> postImageList = postUpdateRequest.getPostImageList().stream().map((s)-> PostImage.builder().post(post).postImageKeyName(s).build()).toList();
+        post.update(postUpdateRequest.getContent(), postUpdateRequest.getPostCategory(), postImageList);
+
+        return post;
     }
 
     @Override
     public void deletePost(Long postId) {
-
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
+        postRepository.delete(post);
     }
 
     @Override
-    public void likePost(Long postId) {
+    public void likePost(Long postId, Member member) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
 
+        PostLike postLike = postLikeRepository.findByPostAndMember(post, member);
+        if (postLike != null) {
+            post.fixLikeNum(-1L);
+            postLikeRepository.delete(postLike);
+        } else {
+            post.fixLikeNum(1L);
+            postLikeRepository.save(PostLikeConverter.toPostLike(post, member));
+        }
     }
 
     @Override
-    public void reportPost(Long postId) {
+    public void reportPost(Long postId, Member member) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
 
+        PostReport postReport = postReportRepository.findByPostAndMember(post, member);
+        if (postReport != null) {
+            post.fixReportNum(-1L);
+            postReportRepository.delete(postReport);
+        } else {
+            post.fixReportNum(1L);
+            postReportRepository.save(PostReportConverter.toPostReport(post, member));
+        }
     }
 }

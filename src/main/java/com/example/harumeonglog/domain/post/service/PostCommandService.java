@@ -1,6 +1,8 @@
 package com.example.harumeonglog.domain.post.service;
 
+import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.post.dto.request.PostRequest;
+import com.example.harumeonglog.domain.post.dto.response.PostResponse;
 import com.example.harumeonglog.domain.post.entity.Post;
 
 
@@ -11,7 +13,7 @@ public interface PostCommandService {
 
     void deletePost(Long postId);
 
-    void likePost(Long postId);
+    void likePost(Long postId, Member member);
 
-    void reportPost(Long postId);
+    void reportPost(Long postId, Member member);
 }

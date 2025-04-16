@@ -1,15 +1,18 @@
 package com.example.harumeonglog.domain.post.service;
 
 
+import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.post.controller.enums.PostRequestCategory;
+import com.example.harumeonglog.domain.post.dto.response.PostResponse;
 import com.example.harumeonglog.domain.post.entity.Post;
 import org.springframework.data.domain.Slice;
 
 public interface PostQueryService {
-    Slice<Post> getPosts(Long cursor, Integer size);
+    PostResponse.PostPreviewListResponse getPosts(Long cursor, Integer size, String search, PostRequestCategory postRequestCategory);
 
-    Post getPost();
+    PostResponse.PostDetailResponse getPost(Long postId);
 
-    Slice<Post> getMyPost(Long cursor, Integer size);
+    PostResponse.PostPreviewListResponse getMyPost(Long cursor, Integer size, Member member);
 
-    Slice<Post> getMyLikePost(Long cursor, Integer size);
+    PostResponse.PostPreviewListResponse getMyLikePost(Long cursor, Integer size, Member member);
 }
