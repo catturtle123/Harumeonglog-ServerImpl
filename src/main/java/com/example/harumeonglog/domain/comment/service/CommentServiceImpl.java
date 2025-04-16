@@ -1,8 +1,7 @@
 package com.example.harumeonglog.domain.comment.service;
 
-import com.example.harumeonglog.domain.comment.controller.dto.request.CommentRequest;
-import com.example.harumeonglog.domain.comment.controller.port.CommentService;
-import com.example.harumeonglog.domain.comment.domain.Comment;
+import com.example.harumeonglog.domain.comment.dto.request.CommentRequest;
+import com.example.harumeonglog.domain.comment.entity.Comment;
 import lombok.Builder;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;

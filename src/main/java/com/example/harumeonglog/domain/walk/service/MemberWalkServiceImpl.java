@@ -1,9 +1,9 @@
 package com.example.harumeonglog.domain.walk.service;
 
-import com.example.harumeonglog.domain.member.domain.Member;
-import com.example.harumeonglog.domain.pet.domain.Pet;
-import com.example.harumeonglog.domain.walk.controller.dto.request.MemberWalkRequest;
-import com.example.harumeonglog.domain.walk.controller.port.MemberWalkService;
+
+import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.pet.entity.Pet;
+import com.example.harumeonglog.domain.walk.dto.request.MemberWalkRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

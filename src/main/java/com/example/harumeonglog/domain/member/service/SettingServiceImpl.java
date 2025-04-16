@@ -1,9 +1,8 @@
 package com.example.harumeonglog.domain.member.service;
 
-import com.example.harumeonglog.domain.member.controller.dto.request.SettingRequest;
-import com.example.harumeonglog.domain.member.controller.port.SettingService;
-import com.example.harumeonglog.domain.member.domain.Member;
-import com.example.harumeonglog.domain.member.domain.Setting;
+import com.example.harumeonglog.domain.member.dto.request.SettingRequest;
+import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.member.entity.Setting;
 import lombok.Builder;
 import org.springframework.stereotype.Service;
 

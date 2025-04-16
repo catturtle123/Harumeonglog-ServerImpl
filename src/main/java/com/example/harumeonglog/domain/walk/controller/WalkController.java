@@ -1,16 +1,16 @@
 package com.example.harumeonglog.domain.walk.controller;
 
-import com.example.harumeonglog.domain.common.controller.response.CustomResponse;
-import com.example.harumeonglog.domain.member.domain.Member;
-import com.example.harumeonglog.domain.pet.domain.Pet;
-import com.example.harumeonglog.domain.walk.controller.dto.request.MemberWalkRequest;
-import com.example.harumeonglog.domain.walk.controller.dto.request.WalkRequest;
-import com.example.harumeonglog.domain.walk.controller.dto.response.MemberWalkResponse;
-import com.example.harumeonglog.domain.walk.controller.dto.response.WalkPetResponse;
-import com.example.harumeonglog.domain.walk.controller.dto.response.WalkResponse;
-import com.example.harumeonglog.domain.walk.controller.port.MemberWalkService;
-import com.example.harumeonglog.domain.walk.controller.port.WalkService;
-import com.example.harumeonglog.domain.walk.domain.Walk;
+import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.pet.entity.Pet;
+import com.example.harumeonglog.domain.walk.entity.Walk;
+import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.domain.walk.dto.request.MemberWalkRequest;
+import com.example.harumeonglog.domain.walk.dto.request.WalkRequest;
+import com.example.harumeonglog.domain.walk.dto.response.MemberWalkResponse;
+import com.example.harumeonglog.domain.walk.dto.response.WalkPetResponse;
+import com.example.harumeonglog.domain.walk.dto.response.WalkResponse;
+import com.example.harumeonglog.domain.walk.service.MemberWalkService;
+import com.example.harumeonglog.domain.walk.service.WalkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +29,7 @@ public class WalkController {
     @PostMapping
     public ResponseEntity<CustomResponse<WalkResponse.WalkCreateResponse>> createWalk(@RequestBody WalkRequest.WalkCreateRequest walkCreateRequest) {
         Walk walk = walkService.createWalk(walkCreateRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CustomResponse.created(WalkResponse.WalkCreateResponse.from(walk)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(CustomResponse.created(null));
     }
 
     @GetMapping
@@ -63,12 +63,12 @@ public class WalkController {
     @PatchMapping("/{walkId}")
     public CustomResponse<WalkResponse.WalkShareResponse> shareWalk(@PathVariable Long walkId) {
         Walk walk = walkService.shareWalk(walkId);
-        return CustomResponse.ok(WalkResponse.WalkShareResponse.from(walk));
+        return CustomResponse.ok(null);
     }
 
     @PostMapping("/{walkId}")
     public CustomResponse<WalkResponse.WalkLikeResponse> likeWalk(@PathVariable Long walkId) {
         Walk walk = walkService.likeWalk(walkId);
-        return CustomResponse.ok(WalkResponse.WalkLikeResponse.from(walk));
+        return CustomResponse.ok(null);
     }
 }

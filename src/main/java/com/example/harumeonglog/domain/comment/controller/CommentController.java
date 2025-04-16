@@ -1,10 +1,10 @@
 package com.example.harumeonglog.domain.comment.controller;
 
-import com.example.harumeonglog.domain.comment.controller.dto.request.CommentRequest;
-import com.example.harumeonglog.domain.comment.controller.dto.response.CommentResponse;
-import com.example.harumeonglog.domain.comment.controller.port.CommentService;
-import com.example.harumeonglog.domain.comment.domain.Comment;
-import com.example.harumeonglog.domain.common.controller.response.CustomResponse;
+import com.example.harumeonglog.domain.comment.dto.request.CommentRequest;
+import com.example.harumeonglog.domain.comment.dto.response.CommentResponse;
+import com.example.harumeonglog.domain.comment.entity.Comment;
+import com.example.harumeonglog.domain.comment.service.CommentService;
+import com.example.harumeonglog.global.common.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +23,7 @@ public class CommentController {
     ) {
         Slice<Comment> commentSlice = commentService.getComments(postId, cursor, size);
         Long nextCursor = commentSlice.toList().get(commentSlice.getSize() - 1).getId();
-        return CustomResponse.ok(CommentResponse.CommentListResponse.from(nextCursor,commentSlice.hasNext(), commentSlice.toList()));
+        return CustomResponse.ok(null);
     }
 
     @PostMapping("/comments/{commentId}/reports")

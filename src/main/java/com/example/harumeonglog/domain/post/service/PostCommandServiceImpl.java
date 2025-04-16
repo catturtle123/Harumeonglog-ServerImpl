@@ -1,8 +1,7 @@
 package com.example.harumeonglog.domain.post.service;
 
-import com.example.harumeonglog.domain.post.controller.dto.request.PostRequest;
-import com.example.harumeonglog.domain.post.controller.port.PostCommandService;
-import com.example.harumeonglog.domain.post.domain.Post;
+import com.example.harumeonglog.domain.post.dto.request.PostRequest;
+import com.example.harumeonglog.domain.post.entity.Post;
 import lombok.Builder;
 import org.springframework.stereotype.Service;
 

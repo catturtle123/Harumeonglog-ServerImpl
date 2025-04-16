@@ -1,14 +1,14 @@
 package com.example.harumeonglog.domain.member.controller;
 
-import com.example.harumeonglog.domain.common.controller.response.CustomResponse;
-import com.example.harumeonglog.domain.member.controller.dto.request.MemberRequest;
-import com.example.harumeonglog.domain.member.controller.dto.request.SettingRequest;
-import com.example.harumeonglog.domain.member.controller.dto.response.MemberResponse;
-import com.example.harumeonglog.domain.member.controller.dto.response.SettingResponse;
-import com.example.harumeonglog.domain.member.controller.port.MemberService;
-import com.example.harumeonglog.domain.member.controller.port.SettingService;
-import com.example.harumeonglog.domain.member.domain.Member;
-import com.example.harumeonglog.domain.member.domain.Setting;
+import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.member.entity.Setting;
+import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.domain.member.dto.request.MemberRequest;
+import com.example.harumeonglog.domain.member.dto.request.SettingRequest;
+import com.example.harumeonglog.domain.member.dto.response.MemberResponse;
+import com.example.harumeonglog.domain.member.dto.response.SettingResponse;
+import com.example.harumeonglog.domain.member.service.MemberService;
+import com.example.harumeonglog.domain.member.service.SettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

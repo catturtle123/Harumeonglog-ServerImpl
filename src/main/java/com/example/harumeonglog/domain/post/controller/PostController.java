@@ -1,11 +1,12 @@
 package com.example.harumeonglog.domain.post.controller;
 
-import com.example.harumeonglog.domain.common.controller.response.CustomResponse;
-import com.example.harumeonglog.domain.post.controller.dto.request.PostRequest;
-import com.example.harumeonglog.domain.post.controller.dto.response.PostResponse;
-import com.example.harumeonglog.domain.post.controller.port.PostCommandService;
-import com.example.harumeonglog.domain.post.controller.port.PostQueryService;
-import com.example.harumeonglog.domain.post.domain.Post;
+import com.example.harumeonglog.domain.post.entity.Post;
+import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.domain.post.dto.request.PostRequest;
+import com.example.harumeonglog.domain.post.dto.response.PostResponse;
+import com.example.harumeonglog.domain.post.service.PostCommandService;
+import com.example.harumeonglog.domain.post.service.PostQueryService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +33,8 @@ public class PostController {
     @GetMapping("/{postId}")
     public CustomResponse<PostResponse.PostDetailResponse> getPost() {
         Post post = postQueryService.getPost();
-        PostResponse.PostDetailResponse from = PostResponse.PostDetailResponse.from(post);
-        return CustomResponse.ok(from);
+
+        return CustomResponse.ok(null);
     }
 
     @PostMapping

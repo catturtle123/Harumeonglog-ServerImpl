@@ -1,8 +1,7 @@
 package com.example.harumeonglog.domain.pet.service;
 
-import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest;
-import com.example.harumeonglog.domain.pet.controller.dto.response.PetResponse;
-import com.example.harumeonglog.domain.pet.controller.port.PetService;
+import com.example.harumeonglog.domain.pet.dto.request.PetRequest;
+import com.example.harumeonglog.domain.pet.dto.response.PetResponse;
 import org.springframework.stereotype.Service;
 
 @Service

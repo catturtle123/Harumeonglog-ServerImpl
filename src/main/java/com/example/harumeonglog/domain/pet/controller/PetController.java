@@ -1,13 +1,15 @@
 package com.example.harumeonglog.domain.pet.controller;
 
 
-import com.example.harumeonglog.domain.common.controller.response.CustomResponse;
-import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest.AddPetRequest;
-import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest.ChangeCurrentPetRequest;
-import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest.ChangePetInfoRequest;
-import com.example.harumeonglog.domain.pet.controller.dto.request.PetRequest.InviteRequest;
-import com.example.harumeonglog.domain.pet.controller.dto.response.PetResponse.*;
-import com.example.harumeonglog.domain.pet.controller.port.PetService;
+import com.example.harumeonglog.domain.pet.dto.response.PetResponse;
+import com.example.harumeonglog.domain.pet.dto.response.PetResponse.AddPetResponse;
+import com.example.harumeonglog.domain.pet.dto.response.PetResponse.ChangePetInfoResponse;
+import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.domain.pet.dto.request.PetRequest.AddPetRequest;
+import com.example.harumeonglog.domain.pet.dto.request.PetRequest.ChangeCurrentPetRequest;
+import com.example.harumeonglog.domain.pet.dto.request.PetRequest.ChangePetInfoRequest;
+import com.example.harumeonglog.domain.pet.dto.request.PetRequest.InviteRequest;
+import com.example.harumeonglog.domain.pet.service.PetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +36,14 @@ public class PetController {
     }
 
     @GetMapping
-    public CustomResponse<GetPetsResponse> getPets(
+    public CustomResponse<PetResponse.GetPetsResponse> getPets(
             @RequestParam(required = false) Long cursor, // 커서 (마지막 펫 ID)
             @RequestParam(defaultValue = "10") int size) { // 페이지 크기
         return CustomResponse.ok(petService.getPets(cursor, size));
     }
 
     @PatchMapping("/current")
-    public CustomResponse<ChangeCurrentPetResponse> changeCurrentPet(
+    public CustomResponse<PetResponse.ChangeCurrentPetResponse> changeCurrentPet(
             @RequestBody ChangeCurrentPetRequest request) {
         return CustomResponse.ok(petService.changeCurrentPet(request));
     }
@@ -60,12 +62,12 @@ public class PetController {
     }
 
     @GetMapping("/search-member")
-    public CustomResponse<SearchMemberResponse> searchMember(
+    public CustomResponse<PetResponse.SearchMemberResponse> searchMember(
             @RequestParam String email,
             @RequestParam(required = false) Long cursor, // 커서 (마지막 펫 ID)
             @RequestParam(defaultValue = "10") int size
     ) {
-        SearchMemberResponse result = petService.searchMember(email, cursor, size);
+        PetResponse.SearchMemberResponse result = petService.searchMember(email, cursor, size);
         return CustomResponse.ok(result);
     }
 

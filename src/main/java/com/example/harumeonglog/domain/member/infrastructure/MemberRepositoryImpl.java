@@ -1,7 +1,6 @@
 package com.example.harumeonglog.domain.member.infrastructure;
 
-import com.example.harumeonglog.domain.member.entity.MemberEntity;
-import com.example.harumeonglog.domain.member.service.port.MemberRepository;
+import com.example.harumeonglog.domain.member.entity.Member;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -10,7 +9,7 @@ import java.util.Optional;
 public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
-    public Optional<MemberEntity> findByEmail(String email) {
+    public Optional<Member> findByEmail(String email) {
         return null;
     }
 }

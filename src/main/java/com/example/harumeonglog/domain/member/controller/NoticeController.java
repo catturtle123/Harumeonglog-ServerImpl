@@ -1,9 +1,9 @@
 package com.example.harumeonglog.domain.member.controller;
 
-import com.example.harumeonglog.domain.common.controller.response.CustomResponse;
-import com.example.harumeonglog.domain.member.controller.dto.response.NoticeResponse;
-import com.example.harumeonglog.domain.member.controller.port.NoticeService;
-import com.example.harumeonglog.domain.member.domain.Notice;
+import com.example.harumeonglog.domain.member.entity.Notice;
+import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.domain.member.dto.response.NoticeResponse;
+import com.example.harumeonglog.domain.member.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;

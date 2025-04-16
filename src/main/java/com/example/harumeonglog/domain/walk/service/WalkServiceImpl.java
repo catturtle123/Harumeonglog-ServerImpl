@@ -1,9 +1,8 @@
 package com.example.harumeonglog.domain.walk.service;
 
-import com.example.harumeonglog.domain.walk.controller.dto.request.WalkRequest;
-import com.example.harumeonglog.domain.walk.controller.dto.response.WalkResponse;
-import com.example.harumeonglog.domain.walk.controller.port.WalkService;
-import com.example.harumeonglog.domain.walk.domain.Walk;
+import com.example.harumeonglog.domain.walk.dto.request.WalkRequest;
+import com.example.harumeonglog.domain.walk.dto.response.WalkResponse;
+import com.example.harumeonglog.domain.walk.entity.Walk;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,8 +1,7 @@
 package com.example.harumeonglog.domain.event.service;
 
-import com.example.harumeonglog.domain.event.controller.dto.request.EventRequest;
-import com.example.harumeonglog.domain.event.controller.dto.response.EventResponse;
-import com.example.harumeonglog.domain.event.controller.port.EventService;
+import com.example.harumeonglog.domain.event.dto.request.EventRequest;
+import com.example.harumeonglog.domain.event.dto.response.EventResponse;
 import org.springframework.stereotype.Service;
 
 @Service
