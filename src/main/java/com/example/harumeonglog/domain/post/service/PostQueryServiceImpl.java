@@ -34,7 +34,7 @@ public class PostQueryServiceImpl implements PostQueryService {
             search = "";
         }
 
-        if (cursor == 1) {
+        if (cursor == 0) {
             cursor = Long.MAX_VALUE;
         }
 
