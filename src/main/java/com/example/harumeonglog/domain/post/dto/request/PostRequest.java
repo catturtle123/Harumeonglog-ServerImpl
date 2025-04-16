@@ -9,7 +9,6 @@ import java.util.List;
 public class PostRequest {
 
     @Getter
-    @Builder
     public static class PostCreateRequest {
         private PostCategory postCategory;
         private String content;
@@ -17,7 +16,6 @@ public class PostRequest {
     }
 
     @Getter
-    @Builder
     public static class PostUpdateRequest {
         private PostCategory postCategory;
         private String content;

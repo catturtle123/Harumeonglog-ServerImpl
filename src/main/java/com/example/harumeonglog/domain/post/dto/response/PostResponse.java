@@ -11,8 +11,8 @@ public class PostResponse {
 
     @Getter
     @Builder
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class PostPreviewListResponse {
         private Long cursor;
         private Boolean hasNext;
@@ -22,6 +22,8 @@ public class PostResponse {
 
     @Getter
     @Builder
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class PostPreviewResponse {
         private Long postId;
         private String content;
@@ -34,6 +36,8 @@ public class PostResponse {
 
     @Getter
     @Builder
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class PostDetailResponse {
         private Long postId;
         private String content;
@@ -46,6 +50,8 @@ public class PostResponse {
 
     @Getter
     @Builder
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class PostUpdateResponse {
         private Long postId;
         private String content;
