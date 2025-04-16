@@ -3,15 +3,18 @@ package com.example.harumeonglog.domain.post.service;
 
 import com.example.harumeonglog.domain.member.converter.MemberConverter;
 import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.post.controller.enums.PostRequestCategory;
 import com.example.harumeonglog.domain.post.converter.PostConverter;
 import com.example.harumeonglog.domain.post.dto.response.PostResponse;
 import com.example.harumeonglog.domain.post.entity.Post;
 import com.example.harumeonglog.domain.post.entity.PostImage;
+import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
 import com.example.harumeonglog.global.error.code.PostErrorCode;
 import com.example.harumeonglog.global.error.exception.PostException;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +29,35 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final PostRepository postRepository;
 
     @Override
-    public Slice<Post> getPosts(Long cursor, Integer size) {
-        return null;
+    public PostResponse.PostPreviewListResponse getPosts(Long cursor, Integer size, String search, PostRequestCategory postRequestCategory) {
+
+        if (search == null || search.isEmpty()) {
+            search = "";
+        }
+
+        if (cursor == 1) {
+            cursor = Long.MAX_VALUE;
+        }
+
+        Slice<Post> postSlice;
+        if (postRequestCategory.equals(PostRequestCategory.ALL)) {
+            postSlice = postRepository.findByContentLikeAndIdLessThanOrderByIdDesc(search, cursor, PageRequest.of(0, size));
+        } else {
+            PostCategory postCategory = PostCategory.valueOf(postRequestCategory.name());
+            postSlice = postRepository.findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(search, cursor, postCategory, PageRequest.of(0, size));
+        }
+
+        Long nextCursor = null;
+        if (!postSlice.isLast()) {
+            nextCursor = postSlice.toList().get(postSlice.toList().size() - 1).getId();
+        }
+
+        List<PostResponse.PostPreviewResponse> postPreviewResponses = postSlice.toList().stream().map((post) -> {
+            String postImageKey = post.getPostImageList().get(0).getPostImageKeyName() != null ? post.getPostImageList().get(0).getPostImageKeyName() : null;
+            return PostConverter.toPostPreviewResponse(post, MemberConverter.toMemberInfoResponse(post.getMember()), postImageKey);
+        }).toList();
+
+        return PostConverter.toPostPreviewListResponse(postPreviewResponses, nextCursor, postSlice.hasNext());
     }
 
     @Override

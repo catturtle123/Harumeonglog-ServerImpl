@@ -19,4 +19,23 @@ public class PostConverter {
                 .postImageList(imageList)
                 .build();
     }
+
+    public static PostResponse.PostPreviewResponse toPostPreviewResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, String imageList) {
+        return PostResponse.PostPreviewResponse.builder()
+                .postId(post.getId())
+                .postCategory(post.getCategory())
+                .content(post.getContent())
+                .likeNum(post.getPostLikeNum())
+                .commentNum(post.getCommentNum())
+                .memberInfoResponse(memberInfoResponse)
+                .build();
+    }
+
+    public static PostResponse.PostPreviewListResponse toPostPreviewListResponse(List<PostResponse.PostPreviewResponse> postList, Long cursor, Boolean hasNext) {
+        return PostResponse.PostPreviewListResponse.builder()
+                .items(postList)
+                .hasNext(hasNext)
+                .cursor(cursor)
+                .build();
+    }
 }

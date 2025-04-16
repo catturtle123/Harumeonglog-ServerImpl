@@ -1,6 +1,8 @@
 package com.example.harumeonglog.domain.post.controller;
 
 import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.post.controller.enums.PostRequestCategory;
+import com.example.harumeonglog.domain.post.converter.PostConverter;
 import com.example.harumeonglog.domain.post.entity.Post;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.domain.post.dto.request.PostRequest;
@@ -22,14 +24,14 @@ public class PostController {
     private final PostQueryService postQueryService;
 
     @GetMapping
-    public CustomResponse<PostResponse.PostListResponse> getPosts(
+    public CustomResponse<PostResponse.PostPreviewListResponse> getPosts(
+            @RequestParam(name = "search") String search,
+            @RequestParam(name = "postRequestCategory") PostRequestCategory postRequestCategory,
             @RequestParam(name = "cursor") Long cursor,
             @RequestParam(name = "size") Integer size
     ) {
-        Slice<Post> postSlice = postQueryService.getPosts(cursor, size);
-        Long nextCursor = postSlice.toList().get(postSlice.getSize() - 1).getId();
-        PostResponse.PostListResponse from = PostResponse.PostListResponse.from(nextCursor, postSlice.hasNext(), postSlice.toList());
-        return CustomResponse.ok(from);
+        PostResponse.PostPreviewListResponse postListResponse = postQueryService.getPosts(cursor, size, search, postRequestCategory);
+        return CustomResponse.ok(postListResponse);
     }
 
     @GetMapping("/{postId}")
@@ -54,7 +56,7 @@ public class PostController {
             @RequestBody PostRequest.PostUpdateRequest postUpdateRequest
     ) {
         Post post = postCommandService.updatePost(postId, postUpdateRequest);
-        return CustomResponse.ok(PostResponse.PostPreviewResponse.from(post));
+        return CustomResponse.ok(null);
     }
 
     @DeleteMapping("/{postId}")
@@ -82,25 +84,23 @@ public class PostController {
     }
 
     @GetMapping("/me")
-    public CustomResponse<PostResponse.PostListResponse> getMyPost(
+    public CustomResponse<PostResponse.PostPreviewListResponse> getMyPost(
             @RequestParam(name = "cursor") Long cursor,
             @RequestParam(name = "size") Integer size
     ) {
         Slice<Post> postSlice = postQueryService.getMyPost(cursor, size);
         Long nextCursor = postSlice.toList().get(postSlice.getSize() - 1).getId();
-        PostResponse.PostListResponse from = PostResponse.PostListResponse.from(nextCursor, postSlice.hasNext(), postSlice.toList());
-        return CustomResponse.ok(from);
+        return CustomResponse.ok(null);
     }
 
     @GetMapping("/me/likes")
-    public CustomResponse<PostResponse.PostListResponse> getMyLikePost(
+    public CustomResponse<PostResponse.PostPreviewListResponse> getMyLikePost(
             @RequestParam(name = "cursor") Long cursor,
             @RequestParam(name = "size") Integer size
     ) {
         Slice<Post> postSlice = postQueryService.getMyLikePost(cursor, size);
         Long nextCursor = postSlice.toList().get(postSlice.getSize() - 1).getId();
-        PostResponse.PostListResponse from = PostResponse.PostListResponse.from(nextCursor, postSlice.hasNext(), postSlice.toList());
-        return CustomResponse.ok(from);
+        return CustomResponse.ok(null);
     }
 
 }
