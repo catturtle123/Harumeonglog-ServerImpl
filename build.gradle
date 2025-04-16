@@ -2,8 +2,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.3'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.asciidoctor.jvm.convert' version '3.3.2'
-    id 'jacoco'
 }
 
 group = 'com.example'
@@ -15,12 +13,7 @@ java {
     }
 }
 
-jacoco {
-    toolVersion = "0.8.8"
-}
-
 configurations {
-    asciidoctorExt
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -28,10 +21,6 @@ configurations {
 
 repositories {
     mavenCentral()
-}
-
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
 }
 
 dependencies {
