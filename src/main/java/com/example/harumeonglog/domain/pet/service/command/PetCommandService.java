@@ -1,14 +1,14 @@
-package com.example.harumeonglog.domain.pet.service;
+package com.example.harumeonglog.domain.pet.service.command;
 
+import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.pet.dto.request.PetRequest;
 import com.example.harumeonglog.domain.pet.dto.response.PetResponse;
+import org.springframework.web.multipart.MultipartFile;
 
-public interface PetService {
-    PetResponse.AddPetResponse addPet(PetRequest.AddPetRequest request);
+public interface PetCommandService {
+    PetResponse.AddPetResponse addPet(PetRequest.AddPetRequest request, MultipartFile mainImage, Member member);
     PetResponse.ChangePetInfoResponse changePetInfo(Long petId, PetRequest.ChangePetInfoRequest request);
-    PetResponse.GetPetsResponse getPets(Long cursor, int size);
     PetResponse.ChangeCurrentPetResponse changeCurrentPet(PetRequest.ChangeCurrentPetRequest request);
     void deletePet(Long petId);
     void invite(Long petId, PetRequest.InviteRequest request);
-    PetResponse.SearchMemberResponse searchMember(String email, Long cursor, int size);
 }

@@ -44,4 +44,8 @@ public class Pet extends BaseEntity {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    public void setMainImage(String mainImage){
+        this.mainImage = mainImage;
+    }
 }

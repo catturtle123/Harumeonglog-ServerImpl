@@ -1,14 +1,18 @@
 package com.example.harumeonglog.domain.pet.controller.specification;
 
+import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.pet.dto.request.PetRequest;
 import com.example.harumeonglog.domain.pet.dto.response.PetResponse;
 import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Pet", description = "Pet 관련 API")
 public interface PetControllerSpecification {
@@ -17,8 +21,10 @@ public interface PetControllerSpecification {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON201", description = "펫 등록 성공")
     })
-    @PostMapping
-    ResponseEntity<CustomResponse<PetResponse.AddPetResponse>> addPet(@RequestBody PetRequest.AddPetRequest request);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<CustomResponse<PetResponse.AddPetResponse>> addPet(@RequestPart("mainImage") MultipartFile mainImage,
+                                                                      @RequestPart PetRequest.AddPetRequest request,
+                                                                      @AuthenticatedMember Member member);
 
     @Operation(summary = "펫 정보 수정 API by 백종우", description = "펫 정보를 수정합니다.")
     @ApiResponses({
