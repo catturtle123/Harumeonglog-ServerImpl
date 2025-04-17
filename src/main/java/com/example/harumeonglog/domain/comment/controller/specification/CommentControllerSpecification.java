@@ -1,6 +1,8 @@
 package com.example.harumeonglog.domain.comment.controller.specification;
 
+import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -17,5 +19,8 @@ public interface CommentControllerSpecification {
             @ApiResponse(responseCode = "COMMENT404", description = "댓글을 찾지 못했습니다.")
     })
     @DeleteMapping("/comments/{commentId}")
-    CustomResponse<Void> deleteComment(@PathVariable Long commentId);
+    CustomResponse<Void> deleteComment(
+            @AuthenticatedMember Member member,
+            @PathVariable Long commentId
+    );
 }

@@ -6,7 +6,9 @@ import com.example.harumeonglog.domain.comment.dto.response.CommentResponse;
 import com.example.harumeonglog.domain.comment.entity.Comment;
 import com.example.harumeonglog.domain.comment.service.CommentCommandService;
 import com.example.harumeonglog.domain.comment.service.CommentQueryService;
+import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
@@ -51,8 +53,11 @@ public class CommentController implements CommentControllerSpecification {
     }
 
     @DeleteMapping("/comments/{commentId}")
-    public CustomResponse<Void> deleteComment(@PathVariable Long commentId) {
-        commentCommandService.deleteComment(commentId);
+    public CustomResponse<Void> deleteComment(
+            @AuthenticatedMember Member member,
+            @PathVariable Long commentId
+    ) {
+        commentCommandService.deleteComment(commentId, member);
         return CustomResponse.ok(null);
     }
 
