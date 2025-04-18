@@ -74,6 +74,12 @@ public class PetController implements PetControllerSpecification {
         return CustomResponse.ok("변경 완료");
     }
 
+    @GetMapping("/home")
+    public CustomResponse<PetResponse.MainPetResponse> getCurrentPet(@AuthenticatedMember Member member){
+        return CustomResponse.ok(petQueryService.getMainPet(member));
+    }
+
+
     @PatchMapping("/{petId}")
     public CustomResponse<String> deletePet(@PathVariable Long petId,
                                             @AuthenticatedMember Member member) {

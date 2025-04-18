@@ -90,4 +90,14 @@ public class PetResponse {
             private String image;
         }
     }
+
+    @Getter
+    @Builder
+    public static class MainPetResponse{
+        private Long petId;
+        private String name;
+        private String mainImage;
+        private Gender gender;
+        private LocalDate birth;
+    }
 }

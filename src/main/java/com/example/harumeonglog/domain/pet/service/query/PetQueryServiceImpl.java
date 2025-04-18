@@ -3,9 +3,14 @@ package com.example.harumeonglog.domain.pet.service.query;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.infrastructure.MemberRepository;
 import com.example.harumeonglog.domain.pet.converter.MemberPetConverter;
+import com.example.harumeonglog.domain.pet.converter.PetConverter;
 import com.example.harumeonglog.domain.pet.dto.response.PetResponse;
 import com.example.harumeonglog.domain.pet.entity.MemberPet;
+import com.example.harumeonglog.domain.pet.entity.Pet;
 import com.example.harumeonglog.domain.pet.repository.MemberPetRepository;
+import com.example.harumeonglog.domain.pet.repository.PetRepository;
+import com.example.harumeonglog.global.error.code.PetErrorCode;
+import com.example.harumeonglog.global.error.exception.PetException;
 import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +32,7 @@ public class PetQueryServiceImpl implements PetQueryService {
     private final MemberPetRepository memberPetRepository;
     private final MemberRepository memberRepository;
     private final S3Util s3Util;
+    private final PetRepository petRepository;
 
 
     // 사용자에 대한 memberPet 페이지네이션
@@ -78,6 +84,13 @@ public class PetQueryServiceImpl implements PetQueryService {
         }
 
         return MemberPetConverter.toSearchMemberResponse(memberSlice, s3Util);
+    }
+
+    @Override
+    public PetResponse.MainPetResponse getMainPet(Member member) {
+        Pet pet = petRepository.findById(member.getCurrentPetId()).orElseThrow(() -> new PetException(PetErrorCode.NOT_FOUND));
+        String mainImage = s3Util.getFilePresignedUrl(pet.getMainImage(), 60);
+        return PetConverter.toMainPetResponse(pet, mainImage);
     }
 
 

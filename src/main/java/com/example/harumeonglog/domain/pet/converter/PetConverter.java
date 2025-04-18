@@ -33,4 +33,14 @@ public class PetConverter {
                 .mainImage(mainImage)
                 .build();
     }
+
+    public static PetResponse.MainPetResponse toMainPetResponse(Pet pet, String mainImage){
+        return PetResponse.MainPetResponse.builder()
+                .petId(pet.getId())
+                .name(pet.getName())
+                .birth(pet.getBirth())
+                .mainImage(mainImage)
+                .gender(pet.getGender())
+                .build();
+    }
 }

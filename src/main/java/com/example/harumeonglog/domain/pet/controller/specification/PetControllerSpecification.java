@@ -96,4 +96,11 @@ public interface PetControllerSpecification {
             @RequestParam(defaultValue = "10") int size,
             @AuthenticatedMember Member member
     );
+
+    @Operation(summary = "현재 펫 정보 조회 API by 백종우", description = "이메일로 사용자를 검색합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "검색 성공")
+    })
+    @GetMapping("/home")
+    CustomResponse<PetResponse.MainPetResponse> getCurrentPet(@AuthenticatedMember Member member);
 }
