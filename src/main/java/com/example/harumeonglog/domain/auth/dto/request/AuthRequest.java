@@ -18,4 +18,16 @@ public class AuthRequest {
         }
 
     }
+
+    @Getter
+    @Builder
+    public static class AuthAccessReissueRequest {
+        private final String refreshToken;
+
+        public AuthAccessReissueRequest(
+                @JsonProperty("refreshToken") String refreshToken
+        ) {
+            this.refreshToken = refreshToken;
+        }
+    }
 }

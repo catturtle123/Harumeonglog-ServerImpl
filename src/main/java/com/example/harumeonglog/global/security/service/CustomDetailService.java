@@ -15,7 +15,7 @@ public class CustomDetailService {
 
     private final MemberRepository memberRepository;
 
-    public UserDetails loadUserById(Long id) {
+    public CustomUserDetails loadUserById(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
         return new CustomUserDetails(member);
     }

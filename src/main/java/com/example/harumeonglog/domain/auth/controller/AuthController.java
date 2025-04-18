@@ -30,4 +30,10 @@ public class AuthController implements AuthControllerSpecification {
         AuthResponse.AuthLogoutResponse response = authCommandService.logout(member);
         return CustomResponse.ok(response);
     }
+
+    @PostMapping("/reissue")
+    public CustomResponse<AuthResponse.AuthAccessReissueResponse> reissueAccessToken(@RequestBody AuthRequest.AuthAccessReissueRequest request) {
+        AuthResponse.AuthAccessReissueResponse response = authCommandService.reissueAccess(request);
+        return CustomResponse.ok(response);
+    }
 }

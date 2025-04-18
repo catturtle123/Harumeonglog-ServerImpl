@@ -10,4 +10,10 @@ public class AuthConverter {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+    public static AuthResponse.AuthAccessReissueResponse toAuthAccessReissueResponse(String accessToken) {
+        return AuthResponse.AuthAccessReissueResponse.builder()
+                .accessToken(accessToken)
+                .build();
+    }
 }

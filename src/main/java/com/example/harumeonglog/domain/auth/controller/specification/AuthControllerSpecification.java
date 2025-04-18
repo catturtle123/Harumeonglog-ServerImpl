@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public interface AuthControllerSpecification {
     @Operation(summary = "로그인 API by 서정모", description = "소셜 로그인")
@@ -22,4 +23,10 @@ public interface AuthControllerSpecification {
             @ApiResponse(responseCode = "COMMON200", description = "로그아웃에 성공했습니다.")
     })
     CustomResponse<AuthResponse.AuthLogoutResponse> logout();
+
+    @Operation(summary = "Access Token 재발급 API by 서정모", description = "Access Token 재발급 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    CustomResponse<AuthResponse.AuthAccessReissueResponse> reissueAccessToken(@RequestBody AuthRequest.AuthAccessReissueRequest request);
 }

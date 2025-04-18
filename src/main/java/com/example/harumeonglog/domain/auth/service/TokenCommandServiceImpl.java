@@ -21,4 +21,9 @@ public class TokenCommandServiceImpl implements TokenCommandService {
         redisCommandService.addRefreshToken(userDetails.getLoginMember().getId(), refreshToken);
         return AuthConverter.toAuthLoginResponse(userDetails.getLoginMember().getId(), accessToken, refreshToken);
     }
+
+    @Override
+    public String createAccessToken(CustomUserDetails userDetails) {
+        return jwtUtil.createAccessToken(userDetails);
+    }
 }

@@ -18,4 +18,10 @@ public class AuthResponse {
     public static class AuthLogoutResponse {
         private Long memberId;
     }
+
+    @Getter
+    @Builder
+    public static class AuthAccessReissueResponse {
+        private String accessToken;
+    }
 }
