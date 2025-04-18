@@ -51,6 +51,8 @@ public class MemberPetConverter {
                 .id(memberPet.getMember().getId())
                 .name(memberPet.getMember().getNickname())
                 .role(memberPet.getRole().name())
+                .image(memberPet.getMember().getImage() != null ?
+                        s3Util.getFilePresignedUrl(memberPet.getMember().getImage(), 60) : null)
                 .build();
 
         List<PetResponse.PeopleInfo> relatedPeopleInfos = relatedMemberPets.stream()
@@ -59,6 +61,8 @@ public class MemberPetConverter {
                         .id(mp.getMember().getId())
                         .name(mp.getMember().getNickname())
                         .role(mp.getRole().name())
+                        .image(memberPet.getMember().getImage() != null ?
+                                s3Util.getFilePresignedUrl(memberPet.getMember().getImage(), 60) : null)
                         .build())
                 .toList();
 
