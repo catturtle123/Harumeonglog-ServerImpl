@@ -15,15 +15,6 @@ public class NoticeResponse {
         private List<NoticePreviewResponse> items;
         private Boolean hasNext;
         private Long cursor;
-
-
-        public static NoticeListResponse from(Long cursor, Boolean hasNext, List<Notice> items) {
-            return NoticeListResponse.builder()
-                    .items(items.stream().map(NoticePreviewResponse::from).toList())
-                    .cursor(cursor)
-                    .hasNext(hasNext)
-                    .build();
-        }
     }
 
     @Getter
@@ -34,15 +25,5 @@ public class NoticeResponse {
         private String content;
         private NoticeType noticeType;
         private Long targetId;
-
-        public static NoticePreviewResponse from(Notice notice) {
-            return NoticePreviewResponse.builder()
-                    .noticeId(notice.getId())
-                    .content(notice.getContent())
-                    .title(notice.getTitle())
-                    .noticeType(notice.getNoticeType())
-                    .targetId(notice.getTargetId())
-                    .build();
-        }
     }
 }
