@@ -56,7 +56,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     public PostResponse.PostPreviewListResponse getMyPost(Long cursor, Integer size, Member member) {
         cursor = normalizeCursor(cursor);
 
-        Slice<Post> postSlice = postRepository.findByMemberAndIdLessThanOrderByIdDesc(member, cursor, PageRequest.of(0, size));
+        Slice<Post> postSlice = postRepository.findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(member, cursor, PageRequest.of(0, size));
         return buildPostPreviewListResponse(postSlice);
     }
 
