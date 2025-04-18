@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,17 +28,23 @@ public class PetQueryServiceImpl implements PetQueryService {
     private final MemberRepository memberRepository;
     private final S3Util s3Util;
 
-    @Override
-    public PetResponse.GetPetsResponse getPets(Long cursor, int size, Member member) {
 
+    // 사용자에 대한 memberPet 페이지네이션
+    private Slice<MemberPet> fetchMemberPetSliceWithCursor(Long cursor, int size, Member member) {
         Pageable pageable = PageRequest.of(0, size);
 
-        Slice<MemberPet> memberPetSlice;
         if (cursor == null || cursor == 0L) {
-            memberPetSlice = memberPetRepository.findFirstPageByMemberId(member.getId(), pageable);
+            return memberPetRepository.findFirstPageByMemberId(member.getId(), pageable);
         } else {
-            memberPetSlice = memberPetRepository.findByMemberAndCursor(member.getId(), cursor, pageable);
+            return memberPetRepository.findByMemberAndCursor(member.getId(), cursor, pageable);
         }
+    }
+
+
+    @Override
+    public PetResponse.GetPetsResponse getPets(Long cursor, int size, Member member) {
+        // 페이징 처리된 멤버펫 관계 조회
+        Slice<MemberPet> memberPetSlice = fetchMemberPetSliceWithCursor(cursor, size, member);
 
         List<MemberPet> currentMemberPets = memberPetSlice.getContent();
         List<Long> petIds = currentMemberPets.stream()
@@ -55,15 +60,8 @@ public class PetQueryServiceImpl implements PetQueryService {
 
     @Override
     public PetResponse.PetListPreviewResponse getChangePet(Long cursor, int size, Member member) {
-
-        Pageable pageable = PageRequest.of(0, size);
-
-        Slice<MemberPet> memberPetSlice;
-        if (cursor == null || cursor == 0L) {
-            memberPetSlice = memberPetRepository.findFirstPageByMemberId(member.getId(), pageable);
-        } else {
-            memberPetSlice = memberPetRepository.findByMemberAndCursor(member.getId(), cursor, pageable);
-        }
+        // 페이징 처리된 멤버펫 관계 조회 (재사용)
+        Slice<MemberPet> memberPetSlice = fetchMemberPetSliceWithCursor(cursor, size, member);
 
         return MemberPetConverter.toGetChangePetResponse(memberPetSlice, s3Util);
     }
@@ -81,4 +79,6 @@ public class PetQueryServiceImpl implements PetQueryService {
 
         return MemberPetConverter.toSearchMemberResponse(memberSlice, s3Util);
     }
+
+
 }

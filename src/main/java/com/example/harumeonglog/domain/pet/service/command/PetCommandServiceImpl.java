@@ -35,6 +35,35 @@ public class PetCommandServiceImpl implements PetCommandService {
     private final MemberRepository memberRepository;
     private final S3Util s3Util;
 
+    // ========== 내부 메서드 ==========
+
+    // Pet 엔티티 조회
+    private Pet findPetById(Long petId) {
+        return petRepository.findById(petId)
+                .orElseThrow(() -> new PetException(PetErrorCode.NOT_FOUND));
+    }
+
+    // 펫 이미지 S3 업로드
+    private String uploadPetImage(Pet pet, MultipartFile image) throws IOException {
+        String imageKey = String.format("pet/%d/main/%s/%s",
+                pet.getId(), UUID.randomUUID(), image.getOriginalFilename());
+        s3Util.uploadFile(image, imageKey);
+        return imageKey;
+    }
+
+    // 사용자 OWNER 검증
+    private void validateOwnerAccess(Member member, Pet pet) {
+        MemberPet memberPet = memberPetRepository.findByMemberAndPet(member, pet)
+                .orElseThrow(() -> new PetException(PetErrorCode.NOT_IN_GROUP));
+
+        if (!memberPet.getRole().equals(MemberPetRole.OWNER)) {
+            throw new PetException(PetErrorCode.NOT_ALLOWED_ROLE);
+        }
+    }
+
+
+    // ========== 외부 메서드 ==========
+
 
     @Override
     public PetResponse.AddPetResponse addPet(PetRequest.AddPetRequest request, MultipartFile mainImage, Member member) {
@@ -42,19 +71,14 @@ public class PetCommandServiceImpl implements PetCommandService {
         if (mainImage == null || mainImage.isEmpty()) {
             throw new PetException(PetErrorCode.IMAGE_NOT_FOUND);
         }
+
         try {
             // Pet 엔터티 생성
             Pet pet = PetConverter.toPet(request);
             Pet savedPet = petRepository.save(pet);
 
-            // S3 키 생성
-            String mainImageKey = String.format("pet/%d/main/%s/%s",
-                    pet.getId(), UUID.randomUUID(), mainImage.getOriginalFilename());
-
             // S3에 이미지 업로드
-            s3Util.uploadFile(mainImage, mainImageKey);
-
-            // pet에 이미지 저장
+            String mainImageKey = uploadPetImage(pet, mainImage);
             savedPet.setMainImage(mainImageKey);
 
             // memberPet 생성
@@ -75,34 +99,23 @@ public class PetCommandServiceImpl implements PetCommandService {
     @Override
     public PetResponse.ChangePetInfoResponse changePetInfo(Long petId, PetRequest.ChangePetInfoRequest request, MultipartFile mainImage, Member member) {
         // Pet 조회
-        Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new PetException(PetErrorCode.NOT_FOUND));
+        Pet pet = findPetById(petId);
 
-        // 해당 MEMBER, PET이 없을 경우 에러처리
-        MemberPet memberPet = memberPetRepository.findByMemberAndPet(member, pet)
-                .orElseThrow(() -> new PetException(PetErrorCode.NOT_IN_GROUP));
-
-        // OWNER 권한이 아닐경우 에러처리
-        if(!memberPet.getRole().equals(MemberPetRole.OWNER)) {
-            throw new PetException(PetErrorCode.NOT_ALLOWED_ROLE);
-        }
+        // 권한 검증
+        validateOwnerAccess(member, pet);
 
         try {
             String newMainImageKey = pet.getMainImage(); // 기존 키 유지
 
-            // mainImage가 제공된 경우 기존 이미지 삭제 및 새 이미지 업로드
+            // mainImage가 제공된 경우 처리
             if (mainImage != null && !mainImage.isEmpty()) {
                 // 기존 이미지 삭제 (기존 키가 null이 아닌 경우)
                 if (pet.getMainImage() != null) {
                     s3Util.deleteFile(pet.getMainImage());
                 }
 
-                // 새 S3 키 생성
-                newMainImageKey = String.format("pet/%d/main/%s/%s",
-                        pet.getId(), UUID.randomUUID(), mainImage.getOriginalFilename());
-
-                // S3에 새 이미지 업로드
-                s3Util.uploadFile(mainImage, newMainImageKey);
+                // 새 이미지 업로드
+                newMainImageKey = uploadPetImage(pet, mainImage);
             }
 
             // Pet 정보 업데이트
@@ -115,11 +128,10 @@ public class PetCommandServiceImpl implements PetCommandService {
                     newMainImageKey
             );
 
-
-            String image = s3Util.getFilePresignedUrl(newMainImageKey, 60);
+            String imageUrl = s3Util.getFilePresignedUrl(newMainImageKey, 60);
 
             // 응답 DTO 반환
-            return PetConverter.toChangePetInfoResponse(pet, image);
+            return PetConverter.toChangePetInfoResponse(pet, imageUrl);
         } catch (IOException e) {
             throw new S3Exception(S3ErrorCode.UPLOAD_FAILED);
         } catch (S3Exception e) {
@@ -127,13 +139,11 @@ public class PetCommandServiceImpl implements PetCommandService {
         }
     }
 
-
     @Override
     public void changeCurrentPet(PetRequest.ChangeCurrentPetRequest request, Member member) {
-        Pet pet = petRepository.findById(request.getPetId()).orElseThrow(
-                () -> new PetException(PetErrorCode.NOT_FOUND));
+        Pet pet = findPetById(request.getPetId());
 
-        // 해당 MEMBER, PET이 없을 경우 에러처리
+        // 해당 MEMBER, PET 관계 확인
         memberPetRepository.findByMemberAndPet(member, pet)
                 .orElseThrow(() -> new PetException(PetErrorCode.NOT_IN_GROUP));
 
@@ -142,59 +152,48 @@ public class PetCommandServiceImpl implements PetCommandService {
 
     @Override
     public void deletePet(Long petId, Member member) {
-        Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new PetException(PetErrorCode.NOT_FOUND));
+        Pet pet = findPetById(petId);
 
-        // 권한 확인 (OWNER만 삭제 가능)
-        MemberPet memberPet = memberPetRepository.findByMemberAndPet(member, pet)
-                .orElseThrow(() -> new PetException(PetErrorCode.NOT_IN_GROUP));
-        if (!memberPet.getRole().equals(MemberPetRole.OWNER)) {
-            throw new PetException(PetErrorCode.NOT_ALLOWED_ROLE);
-        }
+        // 권한 검증
+        validateOwnerAccess(member, pet);
 
-        // pet soft delete
+        // Pet soft delete
         pet.softDelete();
 
-        // memberPet hard delete
+        // MemberPet hard delete
         memberPetRepository.deleteByPet(pet);
     }
 
     @Override
     public void invite(Long petId, PetRequest.InviteListRequest request, Member member) {
-        Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new PetException(PetErrorCode.NOT_FOUND));
+        Pet pet = findPetById(petId);
 
-        // 권한 확인 (OWNER만 삭제 가능)
-        MemberPet memberPet = memberPetRepository.findByMemberAndPet(member, pet)
-                .orElseThrow(() -> new PetException(PetErrorCode.NOT_IN_GROUP));
-        if (!memberPet.getRole().equals(MemberPetRole.OWNER)) {
-            throw new PetException(PetErrorCode.NOT_ALLOWED_ROLE);
-        }
+        // 권한 검증
+        validateOwnerAccess(member, pet);
 
         // 초대 처리
-        request.getRequests().stream()
-                .filter(invite -> {
-                    boolean exists = memberPetRepository.findByMemberAndPet(
-                            memberRepository.findById(invite.getMemberId())
-                                    .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND)),
-                            pet
-                    ).isPresent();
-                    if (exists) {
-                        // 이미 초대된 상태인 경우 에러처리
-                        throw new PetException(PetErrorCode.ALREADY_INVITED);
-                    }
-                    return true;
-                })
-                .map(invite -> {
-                    MemberPetRole role;
-                    try{
-                        role = MemberPetRole.valueOf(invite.getRole());
-                    }catch (IllegalArgumentException e){
-                        throw new PetException(PetErrorCode.INVALID_ROLE);
-                    }
-                    return MemberPetConverter.toMemberPet(member, pet, role);
-                })
-                .forEach(memberPetRepository::save);
+        for (PetRequest.InviteRequest invite : request.getRequests()) {
+            Member invitedMember = memberRepository.findById(invite.getMemberId())
+                    .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
+
+            // 이미 초대된 상태인지 확인
+            if (memberPetRepository.findByMemberAndPet(invitedMember, pet).isPresent()) {
+                throw new PetException(PetErrorCode.ALREADY_INVITED);
+            }
+
+            // 역할 검증 및 설정
+            MemberPetRole role;
+            try {
+                role = MemberPetRole.valueOf(invite.getRole());
+            } catch (IllegalArgumentException e) {
+                throw new PetException(PetErrorCode.INVALID_ROLE);
+            }
+
+            // MemberPet 생성 및 저장
+            MemberPet memberPet = MemberPetConverter.toMemberPet(invitedMember, pet, role);
+            memberPetRepository.save(memberPet);
+        }
     }
+
 
 }
