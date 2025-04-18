@@ -4,7 +4,7 @@ import com.example.harumeonglog.domain.auth.converter.OAuth2Converter;
 import com.example.harumeonglog.domain.auth.dto.request.OAuth2Request;
 import com.example.harumeonglog.domain.auth.dto.response.OAuth2Response;
 import com.example.harumeonglog.domain.member.entity.Member;
-import com.example.harumeonglog.domain.member.infrastructure.MemberRepository;
+import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.global.error.code.AuthErrorCode;
 import com.example.harumeonglog.global.error.code.TokenErrorCode;
 import com.example.harumeonglog.global.error.exception.AuthException;

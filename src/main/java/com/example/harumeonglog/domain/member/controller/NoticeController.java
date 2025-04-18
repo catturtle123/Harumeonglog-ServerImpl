@@ -1,33 +1,37 @@
 package com.example.harumeonglog.domain.member.controller;
 
-import com.example.harumeonglog.domain.member.entity.Notice;
+import com.example.harumeonglog.domain.member.controller.specification.NoticeControllerSpecification;
+import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.member.service.NoticeCommandService;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.domain.member.dto.response.NoticeResponse;
-import com.example.harumeonglog.domain.member.service.NoticeService;
+import com.example.harumeonglog.domain.member.service.NoticeQueryService;
+import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-public class NoticeController {
+@RequestMapping("/api/v1")
+public class NoticeController implements NoticeControllerSpecification {
 
-    private final NoticeService noticeService;
+    private final NoticeQueryService noticeQueryService;
+    private final NoticeCommandService noticeCommandService;
 
     @GetMapping("/notices")
     public CustomResponse<NoticeResponse.NoticeListResponse> getNotices(
+            @AuthenticatedMember Member member,
             @RequestParam(name = "size") Integer size,
             @RequestParam(name = "cursor") Long cursor
     ) {
-        Slice<Notice> noticeSlice = noticeService.getNotices(size, cursor);
-        Long nextCursor = noticeSlice.toList().get(noticeSlice.getSize() -1).getId();
-        return CustomResponse.ok(NoticeResponse.NoticeListResponse.from(nextCursor, noticeSlice.hasNext(), noticeSlice.stream().toList()));
+        NoticeResponse.NoticeListResponse noticeListResponse = noticeQueryService.getNotices(member, size, cursor);
+        return CustomResponse.ok(noticeListResponse);
     }
-
 
     @DeleteMapping("/notices/{noticeId}")
     public CustomResponse<Void> deleteNotice(@PathVariable Long noticeId) {
-        noticeService.deleteNotice(noticeId);
+        noticeCommandService.deleteNotice(noticeId);
         return CustomResponse.ok(null);
     }
 

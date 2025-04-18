@@ -1,4 +1,4 @@
-package com.example.harumeonglog.domain.member.infrastructure;
+package com.example.harumeonglog.domain.member.repository;
 
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.SocialType;
