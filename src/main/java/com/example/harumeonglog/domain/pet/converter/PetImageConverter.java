@@ -27,7 +27,7 @@ public class PetImageConverter {
         List<PetImageResponse.GetImagesResponse.ImageInfo> imageInfos = imageSlice.getContent().stream()
                 .map(image -> PetImageResponse.GetImagesResponse.ImageInfo.builder()
                         .imageId(image.getId())
-                        .imageKey(s3Util.getFilePresignedUrl(image.getImageKey(), 60))
+                        .imageKey(s3Util.getUrlFromKey(image.getImageKey()))
                         .createdAt(image.getCreatedAt())
                         .build())
                 .toList();
@@ -42,10 +42,10 @@ public class PetImageConverter {
                 .build();
     }
 
-    public static PetImageResponse.GetImageResponse toGetImageResponse(PetImage petImage) {
+    public static PetImageResponse.GetImageResponse toGetImageResponse(PetImage petImage, String image) {
         return PetImageResponse.GetImageResponse.builder()
                 .imageId(petImage.getId())
-                .imageKey(petImage.getImageKey())
+                .imageKey(image)
                 .createdAt(petImage.getCreatedAt())
                 .build();
     }

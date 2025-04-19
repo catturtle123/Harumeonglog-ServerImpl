@@ -22,6 +22,7 @@ public class PetRequest {
         private String type;
         private Gender gender;
         private LocalDate birth;
+        private String mainImageKey;
     }
 
     @Setter
@@ -32,6 +33,7 @@ public class PetRequest {
         private String type;
         private Gender gender;
         private LocalDate birth;
+        private String newMainImageKey;
     }
 
     @Setter

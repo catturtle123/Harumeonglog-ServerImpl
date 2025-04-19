@@ -45,9 +45,6 @@ public class Pet extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public void setMainImage(String mainImage){
-        this.mainImage = mainImage;
-    }
 
     public void update(String name, PetSize size, String type, Gender gender, LocalDate birth, String mainImage){
         this.name = name;
@@ -55,6 +52,7 @@ public class Pet extends BaseEntity {
         this.type = type;
         this.gender = gender;
         this.birth = birth;
+        this.mainImage = mainImage;
     }
 
     public void softDelete(){

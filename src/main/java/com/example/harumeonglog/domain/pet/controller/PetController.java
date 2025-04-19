@@ -32,22 +32,21 @@ public class PetController implements PetControllerSpecification {
     private final PetCommandService petCommandService;
     private final PetQueryService petQueryService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CustomResponse<AddPetResponse>> addPet(@RequestPart("mainImage") MultipartFile mainImage,
-                                                                 @RequestPart AddPetRequest request,
-                                                                 @AuthenticatedMember Member member) {
+    @PostMapping
+    public ResponseEntity<CustomResponse<AddPetResponse>> addPet(
+            @RequestBody AddPetRequest request,
+            @AuthenticatedMember Member member) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(CustomResponse.created(petCommandService.addPet(request, mainImage, member)));
+                .body(CustomResponse.created(petCommandService.addPet(request, member)));
     }
 
-    @PatchMapping(value = "/{petId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping("/{petId}")
     public CustomResponse<ChangePetInfoResponse> changePetInfo(
             @PathVariable Long petId,
-            @RequestPart(value = "request", required = false) ChangePetInfoRequest request,
-            @RequestPart(value = "mainImage", required = false) MultipartFile mainImage,
+            @RequestBody ChangePetInfoRequest request,
             @AuthenticatedMember Member member) {
-        return CustomResponse.ok(petCommandService.changePetInfo(petId, request, mainImage, member));
+        return CustomResponse.ok(petCommandService.changePetInfo(petId, request, member));
     }
 
     @GetMapping
@@ -80,7 +79,7 @@ public class PetController implements PetControllerSpecification {
     }
 
 
-    @PatchMapping("/{petId}")
+    @DeleteMapping("/{petId}")
     public CustomResponse<String> deletePet(@PathVariable Long petId,
                                             @AuthenticatedMember Member member) {
         petCommandService.deletePet(petId, member);
@@ -106,5 +105,7 @@ public class PetController implements PetControllerSpecification {
         PetResponse.SearchMemberResponse result = petQueryService.searchMember(email, member, cursor, size);
         return CustomResponse.ok(result);
     }
+
+
 
 }

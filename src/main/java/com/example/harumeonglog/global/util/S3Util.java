@@ -5,16 +5,14 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.harumeonglog.global.data.S3ConfigData;
 import com.example.harumeonglog.global.error.code.S3ErrorCode;
 import com.example.harumeonglog.global.error.exception.S3Exception;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
 
 @Component
@@ -26,26 +24,31 @@ public class S3Util {
 
     //presigned url로 파일 업로드
     @Transactional
-    public String uploadFile(MultipartFile file, String key) throws IOException {
+    public String generatePresignedUrlForUpload(String key, String contentType, long contentLength, int expirationMinutes) {
+        // 메타데이터 설정
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.getSize());
-        metadata.setContentType(file.getContentType());
+        metadata.setContentType(contentType);
+        metadata.setContentLength(contentLength);
 
-        //s3에 파일 업로드
-        amazonS3Client.putObject(new PutObjectRequest(s3ConfigData.getBucket(), key, file.getInputStream(), metadata));
+        // PUT 요청을 위한 Presigned URL 생성
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                new GeneratePresignedUrlRequest(s3ConfigData.getBucket(), key)
+                        .withMethod(HttpMethod.PUT)
+                        .withExpiration(getExpirationDate(expirationMinutes))
+                        .withContentType(contentType);
 
+        URL presignedUrl = amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
+        return presignedUrl.toString();
+    }
+
+
+    public String getUrlFromKey(String key) {
+        if (key == null || key.isEmpty()) {
+            return null;
+        }
         return amazonS3Client.getUrl(s3ConfigData.getBucket(), key).toString();
     }
 
-    // S3에서 파일 가져오기
-    public String getFilePresignedUrl(String key, int expirationMinutes) {
-        GeneratePresignedUrlRequest generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(s3ConfigData.getBucket(), key)
-                        .withMethod(HttpMethod.GET)
-                        .withExpiration(getExpirationDate(expirationMinutes));
-
-        return amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
-    }
 
     // Presigned URL의 만료 시간 설정
     private Date getExpirationDate(int expirationMinutes) {

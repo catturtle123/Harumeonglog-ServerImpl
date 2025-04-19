@@ -2,7 +2,7 @@ package com.example.harumeonglog.domain.pet.service.command;
 
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.MemberPetRole;
-import com.example.harumeonglog.domain.member.infrastructure.MemberRepository;
+import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.pet.converter.MemberPetConverter;
 import com.example.harumeonglog.domain.pet.converter.PetConverter;
 import com.example.harumeonglog.domain.pet.dto.request.PetRequest;
@@ -21,10 +21,6 @@ import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,13 +39,6 @@ public class PetCommandServiceImpl implements PetCommandService {
                 .orElseThrow(() -> new PetException(PetErrorCode.NOT_FOUND));
     }
 
-    // 펫 이미지 S3 업로드
-    private String uploadPetImage(Pet pet, MultipartFile image) throws IOException {
-        String imageKey = String.format("pet/%d/main/%s/%s",
-                pet.getId(), UUID.randomUUID(), image.getOriginalFilename());
-        s3Util.uploadFile(image, imageKey);
-        return imageKey;
-    }
 
     // 사용자 OWNER 검증
     private void validateOwnerAccess(Member member, Pet pet) {
@@ -66,9 +55,9 @@ public class PetCommandServiceImpl implements PetCommandService {
 
 
     @Override
-    public PetResponse.AddPetResponse addPet(PetRequest.AddPetRequest request, MultipartFile mainImage, Member member) {
+    public PetResponse.AddPetResponse addPet(PetRequest.AddPetRequest request, Member member) {
         // 유효성 검사
-        if (mainImage == null || mainImage.isEmpty()) {
+        if (request.getMainImageKey() == null || request.getMainImageKey().isEmpty()) {
             throw new PetException(PetErrorCode.IMAGE_NOT_FOUND);
         }
 
@@ -77,27 +66,21 @@ public class PetCommandServiceImpl implements PetCommandService {
             Pet pet = PetConverter.toPet(request);
             Pet savedPet = petRepository.save(pet);
 
-            // S3에 이미지 업로드
-            String mainImageKey = uploadPetImage(pet, mainImage);
-            savedPet.setMainImage(mainImageKey);
-
             // memberPet 생성
             MemberPet memberPet = MemberPetConverter.toMemberPet(member, pet, MemberPetRole.OWNER);
             memberPetRepository.save(memberPet);
 
             // member의 currentPetId 지정
-            member.setCurrentPetId(pet.getId());
+            member.updateCurrentPetId(pet.getId());
 
             return PetConverter.toAddPetResponse(savedPet);
-        } catch (IOException e) {
-            throw new S3Exception(S3ErrorCode.UPLOAD_FAILED);
-        } catch (S3Exception e) {
+        } catch (Exception e) {
             throw new S3Exception(S3ErrorCode.SERVICE_UNAVAILABLE);
         }
     }
 
     @Override
-    public PetResponse.ChangePetInfoResponse changePetInfo(Long petId, PetRequest.ChangePetInfoRequest request, MultipartFile mainImage, Member member) {
+    public PetResponse.ChangePetInfoResponse changePetInfo(Long petId, PetRequest.ChangePetInfoRequest request, Member member) {
         // Pet 조회
         Pet pet = findPetById(petId);
 
@@ -108,14 +91,14 @@ public class PetCommandServiceImpl implements PetCommandService {
             String newMainImageKey = pet.getMainImage(); // 기존 키 유지
 
             // mainImage가 제공된 경우 처리
-            if (mainImage != null && !mainImage.isEmpty()) {
+            if (request.getNewMainImageKey() != null && !request.getNewMainImageKey().isEmpty()) {
                 // 기존 이미지 삭제 (기존 키가 null이 아닌 경우)
                 if (pet.getMainImage() != null) {
                     s3Util.deleteFile(pet.getMainImage());
                 }
 
-                // 새 이미지 업로드
-                newMainImageKey = uploadPetImage(pet, mainImage);
+                // 새 이미지 키 설정
+                newMainImageKey = request.getNewMainImageKey();
             }
 
             // Pet 정보 업데이트
@@ -128,13 +111,11 @@ public class PetCommandServiceImpl implements PetCommandService {
                     newMainImageKey
             );
 
-            String imageUrl = s3Util.getFilePresignedUrl(newMainImageKey, 60);
+            String imageUrl = s3Util.getUrlFromKey(newMainImageKey);
 
             // 응답 DTO 반환
             return PetConverter.toChangePetInfoResponse(pet, imageUrl);
-        } catch (IOException e) {
-            throw new S3Exception(S3ErrorCode.UPLOAD_FAILED);
-        } catch (S3Exception e) {
+        } catch (Exception e) {
             throw new S3Exception(S3ErrorCode.SERVICE_UNAVAILABLE);
         }
     }
@@ -147,7 +128,7 @@ public class PetCommandServiceImpl implements PetCommandService {
         memberPetRepository.findByMemberAndPet(member, pet)
                 .orElseThrow(() -> new PetException(PetErrorCode.NOT_IN_GROUP));
 
-        member.setCurrentPetId(pet.getId());
+        member.updateCurrentPetId(pet.getId());
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.example.harumeonglog.domain.pet.service.query;
 
 import com.example.harumeonglog.domain.member.entity.Member;
-import com.example.harumeonglog.domain.member.infrastructure.MemberRepository;
+import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.pet.converter.MemberPetConverter;
 import com.example.harumeonglog.domain.pet.converter.PetConverter;
 import com.example.harumeonglog.domain.pet.dto.response.PetResponse;
@@ -89,7 +89,7 @@ public class PetQueryServiceImpl implements PetQueryService {
     @Override
     public PetResponse.MainPetResponse getMainPet(Member member) {
         Pet pet = petRepository.findById(member.getCurrentPetId()).orElseThrow(() -> new PetException(PetErrorCode.NOT_FOUND));
-        String mainImage = s3Util.getFilePresignedUrl(pet.getMainImage(), 60);
+        String mainImage = s3Util.getUrlFromKey(pet.getMainImage());
         return PetConverter.toMainPetResponse(pet, mainImage);
     }
 

@@ -52,7 +52,7 @@ public class MemberPetConverter {
                 .name(memberPet.getMember().getNickname())
                 .role(memberPet.getRole().name())
                 .image(memberPet.getMember().getImage() != null ?
-                        s3Util.getFilePresignedUrl(memberPet.getMember().getImage(), 60) : null)
+                        s3Util.getUrlFromKey(memberPet.getMember().getImage()) : null)
                 .build();
 
         List<PetResponse.PeopleInfo> relatedPeopleInfos = relatedMemberPets.stream()
@@ -62,7 +62,7 @@ public class MemberPetConverter {
                         .name(mp.getMember().getNickname())
                         .role(mp.getRole().name())
                         .image(memberPet.getMember().getImage() != null ?
-                                s3Util.getFilePresignedUrl(memberPet.getMember().getImage(), 60) : null)
+                                s3Util.getUrlFromKey(memberPet.getMember().getImage()) : null)
                         .build())
                 .toList();
 
@@ -79,7 +79,7 @@ public class MemberPetConverter {
                 .gender(pet.getGender())
                 .birth(pet.getBirth())
                 .mainImage(pet.getMainImage() != null ?
-                        s3Util.getFilePresignedUrl(pet.getMainImage(), 60) : null)
+                        s3Util.getUrlFromKey(pet.getMainImage()) : null)
                 .people(peopleInfos)
                 .build();
     }
@@ -92,7 +92,7 @@ public class MemberPetConverter {
                         .petId(mp.getPet().getId())
                         .name(mp.getPet().getName())
                         .mainImage(mp.getPet().getMainImage() != null ?
-                                s3Util.getFilePresignedUrl(mp.getPet().getMainImage(), 60) : null)
+                                s3Util.getUrlFromKey(mp.getPet().getMainImage()) : null)
                         .build())
                 .collect(Collectors.toList());
 
@@ -128,7 +128,7 @@ public class MemberPetConverter {
                 .email(member.getEmail())
                 .name(member.getNickname())
                 .image(member.getImage() != null ?
-                        s3Util.getFilePresignedUrl(member.getImage(), 60) : null)
+                        s3Util.getUrlFromKey(member.getImage()) : null)
                 .build();
     }
 }

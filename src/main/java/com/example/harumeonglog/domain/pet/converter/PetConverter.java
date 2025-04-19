@@ -13,6 +13,7 @@ public class PetConverter {
                 .type(request.getType())
                 .gender(request.getGender())
                 .birth(request.getBirth())
+                .mainImage(request.getMainImageKey())
                 .build();
     }
 

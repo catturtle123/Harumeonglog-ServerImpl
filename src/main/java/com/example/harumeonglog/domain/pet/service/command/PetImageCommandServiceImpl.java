@@ -12,20 +12,19 @@ import com.example.harumeonglog.domain.pet.repository.MemberPetRepository;
 import com.example.harumeonglog.domain.pet.repository.PetImageRepository;
 import com.example.harumeonglog.domain.pet.repository.PetRepository;
 import com.example.harumeonglog.global.error.code.PetErrorCode;
-import com.example.harumeonglog.global.error.code.S3ErrorCode;
 import com.example.harumeonglog.global.error.exception.PetException;
-import com.example.harumeonglog.global.error.exception.S3Exception;
 import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -54,30 +53,31 @@ public class PetImageCommandServiceImpl implements PetImageCommandService {
     }
 
     @Override
-    public PetImageResponse.AddImagesResponse addImages(Long petId, Member member, List<MultipartFile> images) {
+    public List<Map<String, String>> addImagesPresignedUrl(Member member, PetImageRequest.AddImagesPresignedUrlRequest images) {
 
-        Pet pet = findPetById(petId);
-        validateOwnerAccess(member, pet);
+//        Pet pet = findPetById(images.getPetId());
+//        validateOwnerAccess(member, pet);
 
-        // 이미지 업로드 및 저장
-        List<Long> imageIds = images.stream()
-                .map(image -> {
-                    try {
-                        String imageKey = String.format("pet/%d/gallery/%s/%s",
-                                petId, UUID.randomUUID(), image.getOriginalFilename());
-                        s3Util.uploadFile(image, imageKey);
-                        PetImage petImage = PetImageConverter.toPetImage(pet, imageKey);
-                        PetImage savedImage = petImageRepository.save(petImage);
-                        return savedImage.getId();
-                    } catch (IOException e) {
-                        throw new S3Exception(S3ErrorCode.UPLOAD_FAILED);
-                    } catch (S3Exception e) {
-                        throw new S3Exception(S3ErrorCode.SERVICE_UNAVAILABLE);
-                    }
-                })
+        return IntStream.range(0, images.getFilenames().size())
+                .mapToObj(i -> uploadImage(images.getFilenames().get(i), images.getContentTypes().get(i), images.getPetId()))
+                .toList();
+    }
+
+    @Override
+    public PetImageResponse.AddImagesResponse addImage(PetImageRequest.AddImageRequest request) {
+        Pet pet = findPetById(request.getPetId());
+
+        List<PetImage> petImages = request.getImageKeys().stream()
+                .map(imageKey -> PetImageConverter.toPetImage(pet, imageKey))
                 .toList();
 
-        return PetImageConverter.toAddImagesResponse(imageIds);
+        List<PetImage> savedImages = petImageRepository.saveAll(petImages);
+
+        List<Long> imageKeys = savedImages.stream()
+                .map(PetImage::getId)
+                .toList();
+
+        return PetImageConverter.toAddImagesResponse(imageKeys);
     }
 
     @Override
@@ -102,6 +102,33 @@ public class PetImageCommandServiceImpl implements PetImageCommandService {
         // S3 파일 삭제 및 DB 삭제
         petImages.forEach(image -> s3Util.deleteFile(image.getImageKey()));
         petImageRepository.deleteAllByIdIn(request.getImageIds());
+    }
+
+    // 이미지 S3 업로드
+    @Override
+    public Map<String, String> uploadImage(String filename, String contentType, Long petId){
+        String uuid = UUID.randomUUID().toString();
+        String imageKey;
+
+        if (petId == null) {
+            // Pet 객체 미생성: 임시 업로드
+            imageKey = String.format("pet/temp/%s/%s", uuid, filename);
+        } else {
+            // Pet 객체 존재: 특정 Pet에 연결
+            imageKey = String.format("pet/%d/%s/%s",  petId, uuid, filename);
+        }
+
+        // Presigned URL 생성
+        String presignedUrl = s3Util.generatePresignedUrlForUpload(
+                imageKey,
+                contentType,
+                -1, // 클라이언트에서 ContentLength를 지정하도록 함
+                10); // 10분 유효
+        Map<String, String> response = new HashMap<>();
+        response.put("presignedUrl", presignedUrl);
+        response.put("imageKey", imageKey);
+
+        return response;
     }
 
 }

@@ -2,22 +2,19 @@ package com.example.harumeonglog.domain.pet.controller;
 
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.pet.controller.specification.PetImageControllerSpecification;
+import com.example.harumeonglog.domain.pet.dto.request.PetImageRequest;
+import com.example.harumeonglog.domain.pet.dto.request.PetImageRequest.DeleteImagesRequest;
 import com.example.harumeonglog.domain.pet.dto.response.PetImageResponse;
+import com.example.harumeonglog.domain.pet.service.command.PetImageCommandService;
 import com.example.harumeonglog.domain.pet.service.query.PetImageQueryService;
 import com.example.harumeonglog.global.common.response.CustomResponse;
-import com.example.harumeonglog.domain.pet.dto.request.PetImageRequest.AddImagesRequest;
-import com.example.harumeonglog.domain.pet.dto.request.PetImageRequest.DeleteImagesRequest;
-import com.example.harumeonglog.domain.pet.service.command.PetImageCommandService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,13 +25,17 @@ public class PetImageController implements PetImageControllerSpecification {
     private final PetImageCommandService petImageCommandService;
     private final PetImageQueryService petImageQueryService;
 
-    @PostMapping(value = "/{petId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CustomResponse<PetImageResponse.AddImagesResponse>> addImages(
-            @PathVariable Long petId,
-            @RequestPart List<MultipartFile> images,
+    @PostMapping("/presigned-urls")
+    public CustomResponse<List<Map<String, String>>> addImagesPresignedUrl(
+            @RequestBody PetImageRequest.AddImagesPresignedUrlRequest request,
             @AuthenticationPrincipal Member member) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CustomResponse.created(petImageCommandService.addImages(petId, member, images)));
+        return CustomResponse.ok(petImageCommandService.addImagesPresignedUrl(member, request));
+    }
+
+    @PostMapping
+    public CustomResponse<PetImageResponse.AddImagesResponse> addImages(
+            @RequestBody PetImageRequest.AddImageRequest request){
+        return CustomResponse.created(petImageCommandService.addImage(request));
     }
 
     @GetMapping("/{petId}")
@@ -73,5 +74,21 @@ public class PetImageController implements PetImageControllerSpecification {
             @AuthenticationPrincipal Member member) {
         petImageCommandService.deleteImages(petId, request, member);
         return CustomResponse.ok("이미지 삭제 완료");
+    }
+
+
+    @PostMapping("/presigned-url/temp")
+    public CustomResponse<Map<String, String>> getTempPresignedUrl(
+            @RequestParam String filename,
+            @RequestParam String contentType) {
+        return CustomResponse.ok(petImageCommandService.uploadImage(filename, contentType, null));
+    }
+
+    @PostMapping("/presigned-url/{petId}")
+    public CustomResponse<Map<String, String>> getPresignedUrl(
+            @PathVariable Long petId,
+            @RequestParam String filename,
+            @RequestParam String contentType){
+        return CustomResponse.ok(petImageCommandService.uploadImage(filename, contentType, petId));
     }
 }
