@@ -22,7 +22,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "where p.category = :postCategory and p.deletedAt is null and p.content like %:content% and p.id < :cursor order by p.id desc")
     Slice<Post> findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(String content, Long cursor, PostCategory postCategory, PageRequest of);
 
-    Slice<Post> findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(Member member, Long id, Pageable pageable);
+    @Query("select p " +
+            "from Post p join fetch p.member m " +
+            "where p.member = :member and p.id < :cursor order by p.id desc")
+    Slice<Post> findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(Member member, Long cursor, Pageable pageable);
 
     @Query("select p " +
             "from Post p join PostLike pl on pl.post = p join fetch p.member m " +
