@@ -16,7 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p " +
             "from Post p " +
-            "where p.category = :postcategory and p.deletedAt is null and p.content like :search and p.id < :cursor order by p.id desc")
+            "where p.category = :postCategory and p.deletedAt is null and p.content like %:search% and p.id < :cursor order by p.id desc")
     Slice<Post> findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(String search, Long cursor, PostCategory postCategory, PageRequest of);
 
     Slice<Post> findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(Member member, Long id, Pageable pageable);
