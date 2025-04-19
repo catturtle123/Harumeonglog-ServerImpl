@@ -27,7 +27,7 @@ public class PostController implements PostControllerSpecification {
 
     @GetMapping
     public CustomResponse<PostResponse.PostPreviewListResponse> getPosts(
-            @RequestParam(name = "search") String search,
+            @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "postRequestCategory") PostRequestCategory postRequestCategory,
             @RequestParam(name = "cursor") Long cursor,
             @RequestParam(name = "size") Integer size
