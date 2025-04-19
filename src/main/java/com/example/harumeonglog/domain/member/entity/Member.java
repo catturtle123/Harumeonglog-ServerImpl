@@ -44,11 +44,14 @@ public class Member extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Column(name = "current_pet_id")
-    @Setter
     private Long currentPetId;
 
     public void update(String nickname, String image) {
          this.nickname = nickname;
          this.image = image;
+    }
+
+    public void updateCurrentPetId(Long currentPetId) {
+        this.currentPetId = currentPetId;
     }
 }
