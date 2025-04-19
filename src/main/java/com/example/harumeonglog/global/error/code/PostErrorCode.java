@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum PostErrorCode implements BaseErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "POST404", "게시물을 찾지 못했습니다."),
+    NOT_OWN(HttpStatus.FORBIDDEN, "POST403", "자신의 게시물이 아닙니다."),
     ;
 
     private final HttpStatus httpStatus;

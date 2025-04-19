@@ -56,17 +56,19 @@ public class PostController implements PostControllerSpecification {
     @PatchMapping("/{postId}")
     public CustomResponse<Long> updatePost(
             @PathVariable Long postId,
-            @RequestBody PostRequest.PostUpdateRequest postUpdateRequest
+            @RequestBody PostRequest.PostUpdateRequest postUpdateRequest,
+            @AuthenticatedMember Member member
     ) {
-        Post post = postCommandService.updatePost(postId, postUpdateRequest);
+        Post post = postCommandService.updatePost(postId, postUpdateRequest, member);
         return CustomResponse.ok(post.getId());
     }
 
     @DeleteMapping("/{postId}")
     public CustomResponse<Void> deletePost(
+            @AuthenticatedMember Member member,
             @PathVariable Long postId
     ) {
-        postCommandService.deletePost(postId);
+        postCommandService.deletePost(postId, member);
         return CustomResponse.ok(null);
     }
 

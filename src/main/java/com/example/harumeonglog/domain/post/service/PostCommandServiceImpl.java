@@ -41,8 +41,13 @@ public class PostCommandServiceImpl implements PostCommandService {
     }
 
     @Override
-    public Post updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest) {
+    public Post updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest, Member member) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
+
+        if (!post.getMember().equals(member)) {
+            throw new PostException(PostErrorCode.NOT_OWN);
+        }
+
         List<PostImage> postImageList = postUpdateRequest.getPostImageList().stream().map((s)-> PostImage.builder().post(post).postImageKeyName(s).build()).toList();
         post.update(postUpdateRequest.getContent(), postUpdateRequest.getPostCategory(), postImageList);
 
@@ -50,8 +55,13 @@ public class PostCommandServiceImpl implements PostCommandService {
     }
 
     @Override
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, Member member) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
+
+        if (!post.getMember().equals(member)) {
+            throw new PostException(PostErrorCode.NOT_OWN);
+        }
+
         post.softDelete();
     }
 
