@@ -22,8 +22,8 @@ public class NoticeController implements NoticeControllerSpecification {
     @GetMapping("/notices")
     public CustomResponse<NoticeResponse.NoticeListResponse> getNotices(
             @AuthenticatedMember Member member,
-            @RequestParam(name = "size") Integer size,
-            @RequestParam(name = "cursor") Long cursor
+            @RequestParam(name = "cursor") Long cursor,
+            @RequestParam(name = "size") Integer size
     ) {
         NoticeResponse.NoticeListResponse noticeListResponse = noticeQueryService.getNotices(member, size, cursor);
         return CustomResponse.ok(noticeListResponse);
