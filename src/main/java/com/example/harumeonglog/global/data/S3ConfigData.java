@@ -1,6 +1,7 @@
 package com.example.harumeonglog.global.data;
 
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,4 +16,10 @@ public class S3ConfigData {
     private String region;
     private String accessKey;
     private String secretKey;
+    private String baseUrl;
+
+    @PostConstruct
+    public void init() {
+        this.baseUrl = String.format("https://%s.s3.%s.amazonaws.com/", bucket, region);
+    }
 }

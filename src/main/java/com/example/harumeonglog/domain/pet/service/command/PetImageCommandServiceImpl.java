@@ -77,8 +77,8 @@ public class PetImageCommandServiceImpl implements PetImageCommandService {
         Pet pet = findPetById(petImage.getPet().getId());
         validateOwnerAccess(member, pet);
 
-        s3Util.deleteFile(petImage.getImageKey());
         petImageRepository.delete(petImage);
+        s3Util.deleteFile(petImage.getImageKey());
     }
 
     @Override

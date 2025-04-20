@@ -40,7 +40,7 @@ public class S3ServiceImpl implements S3Service {
                 imageKey,
                 contentType,
                 -1, // 클라이언트에서 ContentLength를 지정하도록 함
-                10); // 10분 유효
+                3); // 10분 유효
 
         Map<String, String> response = new HashMap<>();
         response.put("presignedUrl", presignedUrl);
