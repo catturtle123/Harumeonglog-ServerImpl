@@ -32,7 +32,7 @@ public class NoticeQueryServiceImpl implements NoticeQueryService {
         List<Notice> noticeList = noticeSlice.toList();
 
         Long nextCursor = null;
-        if (!noticeList.isEmpty()) {
+        if (!noticeList.isEmpty() && noticeSlice.hasNext()) {
             nextCursor = noticeList.get(noticeList.size() - 1).getId();
         }
 
