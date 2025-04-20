@@ -12,6 +12,7 @@ public class SettingConverter {
                 .eventAlarm(setting.getEventAlarm())
                 .articleLikeAlarm(setting.getArticleLikeAlarm())
                 .commentAlarm(setting.getCommentAlarm())
+                .updatedAt(setting.getUpdatedAt())
                 .build();
     }
 

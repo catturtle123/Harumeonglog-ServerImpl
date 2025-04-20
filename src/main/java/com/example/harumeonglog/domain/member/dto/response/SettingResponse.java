@@ -1,8 +1,9 @@
 package com.example.harumeonglog.domain.member.dto.response;
 
-import com.example.harumeonglog.domain.member.entity.Setting;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 public class SettingResponse {
 
@@ -24,5 +25,6 @@ public class SettingResponse {
         private Boolean eventAlarm;
         private Boolean articleLikeAlarm;
         private Boolean commentAlarm;
+        private LocalDateTime updatedAt;
     }
 }
