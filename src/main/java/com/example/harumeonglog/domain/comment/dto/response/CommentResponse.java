@@ -10,7 +10,7 @@ public class CommentResponse {
 
     @Getter
     @Builder
-    public static class CommentListResponse {
+    public static class CommentPreviewListResponse {
         private List<CommentPreviewResponse> items;
         private Boolean hasNext;
         private Long cursor;
