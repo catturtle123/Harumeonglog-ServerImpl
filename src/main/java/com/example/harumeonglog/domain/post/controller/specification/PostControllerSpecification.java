@@ -54,7 +54,7 @@ public interface PostControllerSpecification {
             @ApiResponse(responseCode = "POST403", description = "자신의 게시물이 아닙니다.")
     })
     @PatchMapping("/{postId}")
-    CustomResponse<Long> updatePost(
+    CustomResponse<PostResponse.PostUpdateResponse> updatePost(
             @PathVariable Long postId,
             @RequestBody PostRequest.PostUpdateRequest postUpdateRequest,
             @AuthenticatedMember Member member

@@ -4,6 +4,7 @@ import com.example.harumeonglog.domain.member.dto.response.MemberResponse.Member
 import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class PostResponse {
@@ -56,6 +57,7 @@ public class PostResponse {
         private String content;
         private PostCategory postCategory;
         private List<String> postImageList;
+        private LocalDateTime updateAt;
     }
 
 }

@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -50,13 +51,15 @@ public class Post extends BaseEntity {
     private List<Comment> commentList;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostImage> postImageList;
+    private List<PostImage> postImageList = new ArrayList<>();
 
     // 비즈니스 함수
     public void update(String content, PostCategory category, List<PostImage> postImageList) {
         this.content = content;
         this.category = category;
-        this.postImageList = postImageList;
+
+        this.postImageList.clear();
+        this.postImageList.addAll(postImageList);
     }
 
     public void fixLikeNum(Long number) {

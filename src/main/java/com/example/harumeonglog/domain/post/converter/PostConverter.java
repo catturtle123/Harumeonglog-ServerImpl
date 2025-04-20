@@ -4,7 +4,9 @@ import com.example.harumeonglog.domain.member.dto.response.MemberResponse;
 import com.example.harumeonglog.domain.post.dto.request.PostRequest;
 import com.example.harumeonglog.domain.post.dto.response.PostResponse;
 import com.example.harumeonglog.domain.post.entity.Post;
+import com.example.harumeonglog.domain.post.entity.PostImage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostConverter {
@@ -44,6 +46,19 @@ public class PostConverter {
         return Post.builder()
                 .content(postCreateRequest.getContent())
                 .category(postCreateRequest.getPostCategory())
+                .build();
+    }
+
+    public static PostResponse.PostUpdateResponse toPostUpdateResponse(Post post) {
+
+        List<String> postImageList = post.getPostImageList().stream().map(PostImage::getPostImageKeyName).toList();
+
+        return PostResponse.PostUpdateResponse.builder()
+                .postId(post.getId())
+                .postCategory(post.getCategory())
+                .postImageList(postImageList)
+                .updateAt(post.getUpdatedAt())
+                .content(post.getContent())
                 .build();
     }
 }

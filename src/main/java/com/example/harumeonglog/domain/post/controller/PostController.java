@@ -54,13 +54,13 @@ public class PostController implements PostControllerSpecification {
     }
 
     @PatchMapping("/{postId}")
-    public CustomResponse<Long> updatePost(
+    public CustomResponse<PostResponse.PostUpdateResponse> updatePost(
             @PathVariable Long postId,
             @RequestBody PostRequest.PostUpdateRequest postUpdateRequest,
             @AuthenticatedMember Member member
     ) {
-        Post post = postCommandService.updatePost(postId, postUpdateRequest, member);
-        return CustomResponse.ok(post.getId());
+        PostResponse.PostUpdateResponse postUpdateResponse = postCommandService.updatePost(postId, postUpdateRequest, member);
+        return CustomResponse.ok(postUpdateResponse);
     }
 
     @DeleteMapping("/{postId}")
