@@ -5,6 +5,7 @@ import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface CommentControllerSpecification {
 
     @Operation(summary = "Comment 목록 조회 API", description = "comment를 전체 조회합니다")
+    @Parameter(name = "cursor", description = "0 이면 끝 값으로 올라감", example = "0")
+    @Parameter(name = "size", description = "이만큼 가져옴", example = "10")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "POST404", description = "게시물을 찾지 못했습니다.")
