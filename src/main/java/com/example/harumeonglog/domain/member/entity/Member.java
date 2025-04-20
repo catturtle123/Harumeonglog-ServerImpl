@@ -48,4 +48,12 @@ public class Member extends BaseEntity {
          this.image = image;
     }
 
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public void cancelSoftDelete() {
+        this.deletedAt = null;
+    }
+
 }
