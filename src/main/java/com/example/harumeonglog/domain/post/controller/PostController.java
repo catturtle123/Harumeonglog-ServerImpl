@@ -27,7 +27,7 @@ public class PostController implements PostControllerSpecification {
 
     @GetMapping
     public CustomResponse<PostResponse.PostPreviewListResponse> getPosts(
-            @RequestParam(name = "search") String search,
+            @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "postRequestCategory") PostRequestCategory postRequestCategory,
             @RequestParam(name = "cursor") Long cursor,
             @RequestParam(name = "size") Integer size
@@ -56,17 +56,19 @@ public class PostController implements PostControllerSpecification {
     @PatchMapping("/{postId}")
     public CustomResponse<Long> updatePost(
             @PathVariable Long postId,
-            @RequestBody PostRequest.PostUpdateRequest postUpdateRequest
+            @RequestBody PostRequest.PostUpdateRequest postUpdateRequest,
+            @AuthenticatedMember Member member
     ) {
-        Post post = postCommandService.updatePost(postId, postUpdateRequest);
+        Post post = postCommandService.updatePost(postId, postUpdateRequest, member);
         return CustomResponse.ok(post.getId());
     }
 
     @DeleteMapping("/{postId}")
     public CustomResponse<Void> deletePost(
+            @AuthenticatedMember Member member,
             @PathVariable Long postId
     ) {
-        postCommandService.deletePost(postId);
+        postCommandService.deletePost(postId, member);
         return CustomResponse.ok(null);
     }
 

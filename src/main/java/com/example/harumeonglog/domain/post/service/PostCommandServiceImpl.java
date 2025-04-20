@@ -41,8 +41,11 @@ public class PostCommandServiceImpl implements PostCommandService {
     }
 
     @Override
-    public Post updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest) {
+    public Post updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest, Member member) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
+
+        isOwnPost(member, post);
+
         List<PostImage> postImageList = postUpdateRequest.getPostImageList().stream().map((s)-> PostImage.builder().post(post).postImageKeyName(s).build()).toList();
         post.update(postUpdateRequest.getContent(), postUpdateRequest.getPostCategory(), postImageList);
 
@@ -50,8 +53,11 @@ public class PostCommandServiceImpl implements PostCommandService {
     }
 
     @Override
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, Member member) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
+
+        isOwnPost(member, post);
+
         post.softDelete();
     }
 
@@ -80,6 +86,12 @@ public class PostCommandServiceImpl implements PostCommandService {
         } else {
             post.fixReportNum(1L);
             postReportRepository.save(PostReportConverter.toPostReport(post, member));
+        }
+    }
+
+    private void isOwnPost(Member member, Post post) {
+        if (!post.getMember().equals(member)) {
+            throw new PostException(PostErrorCode.NOT_OWN);
         }
     }
 }
