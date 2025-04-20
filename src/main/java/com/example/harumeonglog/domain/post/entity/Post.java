@@ -59,7 +59,9 @@ public class Post extends BaseEntity {
         this.category = category;
 
         this.postImageList.clear();
-        this.postImageList.addAll(postImageList);
+        for (PostImage postImage : postImageList) {
+            postImage.associateWith(this);
+        }
     }
 
     public void fixLikeNum(Long number) {
