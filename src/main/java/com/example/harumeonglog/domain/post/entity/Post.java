@@ -51,6 +51,7 @@ public class Post extends BaseEntity {
     private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<PostImage> postImageList = new ArrayList<>();
 
     // 비즈니스 함수
