@@ -2,7 +2,6 @@ package com.example.harumeonglog.domain.member.controller;
 
 import com.example.harumeonglog.domain.member.controller.specification.MemberControllerSpecification;
 import com.example.harumeonglog.domain.member.converter.MemberConverter;
-import com.example.harumeonglog.domain.member.converter.SettingConverter;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.Setting;
 import com.example.harumeonglog.domain.member.service.MemberCommandService;
@@ -35,8 +34,7 @@ public class MemberController implements MemberControllerSpecification {
 
     @GetMapping("/setting")
     public CustomResponse<SettingResponse.SettingInfoResponse> getSettingInfo(@AuthenticatedMember Member member) {
-        Setting setting = settingQueryService.getSetting(member);
-        return CustomResponse.ok(SettingConverter.toSettingInfoResponse(setting));
+        return CustomResponse.ok(settingQueryService.getSetting(member));
     }
 
     @DeleteMapping
@@ -46,14 +44,14 @@ public class MemberController implements MemberControllerSpecification {
     }
 
     @PatchMapping("/info")
-    public CustomResponse<MemberResponse.MemberInfoUpdateResponse> updateInfo(@AuthenticatedMember Member member, @RequestBody MemberRequest.MemberInfoUpdateRequest request) {
+    public CustomResponse<Long> updateInfo(@AuthenticatedMember Member member, @RequestBody MemberRequest.MemberInfoUpdateRequest request) {
         Member updateMember = memberCommandService.updateInfo(member, request);
-        return CustomResponse.ok(MemberConverter.toMemberInfoUpdateResponse(updateMember));
+        return CustomResponse.ok(updateMember.getId());
     }
 
     @PatchMapping("/setting")
-    public CustomResponse<SettingResponse.SettingUpdateResponse> updateSetting(@AuthenticatedMember Member member, @RequestBody SettingRequest.SettingUpdateRequest request) {
+    public CustomResponse<Long> updateSetting(@AuthenticatedMember Member member, @RequestBody SettingRequest.SettingUpdateRequest request) {
         Setting setting = settingCommandService.updateSetting(member, request);
-        return CustomResponse.ok(SettingConverter.toSettingUpdateResponse(setting));
+        return CustomResponse.ok(setting.getId());
     }
 }
