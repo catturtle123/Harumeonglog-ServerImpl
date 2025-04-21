@@ -1,8 +1,7 @@
 package com.example.harumeonglog.domain.comment.service;
 
-import com.example.harumeonglog.domain.comment.entity.Comment;
-import org.springframework.data.domain.Slice;
+import com.example.harumeonglog.domain.comment.dto.response.CommentResponse;
 
 public interface CommentQueryService {
-    Slice<Comment> getComments(Long postId, Integer cursor, Integer size);
+    CommentResponse.CommentPreviewListResponse getComments(Long postId, Long cursor, Integer size);
 }
