@@ -1,5 +1,6 @@
 package com.example.harumeonglog.domain.comment.controller.specification;
 
+import com.example.harumeonglog.domain.comment.dto.request.CommentRequest;
 import com.example.harumeonglog.domain.comment.dto.response.CommentResponse;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.global.common.response.CustomResponse;
@@ -70,6 +71,18 @@ public interface CommentControllerSpecification {
     @PostMapping("/comments/{commentId}/likes")
     CustomResponse<Void> likeComment(
             @PathVariable Long commentId,
+            @AuthenticatedMember Member member
+    );
+
+    @Operation(summary = "Comment 생성 API by 김준환", description = "comment 생성합니다")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "POST404", description = "게시물을 찾지 못했습니다.")
+    })
+    @PostMapping("/posts/{postId}/comments")
+    CustomResponse<CommentResponse.CommentCreateResponse> createComment(
+            @RequestBody CommentRequest.CommentCreateRequest commentCreateRequest,
+            @PathVariable Long postId,
             @AuthenticatedMember Member member
     );
 }
