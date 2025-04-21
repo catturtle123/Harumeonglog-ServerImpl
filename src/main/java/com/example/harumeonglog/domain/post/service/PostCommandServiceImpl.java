@@ -2,6 +2,7 @@ package com.example.harumeonglog.domain.post.service;
 
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.post.converter.PostConverter;
+import com.example.harumeonglog.domain.post.converter.PostImageConverter;
 import com.example.harumeonglog.domain.post.converter.PostLikeConverter;
 import com.example.harumeonglog.domain.post.converter.PostReportConverter;
 import com.example.harumeonglog.domain.post.dto.request.PostRequest;
@@ -10,13 +11,11 @@ import com.example.harumeonglog.domain.post.entity.Post;
 import com.example.harumeonglog.domain.post.entity.PostImage;
 import com.example.harumeonglog.domain.post.entity.PostLike;
 import com.example.harumeonglog.domain.post.entity.PostReport;
-import com.example.harumeonglog.domain.post.repository.PostImageRepository;
 import com.example.harumeonglog.domain.post.repository.PostLikeRepository;
 import com.example.harumeonglog.domain.post.repository.PostReportRepository;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
 import com.example.harumeonglog.global.error.code.PostErrorCode;
 import com.example.harumeonglog.global.error.exception.PostException;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,10 +34,11 @@ public class PostCommandServiceImpl implements PostCommandService {
     public PostResponse.PostCreateResponse createPost(PostRequest.PostCreateRequest postCreateRequest, Member member) {
         Post post = PostConverter.toPost(postCreateRequest, member);
 
-        postCreateRequest.getPostImageList().forEach((s)-> {
-            PostImage postImage = PostImage.builder().post(post).postImageKeyName(s).build();
-            postImage.associateWith(post);
+        postCreateRequest.getPostImageList().forEach((s)->{
+            PostImage postImage = PostImageConverter.toPostImage(s);
+            post.addPostImage(postImage);
         });
+
         return PostConverter.toPostCreateResponse(postRepository.save(post));
     }
 
@@ -48,7 +48,7 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         isOwnPost(member, post);
 
-        List<PostImage> postImageList = postUpdateRequest.getPostImageList().stream().map((s)-> PostImage.builder().post(post).postImageKeyName(s).build()).toList();
+        List<PostImage> postImageList = postUpdateRequest.getPostImageList().stream().map(PostImageConverter::toPostImage).toList();
         post.update(postUpdateRequest.getContent(), postUpdateRequest.getPostCategory(), postImageList);
 
         return PostConverter.toPostUpdateResponse(post);

@@ -24,11 +24,7 @@ public class PostImage extends BaseEntity {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    // 연관관계 편의 메서드
-    public void associateWith(Post post) {
+    public void addPost(Post post) {
         this.post = post;
-        if (!post.getPostImageList().contains(this)) {
-            post.getPostImageList().add(this);
-        }
     }
 }
