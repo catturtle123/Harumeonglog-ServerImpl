@@ -2,6 +2,7 @@ package com.example.harumeonglog.domain.post.service;
 
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.post.converter.PostConverter;
+import com.example.harumeonglog.domain.post.converter.PostImageConverter;
 import com.example.harumeonglog.domain.post.converter.PostLikeConverter;
 import com.example.harumeonglog.domain.post.converter.PostReportConverter;
 import com.example.harumeonglog.domain.post.dto.request.PostRequest;
@@ -35,10 +36,11 @@ public class PostCommandServiceImpl implements PostCommandService {
     public PostResponse.PostCreateResponse createPost(PostRequest.PostCreateRequest postCreateRequest, Member member) {
         Post post = PostConverter.toPost(postCreateRequest, member);
 
-        postCreateRequest.getPostImageList().forEach((s)-> {
-            PostImage postImage = PostImage.builder().post(post).postImageKeyName(s).build();
-            postImage.associateWith(post);
+        postCreateRequest.getPostImageList().forEach((s)->{
+            PostImage postImage = PostImageConverter.toPostImage(s);
+            post.addPostImage(postImage);
         });
+
         return PostConverter.toPostCreateResponse(postRepository.save(post));
     }
 
