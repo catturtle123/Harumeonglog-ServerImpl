@@ -25,10 +25,12 @@ public class Comment extends BaseEntity {
     private String content;
 
     @Column(name = "comment_like_num")
-    private Long commentLikeNum;
+    @Builder.Default
+    private Long commentLikeNum = 0L;
 
     @Column(name = "comment_report_num")
-    private Long commentReportNum;
+    @Builder.Default
+    private Long commentReportNum = 0L;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
@@ -51,5 +53,9 @@ public class Comment extends BaseEntity {
 
     public void fixLikeNum(Long number) {
         this.commentLikeNum += number;
+    }
+
+    public void addPost(Post post) {
+        this.post = post;
     }
 }

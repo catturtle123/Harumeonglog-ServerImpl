@@ -79,4 +79,10 @@ public class Post extends BaseEntity {
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();
     }
+
+    // 연관관계 편의 메서드
+    public void addComment(Comment comment) {
+        comment.addPost(this);
+        commentList.add(comment);
+    }
 }

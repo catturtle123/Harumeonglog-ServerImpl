@@ -1,9 +1,11 @@
 package com.example.harumeonglog.domain.comment.service;
 
 import com.example.harumeonglog.domain.comment.converter.CommentBlockConverter;
+import com.example.harumeonglog.domain.comment.converter.CommentConverter;
 import com.example.harumeonglog.domain.comment.converter.CommentLikeConverter;
 import com.example.harumeonglog.domain.comment.converter.CommentReportConverter;
 import com.example.harumeonglog.domain.comment.dto.request.CommentRequest;
+import com.example.harumeonglog.domain.comment.dto.response.CommentResponse;
 import com.example.harumeonglog.domain.comment.entity.Comment;
 import com.example.harumeonglog.domain.comment.entity.CommentLike;
 import com.example.harumeonglog.domain.comment.entity.CommentReport;
@@ -12,8 +14,12 @@ import com.example.harumeonglog.domain.comment.repository.CommentLikeRepository;
 import com.example.harumeonglog.domain.comment.repository.CommentReportRepository;
 import com.example.harumeonglog.domain.comment.repository.CommentRepository;
 import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.post.entity.Post;
+import com.example.harumeonglog.domain.post.repository.PostRepository;
 import com.example.harumeonglog.global.error.code.CommentErrorCode;
+import com.example.harumeonglog.global.error.code.PostErrorCode;
 import com.example.harumeonglog.global.error.exception.CommentException;
+import com.example.harumeonglog.global.error.exception.PostException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +33,7 @@ public class CommentCommandServiceImpl implements CommentCommandService {
     private final CommentReportRepository commentReportRepository;
     private final CommentBlockRepository commentBlockRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final PostRepository postRepository;
 
     @Override
     public void reportComment(Long commentId, Member member) {
@@ -56,8 +63,16 @@ public class CommentCommandServiceImpl implements CommentCommandService {
     }
 
     @Override
-    public Comment createComment(CommentRequest.CommentCreateRequest commentCreateRequest) {
-        return null;
+    public CommentResponse.CommentCreateResponse createComment(CommentRequest.CommentCreateRequest commentCreateRequest, Long postId, Member member) {
+        Post post = postRepository.findById(postId).orElseThrow(()-> new PostException(PostErrorCode.NOT_FOUND));
+
+        Comment comment = CommentConverter.toComment(commentCreateRequest, member);
+
+        comment.addPost(post);
+
+        commentRepository.save(comment);
+
+        return CommentConverter.toCommentCreateResponse(comment);
     }
 
     @Override

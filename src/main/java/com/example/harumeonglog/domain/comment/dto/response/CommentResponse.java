@@ -4,6 +4,7 @@ import com.example.harumeonglog.domain.member.dto.response.MemberResponse;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CommentResponse {
@@ -22,5 +23,13 @@ public class CommentResponse {
         private Long commentId;
         private String content;
         private MemberResponse.MemberInfoResponse memberInfoResponse;
+    }
+
+    @Getter
+    @Builder
+    public static class CommentCreateResponse {
+        private Long commentId;
+        private LocalDateTime createAt;
+        private LocalDateTime updateAt;
     }
 }

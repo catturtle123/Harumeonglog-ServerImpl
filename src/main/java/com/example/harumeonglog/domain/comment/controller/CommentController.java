@@ -57,12 +57,14 @@ public class CommentController implements CommentControllerSpecification {
         return CustomResponse.ok(null);
     }
 
-    @PostMapping("/comments")
-    public CustomResponse<Long> createComment(
-        @RequestBody CommentRequest.CommentCreateRequest commentCreateRequest
+    @PostMapping("/posts/{postId}/comments")
+    public CustomResponse<CommentResponse.CommentCreateResponse> createComment(
+        @RequestBody CommentRequest.CommentCreateRequest commentCreateRequest,
+        @PathVariable Long postId,
+        @AuthenticatedMember Member member
     ) {
-        Comment comment = commentCommandService.createComment(commentCreateRequest);
-        return CustomResponse.ok(comment.getId());
+        CommentResponse.CommentCreateResponse commentCreateResponse = commentCommandService.createComment(commentCreateRequest, postId, member);
+        return CustomResponse.ok(commentCreateResponse);
     }
 
     @DeleteMapping("/comments/{commentId}")
