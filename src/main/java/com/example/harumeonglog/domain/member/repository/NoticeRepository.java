@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
-    Slice<Notice> findByMemberAndIdLessThanOrderByIdDesc(Member member, Long cursor,Pageable pageable);
+    Slice<Notice> findByMemberAndIdLessThanOrderByIdDesc(Member member, Long Id, Pageable pageable);
 }

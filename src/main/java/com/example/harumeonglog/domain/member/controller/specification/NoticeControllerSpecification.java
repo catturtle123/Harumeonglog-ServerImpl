@@ -17,18 +17,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(name = "Notice", description = "Notice 관련 Controller")
 public interface NoticeControllerSpecification {
 
-    @Operation(summary = "notice 목록 조회 API", description = "notice 목록을 무한스크롤로 조회합니다.")
+    @Operation(summary = "notice 목록 조회 API", description = "notice 목록을 무한스크롤로 조회합니다. by 김준환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
     @GetMapping("/notices")
     CustomResponse<NoticeResponse.NoticeListResponse> getNotices(
             @AuthenticatedMember Member member,
-            @RequestParam(name = "size") Integer size,
-            @RequestParam(name = "cursor") Long cursor
+            @RequestParam(name = "cursor") Long cursor,
+            @RequestParam(name = "size") Integer size
     );
 
-    @Operation(summary = "notice 삭제 API", description = "notice를 삭제합니다")
+    @Operation(summary = "notice 삭제 API", description = "notice를 삭제합니다 by 김준환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "NOTICE404", description = "알림을 찾지 못했습니다.")
