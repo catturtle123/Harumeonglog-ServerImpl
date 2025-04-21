@@ -8,7 +8,7 @@ import org.springframework.data.domain.Slice;
 public interface CommentCommandService {
     void reportComment(Long commentId, Member member);
 
-    void blockComment(Long commentId);
+    void blockComment(Long commentId, Member member);
 
     Comment createComment(CommentRequest.CommentCreateRequest commentCreateRequest);
 

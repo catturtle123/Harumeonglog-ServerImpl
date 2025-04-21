@@ -40,8 +40,11 @@ public class CommentController implements CommentControllerSpecification {
     }
 
     @PostMapping("/comments/{commentId}/blocks")
-    public CustomResponse<Void> blockComment(@PathVariable Long commentId) {
-        commentCommandService.blockComment(commentId);
+    public CustomResponse<Void> blockComment(
+            @PathVariable Long commentId,
+            @AuthenticatedMember Member member
+    ) {
+        commentCommandService.blockComment(commentId, member);
         return CustomResponse.ok(null);
     }
 

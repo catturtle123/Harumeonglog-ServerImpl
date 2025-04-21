@@ -1,9 +1,12 @@
 package com.example.harumeonglog.domain.comment.service;
 
+import com.example.harumeonglog.domain.comment.converter.CommentBlockConverter;
 import com.example.harumeonglog.domain.comment.converter.CommentReportConverter;
 import com.example.harumeonglog.domain.comment.dto.request.CommentRequest;
 import com.example.harumeonglog.domain.comment.entity.Comment;
+import com.example.harumeonglog.domain.comment.entity.CommentBlock;
 import com.example.harumeonglog.domain.comment.entity.CommentReport;
+import com.example.harumeonglog.domain.comment.repository.CommentBlockRepository;
 import com.example.harumeonglog.domain.comment.repository.CommentReportRepository;
 import com.example.harumeonglog.domain.comment.repository.CommentRepository;
 import com.example.harumeonglog.domain.member.entity.Member;
@@ -20,6 +23,7 @@ public class CommentCommandServiceImpl implements CommentCommandService {
 
     private final CommentRepository commentRepository;
     private final CommentReportRepository commentReportRepository;
+    private final CommentBlockRepository commentBlockRepository;
 
     @Override
     public void reportComment(Long commentId, Member member) {
@@ -38,8 +42,10 @@ public class CommentCommandServiceImpl implements CommentCommandService {
     }
 
     @Override
-    public void blockComment(Long commentId) {
+    public void blockComment(Long commentId, Member member) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(CommentErrorCode.NOT_FOUND));
 
+        commentBlockRepository.save(CommentBlockConverter.toCommentBlock(comment, member));
     }
 
     @Override
