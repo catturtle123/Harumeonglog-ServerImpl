@@ -35,4 +35,7 @@ public interface PetImageRepository extends JpaRepository<PetImage, Long> {
     List<PetImage> findByIdInAndPetId(List<Long> imageIds, Long petId);
 
     void deleteAllByIdIn(List<Long> imageIds);
+
+    @Query("SELECT pi.imageKey FROM PetImage pi")
+    List<String> findAllImageKeys();
 }

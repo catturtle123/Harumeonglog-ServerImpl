@@ -78,7 +78,6 @@ public class PetImageCommandServiceImpl implements PetImageCommandService {
         validateOwnerAccess(member, pet);
 
         petImageRepository.delete(petImage);
-        s3Util.deleteFile(petImage.getImageKey());
     }
 
     @Override
@@ -90,7 +89,6 @@ public class PetImageCommandServiceImpl implements PetImageCommandService {
 
         // S3 파일 삭제 및 DB 삭제
         petImages.forEach(image -> s3Util.deleteFile(image.getImageKey()));
-        petImageRepository.deleteAllByIdIn(request.getImageIds());
     }
 
 }

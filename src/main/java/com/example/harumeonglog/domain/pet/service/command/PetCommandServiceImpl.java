@@ -92,11 +92,6 @@ public class PetCommandServiceImpl implements PetCommandService {
 
             // mainImage가 제공된 경우 처리
             if (request.getNewMainImageKey() != null && !request.getNewMainImageKey().isEmpty()) {
-                // 기존 이미지 삭제 (기존 키가 null이 아닌 경우)
-                if (pet.getMainImage() != null) {
-                    s3Util.deleteFile(pet.getMainImage());
-                }
-
                 // 새 이미지 키 설정
                 newMainImageKey = request.getNewMainImageKey();
             }
