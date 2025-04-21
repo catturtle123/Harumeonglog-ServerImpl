@@ -4,7 +4,9 @@ import com.example.harumeonglog.domain.auth.converter.OAuth2Converter;
 import com.example.harumeonglog.domain.auth.dto.request.OAuth2Request;
 import com.example.harumeonglog.domain.auth.dto.response.OAuth2Response;
 import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.member.entity.Setting;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
+import com.example.harumeonglog.domain.member.repository.SettingRepository;
 import com.example.harumeonglog.global.error.code.AuthErrorCode;
 import com.example.harumeonglog.global.error.code.TokenErrorCode;
 import com.example.harumeonglog.global.error.exception.AuthException;
@@ -23,6 +25,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
+import java.util.Optional;
 
 import static org.apache.tomcat.util.codec.binary.Base64.decodeBase64;
 
@@ -30,6 +33,7 @@ import static org.apache.tomcat.util.codec.binary.Base64.decodeBase64;
 public abstract class OAuth2ServiceImpl implements OAuth2Service {
 
     private final MemberRepository memberRepository;
+    private final SettingRepository settingRepository;
 
     @Override
     public CustomUserDetails login(String idToken) {
@@ -57,12 +61,19 @@ public abstract class OAuth2ServiceImpl implements OAuth2Service {
     protected abstract boolean isValidLoginInfo(Claims claims);
 
     protected CustomUserDetails successLogin(OAuth2Request.OAuth2LoginRequest request) {
-        Member member = memberRepository.findByProviderIdAndSocialType(request.getProviderId(), request.getSocialType()).orElse(
-                OAuth2Converter.toMember(request)
-        );
-        // TODO: 로그인 시 동기화 여부
-        member.update(request.getNickname(), request.getImage());
-        return new CustomUserDetails(memberRepository.save(member));
+        Optional<Member> memberOptional = memberRepository.findByProviderIdAndSocialType(request.getProviderId(), request.getSocialType());
+        Member member;
+        if (memberOptional.isPresent()) {
+            member = memberOptional.get();
+            // TODO: 로그인 시 동기화 여부
+            member.update(request.getNickname(), request.getImage());
+        }
+        else {
+            member = memberRepository.save(OAuth2Converter.toMember(request));
+            createSetting(member);
+        }
+
+        return new CustomUserDetails(member);
     }
 
     protected OAuth2Response.OAuth2IdTokenHeader parseIdTokenHeader(String idToken) {
@@ -100,6 +111,16 @@ public abstract class OAuth2ServiceImpl implements OAuth2Service {
         } catch (RuntimeException e) {
             throw new TokenException(TokenErrorCode.INVALID_ID_TOKEN);
         }
+    }
+
+    private Setting createSetting(Member member) {
+        return settingRepository.save(Setting.builder()
+                .morningAlarm(true)
+                .articleLikeAlarm(true)
+                .eventAlarm(true)
+                .commentAlarm(true)
+                .member(member)
+                .build());
     }
 
 }

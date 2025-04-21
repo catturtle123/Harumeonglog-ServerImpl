@@ -32,4 +32,14 @@ public class Setting extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    public void updateSetting(Boolean morningAlarm,
+                              Boolean eventAlarm,
+                              Boolean articleLikeAlarm,
+                              Boolean commentAlarm) {
+        this.morningAlarm = morningAlarm != null ? morningAlarm : this.morningAlarm;
+        this.eventAlarm = eventAlarm != null ? eventAlarm : this.eventAlarm;
+        this.articleLikeAlarm = articleLikeAlarm != null ? articleLikeAlarm : this.articleLikeAlarm;
+        this.commentAlarm = commentAlarm != null ? commentAlarm : this.commentAlarm;
+    }
 }

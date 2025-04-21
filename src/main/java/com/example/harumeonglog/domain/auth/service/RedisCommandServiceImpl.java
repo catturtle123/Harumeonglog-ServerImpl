@@ -4,6 +4,7 @@ import com.example.harumeonglog.global.data.JwtConfigData;
 import com.example.harumeonglog.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 
@@ -12,6 +13,7 @@ import static com.example.harumeonglog.global.data.RedisConfigData.REFRESH_TOKEN
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RedisCommandServiceImpl implements RedisCommandService{
 
     private final JwtConfigData jwtConfigData;

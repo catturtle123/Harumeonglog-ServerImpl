@@ -20,6 +20,7 @@ public class MemberConverter {
                 .image(member.getImage())
                 .nickname(member.getNickname())
                 .birth(member.getBirth())
+                .updatedAt(member.getUpdatedAt())
                 .build();
     }
 

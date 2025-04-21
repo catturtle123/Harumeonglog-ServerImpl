@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class MemberResponse {
 
@@ -23,5 +24,6 @@ public class MemberResponse {
         private String image;
         private String nickname;
         private LocalDate birth;
+        private LocalDateTime updatedAt;
     }
 }

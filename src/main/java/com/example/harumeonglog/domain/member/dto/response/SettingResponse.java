@@ -1,10 +1,21 @@
 package com.example.harumeonglog.domain.member.dto.response;
 
-import com.example.harumeonglog.domain.member.entity.Setting;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 public class SettingResponse {
+
+    @Getter
+    @Builder
+    public static class SettingInfoResponse {
+        private Long memberId;
+        private Boolean morningAlarm;
+        private Boolean eventAlarm;
+        private Boolean articleLikeAlarm;
+        private Boolean commentAlarm;
+    }
 
     @Getter
     @Builder
@@ -14,15 +25,6 @@ public class SettingResponse {
         private Boolean eventAlarm;
         private Boolean articleLikeAlarm;
         private Boolean commentAlarm;
-
-        public static SettingUpdateResponse from(Setting setting) {
-            return SettingUpdateResponse.builder()
-                    .memberId(setting.getMember().getId())
-                    .morningAlarm(setting.getMorningAlarm())
-                    .eventAlarm(setting.getEventAlarm())
-                    .articleLikeAlarm(setting.getArticleLikeAlarm())
-                    .commentAlarm(setting.getCommentAlarm())
-                    .build();
-        }
+        private LocalDateTime updatedAt;
     }
 }

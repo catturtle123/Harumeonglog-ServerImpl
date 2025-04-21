@@ -3,10 +3,12 @@ package com.example.harumeonglog.domain.auth.service;
 import com.example.harumeonglog.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class TokenServiceImpl implements TokenQueryService{
+@Transactional(readOnly = true)
+public class TokenQueryServiceImpl implements TokenQueryService{
 
     private final JwtUtil jwtUtil;
     private final RedisQueryService redisQueryService;

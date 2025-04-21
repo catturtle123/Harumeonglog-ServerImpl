@@ -3,14 +3,15 @@ package com.example.harumeonglog.domain.member.controller;
 import com.example.harumeonglog.domain.member.controller.specification.MemberControllerSpecification;
 import com.example.harumeonglog.domain.member.converter.MemberConverter;
 import com.example.harumeonglog.domain.member.entity.Member;
-import com.example.harumeonglog.domain.member.entity.Setting;
+import com.example.harumeonglog.domain.member.service.MemberCommandService;
+import com.example.harumeonglog.domain.member.service.SettingCommandService;
+import com.example.harumeonglog.domain.member.service.SettingQueryService;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.domain.member.dto.request.MemberRequest;
 import com.example.harumeonglog.domain.member.dto.request.SettingRequest;
 import com.example.harumeonglog.domain.member.dto.response.MemberResponse;
 import com.example.harumeonglog.domain.member.dto.response.SettingResponse;
-import com.example.harumeonglog.domain.member.service.MemberService;
-import com.example.harumeonglog.domain.member.service.SettingService;
+import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,29 +22,35 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Member", description = "Member 관련 API")
 public class MemberController implements MemberControllerSpecification {
 
-    private final MemberService memberService;
-    private final SettingService settingService;
+    private final MemberCommandService memberCommandService;
+    private final SettingCommandService settingCommandService;
+    private final SettingQueryService settingQueryService;
 
     @GetMapping("/info")
-    public CustomResponse<MemberResponse.MemberInfoResponse> getInfo() {
-        // TODO: Annotation으로 변경 필요
-        Member member = Member.builder().build();
+    public CustomResponse<MemberResponse.MemberInfoResponse> getInfo(@AuthenticatedMember Member member) {
         return CustomResponse.ok(MemberConverter.toMemberInfoResponse(member));
     }
 
+    @GetMapping("/setting")
+    public CustomResponse<SettingResponse.SettingInfoResponse> getSettingInfo(@AuthenticatedMember Member member) {
+        return CustomResponse.ok(settingQueryService.getSetting(member));
+    }
+
+    @DeleteMapping
+    public CustomResponse<Void> deleteMember(@AuthenticatedMember Member member) {
+        memberCommandService.softDeleteMember(member);
+        return CustomResponse.ok(null);
+    }
+
     @PatchMapping("/info")
-    public CustomResponse<MemberResponse.MemberInfoUpdateResponse> updateInfo(MemberRequest.MemberInfoUpdateRequest request) {
-        // TODO: Annotation으로 변경 필요
-        Member member = Member.builder().build();
-        Member updateMember = memberService.updateInfo(member, request);
-        return CustomResponse.ok(MemberConverter.toMemberInfoUpdateResponse(updateMember));
+    public CustomResponse<MemberResponse.MemberInfoUpdateResponse> updateInfo(@AuthenticatedMember Member member, @RequestBody MemberRequest.MemberInfoUpdateRequest request) {
+        MemberResponse.MemberInfoUpdateResponse response = memberCommandService.updateInfo(member, request);
+        return CustomResponse.ok(response);
     }
 
     @PatchMapping("/setting")
-    public CustomResponse<SettingResponse.SettingUpdateResponse> updateSetting(@RequestBody SettingRequest.SettingUpdateRequest request) {
-        // TODO: Annotation으로 변경 필요
-        Member member = Member.builder().build();
-        Setting setting = settingService.updateSetting(member, request);
-        return CustomResponse.ok(SettingResponse.SettingUpdateResponse.from(setting));
+    public CustomResponse<SettingResponse.SettingUpdateResponse> updateSetting(@AuthenticatedMember Member member, @RequestBody SettingRequest.SettingUpdateRequest request) {
+        SettingResponse.SettingUpdateResponse response = settingCommandService.updateSetting(member, request);
+        return CustomResponse.ok(response);
     }
 }

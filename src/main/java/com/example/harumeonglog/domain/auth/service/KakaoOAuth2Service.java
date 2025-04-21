@@ -5,6 +5,7 @@ import com.example.harumeonglog.domain.auth.dto.request.OAuth2Request;
 import com.example.harumeonglog.domain.auth.dto.response.OAuth2Response;
 import com.example.harumeonglog.domain.member.entity.enums.SocialType;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
+import com.example.harumeonglog.domain.member.repository.SettingRepository;
 import com.example.harumeonglog.global.data.KakaoOAuthConfigData;
 import com.example.harumeonglog.global.error.exception.AuthException;
 import com.example.harumeonglog.global.util.WebClientUtil;
@@ -23,9 +24,10 @@ public class KakaoOAuth2Service extends OAuth2ServiceImpl {
     private final KakaoOAuthConfigData kakaoOAuthConfigData;
 
     public KakaoOAuth2Service(MemberRepository memberRepository,
+                              SettingRepository settingRepository,
                               WebClientUtil webClientUtil,
                               KakaoOAuthConfigData kakaoOAuthConfigData) {
-        super(memberRepository);
+        super(memberRepository, settingRepository);
         this.webClientUtil = webClientUtil;
         this.kakaoOAuthConfigData = kakaoOAuthConfigData;
     }
