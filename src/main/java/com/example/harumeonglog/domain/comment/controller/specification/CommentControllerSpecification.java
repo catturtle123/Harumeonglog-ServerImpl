@@ -49,4 +49,16 @@ public interface CommentControllerSpecification {
             @PathVariable Long commentId,
             @AuthenticatedMember Member member
     );
+
+    @Operation(summary = "Comment 차단 API by 김준환", description = "comment 차단합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "COMMENT400", description = "이미 차단된 댓글입니다."),
+            @ApiResponse(responseCode = "COMMENT404", description = "댓글을 찾지 못했습니다.")
+    })
+    @PostMapping("/comments/{commentId}/blocks")
+    CustomResponse<Void> blockComment(
+            @PathVariable Long commentId,
+            @AuthenticatedMember Member member
+    );
 }
