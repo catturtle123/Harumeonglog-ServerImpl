@@ -1,6 +1,8 @@
 package com.example.harumeonglog.global.s3.service;
 
-import com.example.harumeonglog.global.s3.dto.S3RequestDTO;
+import com.example.harumeonglog.global.s3.converter.S3Converter;
+import com.example.harumeonglog.global.s3.dto.request.S3RequestDTO;
+import com.example.harumeonglog.global.s3.dto.response.S3ResponseDTO;
 import com.example.harumeonglog.global.s3.enums.S3Domain;
 import com.example.harumeonglog.global.util.S3Util;
 import jakarta.transaction.Transactional;
@@ -12,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +24,7 @@ public class S3ServiceImpl implements S3Service {
 
     private final S3Util s3Util;
 
-    @Override
-    public Map<String, String> generatePresignedUrl(String filename, String contentType, S3Domain domain, Long entityId) {
+    private String geneerateImageKey(Long entityId, S3Domain domain, String filename){
         String uuid = UUID.randomUUID().toString();
         String imageKey;
 
@@ -34,29 +35,42 @@ public class S3ServiceImpl implements S3Service {
             // 특정 엔티티에 연결된 경로
             imageKey = String.format("%s/%d/%s/%s", domain.name().toLowerCase(), entityId, uuid, filename);
         }
+        return imageKey;
+    }
 
-        // Presigned URL 생성
-        String presignedUrl = s3Util.generatePresignedUrlForUpload(
+    private String generatePresignedUrl(String imageKey, String contentType){
+        return s3Util.generatePresignedUrlForUpload(
                 imageKey,
                 contentType,
                 -1, // 클라이언트에서 ContentLength를 지정하도록 함
                 3); // 10분 유효
-
-        Map<String, String> response = new HashMap<>();
-        response.put("presignedUrl", presignedUrl);
-        response.put("imageKey", imageKey);
-
-        return response;
     }
 
     @Override
-    public List<Map<String, String>> generatePresignedUrls(S3RequestDTO.GeneratePresignedUrlsRequest request) {
-        return IntStream.range(0, request.getFilenames().size())
-                .mapToObj(i -> generatePresignedUrl(
-                        request.getFilenames().get(i),
-                        request.getContentTypes().get(i),
-                        request.getDomain(),
-                        request.getEntityId()))
-                .toList();
+    public S3ResponseDTO.S3ResponsePreviewDTO generatePresignedUrl(S3RequestDTO.GeneratePresignedUrlRequest request) {
+        // imageKey 생성
+        String imageKey = geneerateImageKey(request.getEntityId(), request.getDomain(), request.getImage().getFilename());
+
+        // Presigned URL 생성
+        String presignedUrl = generatePresignedUrl(imageKey, request.getImage().getContentType());
+
+        return S3Converter.toS3ResponsePreviewDTO(presignedUrl, imageKey);
+    }
+
+    @Override
+    public S3ResponseDTO.S3ResponseListDTO generatePresignedUrls(S3RequestDTO.GeneratePresignedUrlsRequest request) {
+        List<S3ResponseDTO.S3ResponsePreviewDTO> imageList = request.getImages().stream()
+                .map(image -> {
+                    // imageKey 생성
+                    String imageKey = geneerateImageKey(request.getEntityId(), request.getDomain(), image.getFilename());
+
+                    // Presigned URL 생성
+                    String presignedUrl = generatePresignedUrl(imageKey, image.getContentType());
+
+                    return S3Converter.toS3ResponsePreviewDTO(presignedUrl, imageKey);
+                })
+                .collect(Collectors.toList());
+
+        return S3Converter.toS3ResponseListDTO(imageList);
     }
 }
