@@ -28,20 +28,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostCommandServiceImpl implements PostCommandService {
     private final PostRepository postRepository;
-    private final PostImageRepository postImageRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostReportRepository postReportRepository;
 
     @Override
-    public Post createPost(PostRequest.PostCreateRequest postCreateRequest) {
-        Post post = postRepository.save(PostConverter.toPost(postCreateRequest));
-        List<PostImage> postImageList = postCreateRequest.getPostImageList().stream().map((s)-> PostImage.builder().post(post).postImageKeyName(s).build()).toList();
-        postImageRepository.saveAll(postImageList);
-        return post;
+    public PostResponse.PostCreateResponse createPost(PostRequest.PostCreateRequest postCreateRequest, Member member) {
+        Post post = PostConverter.toPost(postCreateRequest, member);
+
+        postCreateRequest.getPostImageList().forEach((s)-> {
+            PostImage postImage = PostImage.builder().post(post).postImageKeyName(s).build();
+            postImage.associateWith(post);
+        });
+        return PostConverter.toPostCreateResponse(postRepository.save(post));
     }
 
     @Override
-    public Post updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest, Member member) {
+    public PostResponse.PostUpdateResponse updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest, Member member) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
 
         isOwnPost(member, post);
@@ -49,7 +51,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         List<PostImage> postImageList = postUpdateRequest.getPostImageList().stream().map((s)-> PostImage.builder().post(post).postImageKeyName(s).build()).toList();
         post.update(postUpdateRequest.getContent(), postUpdateRequest.getPostCategory(), postImageList);
 
-        return post;
+        return PostConverter.toPostUpdateResponse(post);
     }
 
     @Override
@@ -90,7 +92,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     }
 
     private void isOwnPost(Member member, Post post) {
-        if (!post.getMember().equals(member)) {
+        if (!post.getMember().getId().equals(member.getId())) {
             throw new PostException(PostErrorCode.NOT_OWN);
         }
     }

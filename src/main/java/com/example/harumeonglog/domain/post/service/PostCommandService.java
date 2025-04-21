@@ -7,9 +7,9 @@ import com.example.harumeonglog.domain.post.entity.Post;
 
 
 public interface PostCommandService {
-    Post createPost(PostRequest.PostCreateRequest postCreateRequest);
+    PostResponse.PostCreateResponse createPost(PostRequest.PostCreateRequest postCreateRequest, Member member);
 
-    Post updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest, Member member);
+    PostResponse.PostUpdateResponse updatePost(Long postId, PostRequest.PostUpdateRequest postUpdateRequest, Member member);
 
     void deletePost(Long postId, Member member);
 

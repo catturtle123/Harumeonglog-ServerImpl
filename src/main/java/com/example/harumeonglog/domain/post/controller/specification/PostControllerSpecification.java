@@ -43,8 +43,9 @@ public interface PostControllerSpecification {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
     @PostMapping
-    CustomResponse<Long> createPost(
-            @RequestBody PostRequest.PostCreateRequest postCreateRequest
+    CustomResponse<PostResponse.PostCreateResponse> createPost(
+            @RequestBody PostRequest.PostCreateRequest postCreateRequest,
+            @AuthenticatedMember Member member
     );
 
     @Operation(summary = "게시물 수정 API by 김준환",description = "게시물 수정")
@@ -54,7 +55,7 @@ public interface PostControllerSpecification {
             @ApiResponse(responseCode = "POST403", description = "자신의 게시물이 아닙니다.")
     })
     @PatchMapping("/{postId}")
-    CustomResponse<Long> updatePost(
+    CustomResponse<PostResponse.PostUpdateResponse> updatePost(
             @PathVariable Long postId,
             @RequestBody PostRequest.PostUpdateRequest postUpdateRequest,
             @AuthenticatedMember Member member
