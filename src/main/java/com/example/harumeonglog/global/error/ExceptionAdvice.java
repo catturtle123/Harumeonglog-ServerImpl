@@ -63,7 +63,7 @@ public class ExceptionAdvice {
     public ResponseEntity<CustomResponse<String>> handleDuplicateEntry(DataIntegrityViolationException e) {
         loggingError(e, e.getMessage());
 
-        BaseErrorCode code = CommentErrorCode.IS_ALREADY;
+        BaseErrorCode code = GeneralErrorCode._IS_ALREADY;
 
         return ResponseEntity.status(code.getHttpStatus()).body(CustomResponse.fail(code, null));
     }
