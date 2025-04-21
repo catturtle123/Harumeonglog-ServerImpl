@@ -28,7 +28,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostCommandServiceImpl implements PostCommandService {
     private final PostRepository postRepository;
-    private final PostImageRepository postImageRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostReportRepository postReportRepository;
 

@@ -25,15 +25,18 @@ public class Post extends BaseEntity {
     private Long id;
 
     @Column(name = "post_like_num", nullable = false)
-    private Long postLikeNum;
+    @Builder.Default
+    private Long postLikeNum = 0L;
 
     @Column(name = "content")
     private String content;
 
     @Column(name = "post_report_num", nullable = false)
+    @Builder.Default
     private Long postReportNum = 0L;
 
     @Column(name = "comment_num", nullable = false)
+    @Builder.Default
     private Long commentNum = 0L;
 
     @Column(name = "category", nullable = false)

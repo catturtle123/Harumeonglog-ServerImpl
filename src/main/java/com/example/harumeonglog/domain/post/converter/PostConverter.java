@@ -47,9 +47,6 @@ public class PostConverter {
         return Post.builder()
                 .content(postCreateRequest.getContent())
                 .category(postCreateRequest.getPostCategory())
-                .commentNum(0L)
-                .postLikeNum(0L)
-                .postReportNum(0L)
                 .member(member)
                 .build();
     }
