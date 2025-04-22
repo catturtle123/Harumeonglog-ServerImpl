@@ -35,14 +35,6 @@ public class JwtUtil {
         return createToken(details, refreshExpiration);
     }
 
-    public String getUsername(String token) {
-        try {
-            return getClaims(token).getPayload().getSubject();
-        } catch (JwtException e) {
-            return null;
-        }
-    }
-
     public Long getUserId(String token) {
         try {
             return getClaims(token).getPayload().get("id", Long.class);
@@ -65,7 +57,6 @@ public class JwtUtil {
     private String createToken(CustomUserDetails detail, Duration expiration) {
         Instant now = Instant.now();
         return Jwts.builder()
-                .subject(detail.getUsername())
                 .claim("authorization", detail.getAuthorities())
                 .claim("id", detail.getLoginMember().getId())
                 .issuedAt(Date.from(now))
