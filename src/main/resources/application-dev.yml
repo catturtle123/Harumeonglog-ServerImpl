@@ -57,7 +57,7 @@ discord:
   web-hook-url: ${DISCORD_WEBHOOK_URL}
 
 s3:
-  bucket: harumeonglog-s3
+  bucket: ${AWS_BUCKET}
   region: ap-northeast-2
   access-key: ${AWS_ACCESS_KEY_ID}
   secret-key: ${AWS_SECRET_ACCESS_KEY}
