@@ -29,7 +29,7 @@ public class CommentConverter {
         return CommentPreviewResponse.builder()
                 .commentId(comment.getId())
                 .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember()))
-                .content(comment.getDeletedAt() != null || isBlocked.contains(comment.getId()) ? "차단 혹은 삭제된 댓글 입니다.": comment.getContent())
+                .content(IsBlockOrDeletedComment(comment, isBlocked))
                 .commentcommentResponseList(commentcommentReponseList)
                 .build();
     }
@@ -54,7 +54,11 @@ public class CommentConverter {
         return CommentCommentPreviewResponse.builder()
                 .commentId(comment.getId())
                 .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember()))
-                .content(comment.getDeletedAt() != null || isBlocked.contains(comment.getId()) ? "차단 혹은 삭제된 댓글 입니다.": comment.getContent())
+                .content(IsBlockOrDeletedComment(comment, isBlocked))
                 .build();
+    }
+
+    private static String IsBlockOrDeletedComment(Comment comment, Set<Long> isBlocked) {
+        return comment.getDeletedAt() != null || isBlocked.contains(comment.getId()) ? "차단 혹은 삭제된 댓글 입니다.": comment.getContent();
     }
 }
