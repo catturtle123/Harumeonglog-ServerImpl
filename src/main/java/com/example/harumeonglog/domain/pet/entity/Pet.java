@@ -1,8 +1,8 @@
 package com.example.harumeonglog.domain.pet.entity;
 
-import com.example.harumeonglog.global.common.entity.BaseEntity;
 import com.example.harumeonglog.domain.pet.entity.enums.Gender;
 import com.example.harumeonglog.domain.pet.entity.enums.PetSize;
+import com.example.harumeonglog.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,9 +39,23 @@ public class Pet extends BaseEntity {
     @Column(name = "birth", nullable = false)
     private LocalDate birth;
 
-    @Column(name = "main_image", nullable = false)
+    @Column(name = "main_image")
     private String mainImage;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+
+    public void update(String name, PetSize size, String type, Gender gender, LocalDate birth, String mainImage){
+        this.name = name;
+        this.size = size;
+        this.type = type;
+        this.gender = gender;
+        this.birth = birth;
+        this.mainImage = mainImage;
+    }
+
+    public void softDelete(){
+        this.deletedAt = LocalDateTime.now();
+    }
 }

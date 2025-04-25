@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -16,6 +17,8 @@ public class PetResponse {
     @Getter
     public static class AddPetResponse {
         private Long petId;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
     @Getter
     @Builder
@@ -27,6 +30,8 @@ public class PetResponse {
         private Gender gender;
         private LocalDate birth;
         private String mainImage;
+        private LocalDateTime updatedAt;
+
     }
     @Getter
     @Builder
@@ -56,14 +61,25 @@ public class PetResponse {
         private Long id;
         private String name;
         private String role;
+        private String image;
     }
 
     @Getter
     @Builder
-    public static class ChangeCurrentPetResponse {
+    public static class PetPreviewResponse {
         private Long petId;
         private String name;
+        private String mainImage;
     }
+
+    @Getter
+    @Builder
+    public static class PetListPreviewResponse {
+        List<PetPreviewResponse> pets;
+        private Long cursor;
+        private Boolean hasNext;
+    }
+
     @Getter
     @Builder
     public static class SearchMemberResponse {
@@ -75,7 +91,19 @@ public class PetResponse {
         @Builder
         public static class MemberInfo {
             private Long memberId;
+            private String email;
             private String name;
+            private String image;
         }
+    }
+
+    @Getter
+    @Builder
+    public static class MainPetResponse{
+        private Long petId;
+        private String name;
+        private String mainImage;
+        private Gender gender;
+        private LocalDate birth;
     }
 }

@@ -13,6 +13,8 @@ public class PetImageResponse {
     @Builder
     public static class AddImagesResponse {
         private List<Long> imageIds;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
 
     @Builder

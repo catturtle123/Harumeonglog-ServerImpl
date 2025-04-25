@@ -43,11 +43,17 @@ public class Member extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Column(name = "current_pet_id")
+    private Long currentPetId;
+
     public void update(String nickname, String image) {
          this.nickname = nickname;
          this.image = image;
     }
 
+    public void updateCurrentPetId(Long currentPetId) {
+        this.currentPetId = currentPetId;
+    }
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();
     }

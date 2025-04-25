@@ -1,12 +1,12 @@
 package com.example.harumeonglog.domain.pet.dto.request;
 
-import com.example.harumeonglog.domain.member.entity.enums.SocialType;
 import com.example.harumeonglog.domain.pet.entity.enums.Gender;
 import com.example.harumeonglog.domain.pet.entity.enums.PetSize;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,7 +21,7 @@ public class PetRequest {
         private String type;
         private Gender gender;
         private LocalDate birth;
-        private String mainImage;
+        private String mainImageKey;
     }
 
     @Setter
@@ -32,7 +32,7 @@ public class PetRequest {
         private String type;
         private Gender gender;
         private LocalDate birth;
-        private String mainImage;
+        private String newMainImageKey;
     }
 
     @Setter
@@ -44,8 +44,14 @@ public class PetRequest {
     @Setter
     @Getter
     public static class InviteRequest {
-        private String email;
-        private SocialType socialType;
+        private Long memberId;
+        private String role;
+    }
+
+    @Setter
+    @Getter
+    public static class InviteListRequest {
+        List<InviteRequest> requests;
     }
 
     @Setter

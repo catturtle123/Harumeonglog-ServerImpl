@@ -1,7 +1,7 @@
 package com.example.harumeonglog.domain.pet.entity;
 
-import com.example.harumeonglog.domain.member.entity.enums.MemberPetRole;
 import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.member.entity.enums.MemberPetRole;
 import com.example.harumeonglog.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +11,10 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "member_pet")
+@Table(
+        name = "member_pet",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "pet_id"})
+)
 public class MemberPet extends BaseEntity {
 
     @Id
