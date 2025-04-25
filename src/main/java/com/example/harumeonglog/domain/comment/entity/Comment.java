@@ -66,6 +66,7 @@ public class Comment extends BaseEntity {
 
     public void addPost(Post post) {
         this.post = post;
+        post.getCommentList().add(this);
     }
 
     public void addCommentComment(Comment parent) {
