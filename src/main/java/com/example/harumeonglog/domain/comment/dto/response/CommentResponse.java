@@ -23,6 +23,7 @@ public class CommentResponse {
         private Long commentId;
         private String content;
         private MemberResponse.MemberInfoResponse memberInfoResponse;
+        private List<CommentCommentPreviewResponse> commentcommentResponseList;
     }
 
     @Getter
@@ -31,5 +32,13 @@ public class CommentResponse {
         private Long commentId;
         private LocalDateTime createAt;
         private LocalDateTime updateAt;
+    }
+
+    @Getter
+    @Builder
+    public static class CommentCommentPreviewResponse {
+        private Long commentId;
+        private String content;
+        private MemberResponse.MemberInfoResponse memberInfoResponse;
     }
 }

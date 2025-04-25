@@ -2,14 +2,13 @@ package com.example.harumeonglog.domain.comment.converter;
 
 import com.example.harumeonglog.domain.comment.dto.request.CommentRequest;
 import com.example.harumeonglog.domain.comment.dto.response.CommentResponse;
+import com.example.harumeonglog.domain.comment.dto.response.CommentResponse.CommentCommentPreviewResponse;
 import com.example.harumeonglog.domain.comment.dto.response.CommentResponse.CommentPreviewResponse;
 import com.example.harumeonglog.domain.comment.entity.Comment;
 import com.example.harumeonglog.domain.member.converter.MemberConverter;
 import com.example.harumeonglog.domain.member.entity.Member;
-import com.example.harumeonglog.domain.post.entity.Post;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public class CommentConverter {
 
@@ -25,10 +24,14 @@ public class CommentConverter {
     }
 
     private static CommentPreviewResponse toCommentPreviewResponse(Comment comment) {
+
+        List<CommentCommentPreviewResponse> commentcommentReponseList = comment.getCommentList().stream().map(CommentConverter::toCommentCommentPreviewResponse).toList();
+
         return CommentPreviewResponse.builder()
                 .commentId(comment.getId())
                 .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember()))
                 .content(comment.getContent())
+                .commentcommentResponseList(commentcommentReponseList)
                 .build();
     }
 
@@ -44,6 +47,15 @@ public class CommentConverter {
                 .commentId(comment.getId())
                 .createAt(comment.getCreatedAt())
                 .updateAt(comment.getUpdatedAt())
+                .build();
+    }
+
+    private static CommentCommentPreviewResponse toCommentCommentPreviewResponse(Comment comment) {
+
+        return CommentCommentPreviewResponse.builder()
+                .commentId(comment.getId())
+                .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember()))
+                .content(comment.getContent())
                 .build();
     }
 }
