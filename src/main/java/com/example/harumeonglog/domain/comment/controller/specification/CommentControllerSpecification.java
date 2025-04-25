@@ -75,7 +75,7 @@ public interface CommentControllerSpecification {
             @AuthenticatedMember Member member
     );
 
-    @Operation(summary = "Comment 생성 API by 김준환", description = "comment 생성합니다")
+    @Operation(summary = "Comment 생성 API by 김준환", description = "comment 생성합니다, parentId가 null이면 댓글 Long 값이 들어가면 대댓글(해당 parentId의 댓글에 종속되는)이 됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "POST404", description = "게시물을 찾지 못했습니다.")
