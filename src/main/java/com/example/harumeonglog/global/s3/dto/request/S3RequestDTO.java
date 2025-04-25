@@ -13,7 +13,7 @@ public class S3RequestDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class GeneratePresignedUrlsRequest {
-        private List<GeneratePresignedUrlPReview> images;
+        private List<GeneratePresignedUrlPreview> images;
         private S3Domain domain;
         private Long entityId;
     }
@@ -21,7 +21,7 @@ public class S3RequestDTO {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class GeneratePresignedUrlPReview {
+    public static class GeneratePresignedUrlPreview {
         private String filename;
         private String contentType;
     }
@@ -30,7 +30,7 @@ public class S3RequestDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class GeneratePresignedUrlRequest {
-        private GeneratePresignedUrlPReview image;
+        private GeneratePresignedUrlPreview image;
         private S3Domain domain;
         private Long entityId;
     }

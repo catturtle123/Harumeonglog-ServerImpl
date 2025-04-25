@@ -1,5 +1,7 @@
 package com.example.harumeonglog.global.s3.service;
 
+import com.example.harumeonglog.global.error.code.S3ErrorCode;
+import com.example.harumeonglog.global.error.exception.S3Exception;
 import com.example.harumeonglog.global.s3.converter.S3Converter;
 import com.example.harumeonglog.global.s3.dto.request.S3RequestDTO;
 import com.example.harumeonglog.global.s3.dto.response.S3ResponseDTO;
@@ -22,12 +24,17 @@ public class S3ServiceImpl implements S3Service {
 
     private final S3Util s3Util;
 
+    private List<String> acceptImageType = List.of("image/jpeg", "image/png", "image/gif", "image/jpg");
 
 
     @Override
     public S3ResponseDTO.S3ResponsePreviewDTO generatePresignedUrl(S3RequestDTO.GeneratePresignedUrlRequest request) {
         // imageKey 생성
         String imageKey = geneerateImageKey(request.getEntityId(), request.getDomain(), request.getImage().getFilename());
+
+        if (!acceptImageType.contains(request.getImage().getContentType())) {
+            throw new S3Exception(S3ErrorCode.INVALID_TYPE);
+        }
 
         // Presigned URL 생성
         String presignedUrl = generatePresignedUrl(imageKey, request.getImage().getContentType());
