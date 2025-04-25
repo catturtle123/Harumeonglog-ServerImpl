@@ -78,7 +78,7 @@ public class CommentCommandServiceImpl implements CommentCommandService {
 
             comment = CommentConverter.toComment(commentCreateRequest, member);
 
-            comment.addCommentComment(parent);
+            comment.addCommentComment(parent, post);
 
             commentRepository.save(comment);
         }
