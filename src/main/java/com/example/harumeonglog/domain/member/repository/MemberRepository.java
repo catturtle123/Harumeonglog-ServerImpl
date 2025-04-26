@@ -41,4 +41,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT m.image FROM Member m WHERE m.image IS NOT NULL")
     List<String> findAllImageKeys();
+
+    @Query("UPDATE Member m set m.deviceId = null where m = :member")
+    void notDeadLockFcmSignOut(Member member);
 }

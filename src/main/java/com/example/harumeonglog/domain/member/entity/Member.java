@@ -46,6 +46,11 @@ public class Member extends BaseEntity {
     @Column(name = "current_pet_id")
     private Long currentPetId;
 
+    private String deviceId;
+
+    @OneToOne(mappedBy = "member")
+    private Setting setting;
+
     public void update(String nickname, String image) {
          this.nickname = nickname;
          this.image = image;

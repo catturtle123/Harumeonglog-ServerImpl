@@ -37,6 +37,9 @@ spring:
         iss: ${KAKAO_ISS}
         app-key: ${KAKAO_APP_KEY}
 
+  firebase:
+    config: ${FIRE_BASE_CONFIG}
+
 jwt:
   secret: ${JWT_SECRET}
   time:
