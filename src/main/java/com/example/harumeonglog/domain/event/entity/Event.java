@@ -1,11 +1,14 @@
 package com.example.harumeonglog.domain.event.entity;
 
-import com.example.harumeonglog.global.common.entity.BaseEntity;
 import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.pet.entity.Pet;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,8 +18,10 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SuperBuilder
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "event")
-public class Event extends BaseEntity {
+public class Event{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,4 +60,12 @@ public class Event extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id", nullable = false)
     private Pet pet;
+
+    @CreatedDate
+    @Column(name = "createdAt", updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updatedAt")
+    private LocalDateTime updatedAt;
 }
