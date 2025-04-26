@@ -1,55 +1,58 @@
 package com.example.harumeonglog.domain.event.controller;
 
 
+import com.example.harumeonglog.domain.event.controller.sepcification.EventControllerSpecification;
+import com.example.harumeonglog.domain.event.service.query.EventQueryService;
+import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.domain.event.dto.request.EventRequest;
 import com.example.harumeonglog.domain.event.dto.response.EventResponse;
-import com.example.harumeonglog.domain.event.service.EventService;
+import com.example.harumeonglog.domain.event.service.command.EventCommandService;
+import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/events")
-public class EventController {
+public class EventController implements EventControllerSpecification {
 
-    private final EventService eventService;
+    private final EventCommandService eventCommandService;
+    private final EventQueryService eventQueryService;
 
     @PostMapping
-    public ResponseEntity<CustomResponse<EventResponse.EventCreateResponse>> createEvent(
-            @RequestBody EventRequest.EventCreateRequest request) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(CustomResponse.created(eventService.createEvent(request)));
+    public CustomResponse<EventResponse.EventCreateResponse> createEvent(
+            @RequestBody EventRequest.EventCreateRequest request,
+            @AuthenticatedMember Member member) {
+        return CustomResponse.created(eventCommandService.createEvent(request, member));
     }
 
     @GetMapping
     public CustomResponse<EventResponse.EventDayResponse> getDayEvent(@RequestParam("date") String date){
-        return CustomResponse.ok(eventService.getDayEvents(date));
+        return CustomResponse.ok(eventQueryService.getDayEvents(date));
     }
 
     @GetMapping("/{eventId}")
     public CustomResponse<EventResponse.BaseEventResponse> getEvent(@PathVariable Long eventId){
-        return CustomResponse.ok(eventService.getEvent(eventId));
+        return CustomResponse.ok(eventQueryService.getEvent(eventId));
     }
 
     @PutMapping("/{eventId}")
     public CustomResponse<EventResponse.BaseEventResponse> updateEvent(
             @PathVariable Long eventId,
             @RequestBody EventRequest.EventUpdateRequest request){
-        return CustomResponse.ok(eventService.updateEvent(eventId, request));
+        return CustomResponse.ok(eventCommandService.updateEvent(eventId, request));
     }
 
     @DeleteMapping("/{eventId}")
     public CustomResponse<String> deleteEvent(@PathVariable Long eventId){
-        eventService.deleteEvent(eventId);
+        eventCommandService.deleteEvent(eventId);
         return CustomResponse.ok("일정 삭제가 완료되었습니다.");
     }
 
     @PatchMapping("/{eventId}")
     public CustomResponse<EventResponse.EventCompleteResponse> completeEvent(@PathVariable Long eventId){
-        return CustomResponse.ok(eventService.completeEvent(eventId));
+        return CustomResponse.ok(eventCommandService.completeEvent(eventId));
     }
 }

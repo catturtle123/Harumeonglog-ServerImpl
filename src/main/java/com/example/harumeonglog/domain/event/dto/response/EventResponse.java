@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class EventResponse {
@@ -14,7 +15,8 @@ public class EventResponse {
     @Builder
     public static class EventCreateResponse {
         private Long eventId;
-
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
     @Getter
     @SuperBuilder
