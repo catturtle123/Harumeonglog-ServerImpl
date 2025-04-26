@@ -22,4 +22,10 @@ public class MemberRequest {
             this.nickname = nickname;
         }
     }
+
+    @Getter
+    @Builder
+    public static class FCMRequest {
+        private String fcmToken;
+    }
 }

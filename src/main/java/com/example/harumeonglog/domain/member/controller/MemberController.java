@@ -53,4 +53,13 @@ public class MemberController implements MemberControllerSpecification {
         SettingResponse.SettingUpdateResponse response = settingCommandService.updateSetting(member, request);
         return CustomResponse.ok(response);
     }
+
+    @PatchMapping("/fcm-tokens")
+    public CustomResponse<Void> saveFCM(
+            @AuthenticatedMember Member member,
+            @RequestBody MemberRequest.FCMRequest fcmRequest
+    ) {
+        memberCommandService.saveFCM(member, fcmRequest);
+        return CustomResponse.ok(null);
+    }
 }

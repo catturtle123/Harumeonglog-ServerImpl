@@ -67,4 +67,7 @@ public class Member extends BaseEntity {
         this.deletedAt = null;
     }
 
+    public void updateFCMToken(String fcmToken) {
+        this.deviceId = fcmToken;
+    }
 }
