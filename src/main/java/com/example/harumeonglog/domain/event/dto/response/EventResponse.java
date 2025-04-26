@@ -77,14 +77,14 @@ public class EventResponse {
     @Getter
     @Builder
     public static class EventDayResponse{
-        private List<EventShortResponse> events;
-
-
+        private List<EventPreviewResponse> events;
+        private Long cursor;
+        private Boolean hasNext;
     }
 
     @Getter
     @Builder
-    public static class EventShortResponse{
+    public static class EventPreviewResponse {
         private Long id;
         private String title;
         private Boolean done;

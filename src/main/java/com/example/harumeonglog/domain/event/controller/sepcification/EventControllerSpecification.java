@@ -2,14 +2,17 @@ package com.example.harumeonglog.domain.event.controller.sepcification;
 
 import com.example.harumeonglog.domain.event.dto.request.EventRequest;
 import com.example.harumeonglog.domain.event.dto.response.EventResponse;
+import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @Tag(name = "일정 API", description = "일정 관련 API 입니다.")
 public interface EventControllerSpecification {
@@ -21,10 +24,21 @@ public interface EventControllerSpecification {
     @PostMapping
     CustomResponse<EventResponse.EventCreateResponse> createEvent(
             @RequestBody EventRequest.EventCreateRequest request,
-            @AuthenticationPrincipal Member member);
+            @AuthenticatedMember Member member);
 
+
+    @Operation(summary = "날짜별 일정 조회 API by 백종우", description = "특정 날짜의 일정들을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "일정 조회 성공")
+    })
     @GetMapping
-    CustomResponse<EventResponse.EventDayResponse> getDayEvent(@RequestParam("date") String date);
+    CustomResponse<EventResponse.EventDayResponse> getDayEvent(
+            @AuthenticatedMember Member member,
+            @RequestParam(defaultValue = "2025-04-26") LocalDate date,
+            @RequestParam(required = false) EventCategory category,
+            @RequestParam Integer size,
+            @RequestParam Long cursor
+            );
 
     @GetMapping("/{eventId}")
     CustomResponse<EventResponse.BaseEventResponse> getEvent(@PathVariable Long eventId);

@@ -2,6 +2,7 @@ package com.example.harumeonglog.domain.event.controller;
 
 
 import com.example.harumeonglog.domain.event.controller.sepcification.EventControllerSpecification;
+import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
 import com.example.harumeonglog.domain.event.service.query.EventQueryService;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.global.common.response.CustomResponse;
@@ -12,6 +13,8 @@ import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,8 +32,13 @@ public class EventController implements EventControllerSpecification {
     }
 
     @GetMapping
-    public CustomResponse<EventResponse.EventDayResponse> getDayEvent(@RequestParam("date") String date){
-        return CustomResponse.ok(eventQueryService.getDayEvents(date));
+    public CustomResponse<EventResponse.EventDayResponse> getDayEvent(
+            @AuthenticatedMember Member member,
+            @RequestParam(defaultValue = "2025-04-26") LocalDate date,
+            @RequestParam(required = false) EventCategory category,
+            @RequestParam Integer size,
+            @RequestParam Long cursor){
+        return CustomResponse.ok(eventQueryService.getDayEvents(date, category, cursor, size, member));
     }
 
     @GetMapping("/{eventId}")

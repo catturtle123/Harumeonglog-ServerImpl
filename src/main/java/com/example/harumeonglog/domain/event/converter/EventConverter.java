@@ -7,6 +7,10 @@ import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.pet.entity.Pet;
 import com.example.harumeonglog.global.error.code.EventErrorCode;
 import com.example.harumeonglog.global.error.exception.EventException;
+import org.springframework.data.domain.Slice;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EventConverter {
 
@@ -96,6 +100,30 @@ public class EventConverter {
                 .eventId(event.getId())
                 .createdAt(event.getCreatedAt())
                 .updatedAt(event.getUpdatedAt())
+                .build();
+    }
+
+
+
+    public static EventResponse.EventPreviewResponse toEventDto(Event event) {
+        return EventResponse.EventPreviewResponse.builder()
+                .id(event.getId())
+                .done(event.getDone())
+                .title(event.getTitle())
+                .build();
+    }
+
+    public static EventResponse.EventDayResponse toEventDayResponse(Slice<Event> eventSlice) {
+        List<EventResponse.EventPreviewResponse> content = eventSlice.getContent().stream()
+                .map(EventConverter::toEventDto)
+                .collect(Collectors.toList());
+
+        Long nextCursor = content.isEmpty() ? null : content.get(content.size() - 1).getId();
+
+        return EventResponse.EventDayResponse.builder()
+                .events(content)
+                .cursor(nextCursor)
+                .hasNext(eventSlice.hasNext())
                 .build();
     }
 }
