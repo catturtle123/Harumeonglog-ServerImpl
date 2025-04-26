@@ -4,6 +4,7 @@ import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.member.repository.NoticeRepository;
+import com.example.harumeonglog.domain.member.service.MemberCommandService;
 import com.example.harumeonglog.global.discord.DiscordApiUtil;
 import com.example.harumeonglog.global.discord.dto.DiscordMessage;
 import com.google.firebase.messaging.*;
@@ -21,7 +22,7 @@ public class FcmService {
 
     private final NoticeRepository noticeRepository;
     private final Environment environment;
-    private final MemberRepository memberRepository;
+    private final MemberCommandService memberCommandService;
     private final DiscordApiUtil discordApiUtil;
 
     public void sendPushNotification(Member receiver, String title, String body, NoticeType noticeType) {
@@ -66,7 +67,7 @@ public class FcmService {
     }
 
     private void handleFcmSendFailure(Member receiver, String title, FirebaseMessagingException e) {
-        memberRepository.notDeadLockFcmSignOut(receiver);
+        memberCommandService.notDeadLockFcmSignOut(receiver);
 
         boolean isLocalProfile = List.of(environment.getActiveProfiles()).contains("local");
         if (!isLocalProfile) {

@@ -9,4 +9,6 @@ public interface MemberCommandService {
     void softDeleteMember(Member member);
 
     void saveFCM(Member member, MemberRequest.FCMRequest fcmRequest);
+
+    void notDeadLockFcmSignOut(Member member);
 }

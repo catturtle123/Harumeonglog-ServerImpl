@@ -38,4 +38,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         member.updateFCMToken(fcmRequest.getFcmToken());
         memberRepository.save(member);
     }
+
+    @Override
+    public void notDeadLockFcmSignOut(Member member) {
+        memberRepository.updateDeviceIdByMember(member);
+    }
 }
