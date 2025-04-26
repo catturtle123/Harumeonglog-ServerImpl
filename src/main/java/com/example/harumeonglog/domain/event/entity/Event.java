@@ -1,6 +1,7 @@
 package com.example.harumeonglog.domain.event.entity;
 
 import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
+import com.example.harumeonglog.domain.event.entity.enums.RepeatDay;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.pet.entity.Pet;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -39,6 +41,18 @@ public class Event{
 
     @Column(name = "expired_date")
     private LocalDate expiredDate;
+
+    @ElementCollection
+    @CollectionTable(name = "event_repeat_days", joinColumns = @JoinColumn(name = "event_id"))
+    @Column(name = "repeat_day")
+    @Enumerated(EnumType.STRING)
+    private List<RepeatDay> repeatDays;
+
+    @Column(name = "is_original_event")
+    private Boolean isOriginalEvent;
+
+    @Column(name = "original_event_id")
+    private Long originalEventId;
 
     @Column(name = "has_notice", nullable = false)
     private Boolean hasNotice;

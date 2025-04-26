@@ -1,11 +1,13 @@
 package com.example.harumeonglog.domain.event.dto.request;
 
 import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
+import com.example.harumeonglog.domain.event.entity.enums.RepeatDay;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class EventRequest {
 
@@ -16,6 +18,7 @@ public class EventRequest {
         private LocalDate date;
         private Boolean isRepeated;
         private LocalDate expiredDate;
+        private List<RepeatDay> repeatDays;
         private Boolean hasNotice;
         private EventCategory category;
         // 카테고리별 필드 (선택적)
@@ -26,35 +29,6 @@ public class EventRequest {
         private String medicineName;   // MEDICINE
         private String distance;       // WALK
         private String duration;       // WALK
-
-        public EventCreateRequest(
-                @JsonProperty("title") String title,
-                @JsonProperty("date") LocalDate date,
-                @JsonProperty("isRepeated") Boolean isRepeated,
-                @JsonProperty("expiredDate") LocalDate expiredDate,
-                @JsonProperty("hasNotice") Boolean hasNotice,
-                @JsonProperty("category") EventCategory category,
-                @JsonProperty("details") String details,
-                @JsonProperty("hospitalName") String hospitalName,
-                @JsonProperty("department") String department,
-                @JsonProperty("cost") Integer cost,
-                @JsonProperty("medicineName") String medicineName,
-                @JsonProperty("distance") String distance,
-                @JsonProperty("duration") String duration) {
-            this.title = title;
-            this.date = date;
-            this.isRepeated = isRepeated;
-            this.expiredDate = expiredDate;
-            this.hasNotice = hasNotice;
-            this.category = category;
-            this.details = details;
-            this.hospitalName = hospitalName;
-            this.department = department;
-            this.cost = cost;
-            this.medicineName = medicineName;
-            this.distance = distance;
-            this.duration = duration;
-        }
     }
 
     @Getter
