@@ -38,4 +38,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("member") Member member,
             @Param("cursor") Long cursor,
             Pageable pageable);
+
+    void deleteByOriginalEventId(Long originalEventId);
 }

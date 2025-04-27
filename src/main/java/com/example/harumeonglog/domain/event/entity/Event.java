@@ -5,6 +5,7 @@ import com.example.harumeonglog.domain.event.entity.enums.RepeatDay;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.pet.entity.Pet;
 import jakarta.persistence.*;
+import jdk.jfr.Category;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
@@ -86,4 +87,23 @@ public class Event{
     @LastModifiedDate
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
+
+
+    public void update(String title, LocalDate date, Boolean hasNotice, LocalTime time, EventCategory category){
+        this.title = title;
+        this.date = date;
+        this.hasNotice = hasNotice;
+        this.time = time;
+        this.category = category;
+    }
+
+    public void updateRepeat(Boolean isRepeated, LocalDate expiredDate, List<RepeatDay> repeatDays){
+        this.isRepeated = isRepeated;
+        this.expiredDate = expiredDate;
+        this.repeatDays = repeatDays;
+    }
+
+    public void updateId(Long eventId){
+        this.id = eventId;
+    }
 }

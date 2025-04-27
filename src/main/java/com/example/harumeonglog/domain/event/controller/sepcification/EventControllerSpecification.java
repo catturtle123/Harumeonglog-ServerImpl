@@ -23,7 +23,7 @@ public interface EventControllerSpecification {
     })
     @PostMapping
     CustomResponse<EventResponse.EventCreateResponse> createEvent(
-            @RequestBody EventRequest.EventCreateRequest request,
+            @RequestBody EventRequest.EventRequestDTO request,
             @AuthenticatedMember Member member);
 
 
@@ -40,13 +40,23 @@ public interface EventControllerSpecification {
             @RequestParam Long cursor
             );
 
+
+    @Operation(summary = "일정 단일 조회 API by 백종우", description = "특정 id의 일정을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "일정 조회 성공")
+    })
     @GetMapping("/{eventId}")
     CustomResponse<EventResponse.BaseEventResponse> getEvent(@PathVariable Long eventId);
 
+    @Operation(summary = "일정 수정 API by 백종우", description = "특정 id의 일정을 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "일정 수정 성공")
+    })
     @PutMapping("/{eventId}")
     CustomResponse<EventResponse.BaseEventResponse> updateEvent(
+            @AuthenticatedMember Member member,
             @PathVariable Long eventId,
-            @RequestBody EventRequest.EventUpdateRequest request);
+            @RequestBody EventRequest.EventRequestDTO request);
 
     @DeleteMapping("/{eventId}")
     CustomResponse<String> deleteEvent(@PathVariable Long eventId);

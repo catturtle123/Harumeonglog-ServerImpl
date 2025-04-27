@@ -32,6 +32,7 @@ public class EventResponse {
         private Boolean hasNotice;
         private EventCategory category;
         private LocalTime time;
+        private LocalDateTime updatedAt;
     }
 
     @Getter

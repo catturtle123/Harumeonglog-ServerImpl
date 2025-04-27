@@ -2,7 +2,6 @@ package com.example.harumeonglog.domain.event.converter;
 
 import com.example.harumeonglog.domain.event.dto.request.EventRequest;
 import com.example.harumeonglog.domain.event.dto.response.EventResponse;
-import com.example.harumeonglog.domain.event.dto.response.EventResponse.MedicineEventDetailResponse;
 import com.example.harumeonglog.domain.event.entity.*;
 import com.example.harumeonglog.domain.event.entity.enums.RepeatDay;
 import com.example.harumeonglog.domain.member.entity.Member;
@@ -18,13 +17,13 @@ import java.util.stream.Collectors;
 
 public class EventConverter {
 
-    public static Event toEntity(EventRequest.EventCreateRequest request, Member member, Pet pet) {
+    public static Event toEntity(EventRequest.EventRequestDTO request, Member member, Pet pet) {
         return toEntityWithAttributes(request, member, pet, request.getDate(),
                 request.getIsRepeated(), request.getExpiredDate(), request.getRepeatDays(),
                 true, null);
     }
 
-    public static Event toRepeatedEvent(EventRequest.EventCreateRequest request, Member member, Pet pet,
+    public static Event toRepeatedEvent(EventRequest.EventRequestDTO request, Member member, Pet pet,
                                         LocalDate newDate, Long originalEventId) {
         // 반복 이벤트는 반복 속성을 가지지 않음
         return toEntityWithAttributes(
@@ -34,7 +33,7 @@ public class EventConverter {
     }
 
     public static Event toEntityWithAttributes(
-            EventRequest.EventCreateRequest request, Member member, Pet pet,
+            EventRequest.EventRequestDTO request, Member member, Pet pet,
             LocalDate date, Boolean isRepeated, LocalDate expiredDate,
             List<RepeatDay> repeatDays, Boolean isOriginalEvent, Long originalEventId) {
 
@@ -215,6 +214,7 @@ public class EventConverter {
                 .category(event.getCategory())
                 .time(event.getTime())
                 .repeatDays(event.getRepeatDays())
+                .updatedAt(event.getUpdatedAt())
                 .build();
     }
 
@@ -231,6 +231,7 @@ public class EventConverter {
                 .details(event.getDetails())
                 .time(event.getTime())
                 .repeatDays(event.getRepeatDays())
+                .updatedAt(event.getUpdatedAt())
                 .build();
     }
 
@@ -250,6 +251,7 @@ public class EventConverter {
                 .details(event.getDetails())
                 .time(event.getTime())
                 .repeatDays(event.getRepeatDays())
+                .updatedAt(event.getUpdatedAt())
                 .build();
     }
 
@@ -267,6 +269,7 @@ public class EventConverter {
                 .details(event.getDetails())
                 .time(event.getTime())
                 .repeatDays(event.getRepeatDays())
+                .updatedAt(event.getUpdatedAt())
                 .build();
     }
 
@@ -284,6 +287,7 @@ public class EventConverter {
                 .duration(event.getDuration())
                 .time(event.getTime())
                 .repeatDays(event.getRepeatDays())
+                .updatedAt(event.getUpdatedAt())
                 .build();
     }
 

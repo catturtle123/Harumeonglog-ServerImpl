@@ -11,7 +11,6 @@ import com.example.harumeonglog.domain.event.dto.response.EventResponse;
 import com.example.harumeonglog.domain.event.service.command.EventCommandService;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -26,7 +25,7 @@ public class EventController implements EventControllerSpecification {
 
     @PostMapping
     public CustomResponse<EventResponse.EventCreateResponse> createEvent(
-            @RequestBody EventRequest.EventCreateRequest request,
+            @RequestBody EventRequest.EventRequestDTO request,
             @AuthenticatedMember Member member) {
         return CustomResponse.created(eventCommandService.createEvent(request, member));
     }
@@ -48,9 +47,10 @@ public class EventController implements EventControllerSpecification {
 
     @PutMapping("/{eventId}")
     public CustomResponse<EventResponse.BaseEventResponse> updateEvent(
+            @AuthenticatedMember Member member,
             @PathVariable Long eventId,
-            @RequestBody EventRequest.EventUpdateRequest request){
-        return CustomResponse.ok(eventCommandService.updateEvent(eventId, request));
+            @RequestBody EventRequest.EventRequestDTO request){
+        return CustomResponse.ok(eventCommandService.updateEvent(member, eventId, request));
     }
 
     @DeleteMapping("/{eventId}")
