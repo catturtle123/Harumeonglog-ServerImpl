@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class EventConverter {
 
-    public static Event toEntity(EventRequest.EventRequestDTO request, Member member, Pet pet) {
+    public static Event toEvent(EventRequest.EventRequestDTO request, Member member, Pet pet) {
         return toEntityWithAttributes(request, member, pet, request.getDate(),
                 request.getIsRepeated(), request.getExpiredDate(), request.getRepeatDays(),
                 true, null);
@@ -26,14 +26,130 @@ public class EventConverter {
 
     public static Event toRepeatedEvent(EventRequest.EventRequestDTO request, Member member, Pet pet,
                                         LocalDate newDate, Long originalEventId) {
-        // 반복 이벤트는 반복 속성을 가지지 않음
         return toEntityWithAttributes(
                 request, member, pet, newDate,
-                false, null, null, // 반복 속성 제거
-                false, originalEventId); // 원본 이벤트가 아님을 표시
+                false, null, null,
+                false, originalEventId);
     }
 
-    public static Event toEntityWithAttributes(
+
+
+    public static EventResponse.EventCreateResponse toEventCreateResponse(Event event) {
+        return EventResponse.EventCreateResponse.builder()
+                .eventId(event.getId())
+                .createdAt(event.getCreatedAt())
+                .updatedAt(event.getUpdatedAt())
+                .build();
+    }
+
+
+
+    public static EventResponse.EventPreviewResponse toEventPreviewResponse(Event event) {
+        return EventResponse.EventPreviewResponse.builder()
+                .id(event.getId())
+                .done(event.getDone())
+                .title(event.getTitle())
+                .build();
+    }
+
+    public static EventResponse.EventDayResponse toEventDayResponse(Slice<Event> eventSlice) {
+        List<EventResponse.EventPreviewResponse> content = eventSlice.getContent().stream()
+                .map(EventConverter::toEventPreviewResponse)
+                .collect(Collectors.toList());
+
+        Long nextCursor = content.isEmpty() ? null : content.get(content.size() - 1).getId();
+
+        return EventResponse.EventDayResponse.builder()
+                .events(content)
+                .cursor(nextCursor)
+                .hasNext(eventSlice.hasNext())
+                .build();
+    }
+
+
+    public static RepeatDay toRepeatDay(DayOfWeek dayOfWeek) {
+        return switch (dayOfWeek) {
+            case MONDAY -> RepeatDay.MON;
+            case TUESDAY -> RepeatDay.TUE;
+            case WEDNESDAY -> RepeatDay.WED;
+            case THURSDAY -> RepeatDay.THU;
+            case FRIDAY -> RepeatDay.FRI;
+            case SATURDAY -> RepeatDay.SAT;
+            case SUNDAY -> RepeatDay.SUN;
+        };
+    }
+
+
+    public static EventResponse.EventDatesResponse toEventDatesResponse(List<LocalDate> dates) {
+        return EventResponse.EventDatesResponse.builder()
+                .dates(dates)
+                .build();
+    }
+
+    public static EventResponse.BaseEventResponse toBaseEventResponse(Event event) {
+        switch (event.getCategory()) {
+            case BATH:
+                var bathBuilder = EventResponse.BathEventDetailResponse.builder();
+                setCommonResponseFields(bathBuilder, event);
+                return bathBuilder.build();
+
+            case GENERAL:
+                var generalBuilder = EventResponse.GeneralEventDetailResponse.builder();
+                setCommonResponseFields(generalBuilder, event);
+                generalBuilder.details(((GeneralEvent) event).getDetails());
+                return generalBuilder.build();
+
+            case HOSPITAL:
+                var hospitalBuilder = EventResponse.HospitalEventDetailResponse.builder();
+                setCommonResponseFields(hospitalBuilder, event);
+                HospitalEvent hospitalEvent = (HospitalEvent) event;
+                hospitalBuilder
+                        .hospitalName(hospitalEvent.getHospitalName())
+                        .department(hospitalEvent.getDepartment())
+                        .cost(hospitalEvent.getCost())
+                        .details(hospitalEvent.getDetails());
+                return hospitalBuilder.build();
+
+            case MEDICINE:
+                var medicineBuilder = EventResponse.MedicineEventDetailResponse.builder();
+                setCommonResponseFields(medicineBuilder, event);
+                MedicineEvent medicineEvent = (MedicineEvent) event;
+                medicineBuilder
+                        .medicineName(medicineEvent.getMedicineName())
+                        .details(medicineEvent.getDetails());
+                return medicineBuilder.build();
+
+            case WALK:
+                var walkBuilder = EventResponse.WalkEventDetailResponse.builder();
+                setCommonResponseFields(walkBuilder, event);
+                WalkEvent walkEvent = (WalkEvent) event;
+                walkBuilder
+                        .distance(walkEvent.getDistance())
+                        .duration(walkEvent.getDuration())
+                        .details(walkEvent.getDetails());
+                return walkBuilder.build();
+
+            default:
+                throw new EventException(EventErrorCode.INVALID_CATEGORY);
+        }
+    }
+
+
+    private static void setCommonResponseFields(EventResponse.BaseEventResponse.BaseEventResponseBuilder<?, ?> builder, Event event) {
+        builder
+                .id(event.getId())
+                .title(event.getTitle())
+                .date(event.getDate())
+                .isRepeated(event.getIsRepeated())
+                .expiredDate(event.getExpiredDate())
+                .hasNotice(event.getHasNotice())
+                .category(event.getCategory())
+                .time(event.getTime())
+                .repeatDays(event.getRepeatDays())
+                .updatedAt(event.getUpdatedAt());
+    }
+
+    private static Event toEntityWithAttributes(
             EventRequest.EventRequestDTO request, Member member, Pet pet,
             LocalDate date, Boolean isRepeated, LocalDate expiredDate,
             List<RepeatDay> repeatDays, Boolean isOriginalEvent, Long originalEventId) {
@@ -89,121 +205,6 @@ public class EventConverter {
                         .duration(request.getDuration())
                         .details(request.getDetails())
                         .build();
-
-            default:
-                throw new EventException(EventErrorCode.INVALID_CATEGORY);
-        }
-    }
-
-    public static EventResponse.EventCreateResponse toEventCreateResponse(Event event) {
-        return EventResponse.EventCreateResponse.builder()
-                .eventId(event.getId())
-                .createdAt(event.getCreatedAt())
-                .updatedAt(event.getUpdatedAt())
-                .build();
-    }
-
-
-
-    public static EventResponse.EventPreviewResponse toEventPreviewDto(Event event) {
-        return EventResponse.EventPreviewResponse.builder()
-                .id(event.getId())
-                .done(event.getDone())
-                .title(event.getTitle())
-                .build();
-    }
-
-    public static EventResponse.EventDayResponse toEventDayResponse(Slice<Event> eventSlice) {
-        List<EventResponse.EventPreviewResponse> content = eventSlice.getContent().stream()
-                .map(EventConverter::toEventPreviewDto)
-                .collect(Collectors.toList());
-
-        Long nextCursor = content.isEmpty() ? null : content.get(content.size() - 1).getId();
-
-        return EventResponse.EventDayResponse.builder()
-                .events(content)
-                .cursor(nextCursor)
-                .hasNext(eventSlice.hasNext())
-                .build();
-    }
-
-
-    public static RepeatDay toRepeatDay(DayOfWeek dayOfWeek) {
-        return switch (dayOfWeek) {
-            case MONDAY -> RepeatDay.MON;
-            case TUESDAY -> RepeatDay.TUE;
-            case WEDNESDAY -> RepeatDay.WED;
-            case THURSDAY -> RepeatDay.THU;
-            case FRIDAY -> RepeatDay.FRI;
-            case SATURDAY -> RepeatDay.SAT;
-            case SUNDAY -> RepeatDay.SUN;
-        };
-    }
-
-
-    public static EventResponse.EventDatesResponse toEventDatesResponse(List<LocalDate> dates) {
-        return EventResponse.EventDatesResponse.builder()
-                .dates(dates)
-                .build();
-    }
-
-    // 타입 파라미터 2개를 사용하도록 수정
-    private static void setCommonResponseFields(EventResponse.BaseEventResponse.BaseEventResponseBuilder<?, ?> builder, Event event) {
-        builder
-                .id(event.getId())
-                .title(event.getTitle())
-                .date(event.getDate())
-                .isRepeated(event.getIsRepeated())
-                .expiredDate(event.getExpiredDate())
-                .hasNotice(event.getHasNotice())
-                .category(event.getCategory())
-                .time(event.getTime())
-                .repeatDays(event.getRepeatDays())
-                .updatedAt(event.getUpdatedAt());
-    }
-
-    public static EventResponse.BaseEventResponse toBaseEventResponse(Event event) {
-        switch (event.getCategory()) {
-            case BATH:
-                var bathBuilder = EventResponse.BathEventDetailResponse.builder();
-                setCommonResponseFields(bathBuilder, event);
-                return bathBuilder.build();
-
-            case GENERAL:
-                var generalBuilder = EventResponse.GeneralEventDetailResponse.builder();
-                setCommonResponseFields(generalBuilder, event);
-                generalBuilder.details(((GeneralEvent) event).getDetails());
-                return generalBuilder.build();
-
-            case HOSPITAL:
-                var hospitalBuilder = EventResponse.HospitalEventDetailResponse.builder();
-                setCommonResponseFields(hospitalBuilder, event);
-                HospitalEvent hospitalEvent = (HospitalEvent) event;
-                hospitalBuilder
-                        .hospitalName(hospitalEvent.getHospitalName())
-                        .department(hospitalEvent.getDepartment())
-                        .cost(hospitalEvent.getCost())
-                        .details(hospitalEvent.getDetails());
-                return hospitalBuilder.build();
-
-            case MEDICINE:
-                var medicineBuilder = EventResponse.MedicineEventDetailResponse.builder();
-                setCommonResponseFields(medicineBuilder, event);
-                MedicineEvent medicineEvent = (MedicineEvent) event;
-                medicineBuilder
-                        .medicineName(medicineEvent.getMedicineName())
-                        .details(medicineEvent.getDetails());
-                return medicineBuilder.build();
-
-            case WALK:
-                var walkBuilder = EventResponse.WalkEventDetailResponse.builder();
-                setCommonResponseFields(walkBuilder, event);
-                WalkEvent walkEvent = (WalkEvent) event;
-                walkBuilder
-                        .distance(walkEvent.getDistance())
-                        .duration(walkEvent.getDuration())
-                        .details(walkEvent.getDetails());
-                return walkBuilder.build();
 
             default:
                 throw new EventException(EventErrorCode.INVALID_CATEGORY);

@@ -7,7 +7,6 @@ import com.example.harumeonglog.domain.event.entity.Event;
 import com.example.harumeonglog.domain.event.repository.EventRepository;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.MemberPetRole;
-import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.pet.entity.MemberPet;
 import com.example.harumeonglog.domain.pet.entity.Pet;
 import com.example.harumeonglog.domain.pet.repository.MemberPetRepository;
@@ -39,7 +38,7 @@ public class EventCommandServiceImpl implements EventCommandService {
         checkMemberRole(member, pet);
 
         // 원본 일정 생성 및 저장
-        Event originalEvent = EventConverter.toEntity(request, member, pet);
+        Event originalEvent = EventConverter.toEvent(request, member, pet);
         Event savedOriginalEvent = eventRepository.save(originalEvent);
 
         // 반복 일정 처리
@@ -102,7 +101,7 @@ public class EventCommandServiceImpl implements EventCommandService {
 
         event.check();
 
-        return EventConverter.toEventPreviewDto(event);
+        return EventConverter.toEventPreviewResponse(event);
     }
 
 
@@ -140,7 +139,7 @@ public class EventCommandServiceImpl implements EventCommandService {
         eventRepository.delete(oldEvent);
 
         // 새로운 카테고리의 엔티티 생성
-        Event newEvent = EventConverter.toEntity(request, member, oldEvent.getPet());
+        Event newEvent = EventConverter.toEvent(request, member, oldEvent.getPet());
         newEvent.updateId(oldEvent.getId()); // ID 유지
 
         // 새 엔티티 저장
