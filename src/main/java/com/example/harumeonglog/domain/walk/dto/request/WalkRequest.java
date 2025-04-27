@@ -12,31 +12,19 @@ public class WalkRequest {
 
         private final List<Long> petId;
         private final List<Long> memberId;
-        private final String title;
         private final Double startLatitude;
         private final Double startLongitude;
-        private final Double distance;
-        private final Integer time;
-        private final List<Track> tracks;
 
         public WalkStartRequest(
                 @JsonProperty("petId") List<Long> petId,
                 @JsonProperty("memberId") List<Long> memberId,
-                @JsonProperty("title") String title,
                 @JsonProperty("startLatitude") Double startLatitude,
-                @JsonProperty("startLongitude") Double startLongitude,
-                @JsonProperty("distance") Double distance,
-                @JsonProperty("time") Integer time,
-                @JsonProperty("tracks") List<Track> tracks
+                @JsonProperty("startLongitude") Double startLongitude
         ) {
             this.petId = petId;
             this.memberId = memberId;
-            this.title = title;
             this.startLatitude = startLatitude;
             this.startLongitude = startLongitude;
-            this.distance = distance;
-            this.time = time;
-            this.tracks = tracks;
         }
     }
 

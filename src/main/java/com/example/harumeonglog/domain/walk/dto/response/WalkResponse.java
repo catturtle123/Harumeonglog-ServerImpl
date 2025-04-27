@@ -22,6 +22,7 @@ public class WalkResponse {
     @Builder
     public static class WalkPauseResponse {
         private Long walkId;
+        private String status;
         private LocalDateTime updatedAt;
     }
 
@@ -30,6 +31,7 @@ public class WalkResponse {
     public static class WalkResumeResponse {
         private Long walkId;
         private Long trackId;
+        private String status;
         private LocalDateTime updatedAt;
     }
 
@@ -44,10 +46,8 @@ public class WalkResponse {
     @Builder
     public static class WalkShareResponse {
         private Long walkId;
-        private Double distance;
-        private Integer time;
         private Boolean isShared;
-
+        private LocalDateTime updatedAt;
     }
 
     @Getter
@@ -90,6 +90,7 @@ public class WalkResponse {
     public static class WalkLikeResponse {
         private Long walkId;
         private Long walkLikeNum;
+        private LocalDateTime updatedAt;
 
     }
 

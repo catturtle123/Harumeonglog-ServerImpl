@@ -7,18 +7,23 @@ import com.example.harumeonglog.domain.pet.repository.MemberPetRepository;
 import com.example.harumeonglog.domain.walk.converter.WalkConverter;
 import com.example.harumeonglog.domain.walk.dto.request.WalkRequest;
 import com.example.harumeonglog.domain.walk.dto.response.WalkResponse;
+import com.example.harumeonglog.domain.walk.entity.Walk;
+import com.example.harumeonglog.domain.walk.entity.enums.WalkStatus;
+import com.example.harumeonglog.domain.walk.repository.WalkRepository;
+import com.example.harumeonglog.global.error.code.WalkErrorCode;
+import com.example.harumeonglog.global.error.exception.WalkException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class WalkQueryServiceImpl implements WalkQueryService {
 
+    private final WalkRepository walkRepository;
     private final MemberPetRepository memberPetRepository;
 
     @Override
@@ -29,7 +34,7 @@ public class WalkQueryServiceImpl implements WalkQueryService {
 
     @Override
     public WalkResponse.WalkAvailableMemberListResponse getAvailableMembers(WalkRequest.AvailableMemberRequest dto) {
-        List<Member> members = new ArrayList<>();
+        Set<Member> members = new HashSet<>();
         dto.getPetId().forEach(petId ->
             members.addAll(memberPetRepository.findByPet(petId).stream().map(MemberPet::getMember).toList())
         );
@@ -44,5 +49,15 @@ public class WalkQueryServiceImpl implements WalkQueryService {
     @Override
     public WalkResponse.WalkDetailResponse getWalkDetails(Long walkId) {
         return null;
+    }
+
+    @Override
+    public Walk findById(Long walkId) {
+        return walkRepository.findById(walkId).orElseThrow(() -> new WalkException(WalkErrorCode.NOT_FOUND));
+    }
+
+    @Override
+    public boolean hasStatus(Walk walk, WalkStatus... walkStatus) {
+        return Arrays.stream(walkStatus).anyMatch(status -> status.equals(walk.getStatus()));
     }
 }

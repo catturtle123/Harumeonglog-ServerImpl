@@ -20,9 +20,27 @@ public class WalkController implements WalkControllerSpecification {
     private final WalkQueryService walkQueryService;
 
     @PostMapping
-    public CustomResponse<WalkResponse.WalkStartResponse> startWalk(@RequestBody WalkRequest.WalkStartRequest walkCreateRequest) {
-        WalkResponse.WalkStartResponse response = walkCommandService.startWalk(walkCreateRequest);
-        return CustomResponse.created(response);
+    public CustomResponse<WalkResponse.WalkStartResponse> startWalk(@AuthenticatedMember Member member, @RequestBody WalkRequest.WalkStartRequest walkCreateRequest) {
+        WalkResponse.WalkStartResponse response = walkCommandService.startWalk(member, walkCreateRequest);
+        return CustomResponse.ok(response);
+    }
+
+    @PatchMapping("/{walkId}/pause")
+    public CustomResponse<WalkResponse.WalkPauseResponse> pauseWalk(@PathVariable Long walkId) {
+        WalkResponse.WalkPauseResponse response = walkCommandService.pauseWalk(walkId);
+        return CustomResponse.ok(response);
+    }
+
+    @PatchMapping("/{walkId}/resume")
+    public CustomResponse<WalkResponse.WalkResumeResponse> resumeWalk(@PathVariable Long walkId) {
+        WalkResponse.WalkResumeResponse response = walkCommandService.resumeWalk(walkId);
+        return CustomResponse.ok(response);
+    }
+
+    @PatchMapping("/{walkId}/end")
+    public CustomResponse<WalkResponse.WalkEndResponse> endWalk(@PathVariable Long walkId) {
+        WalkResponse.WalkEndResponse response = walkCommandService.endWalk(walkId);
+        return CustomResponse.ok(response);
     }
 
     @GetMapping
@@ -60,8 +78,8 @@ public class WalkController implements WalkControllerSpecification {
     }
 
     @PostMapping("/{walkId}")
-    public CustomResponse<WalkResponse.WalkLikeResponse> likeWalk(@PathVariable Long walkId) {
-        WalkResponse.WalkLikeResponse response = walkCommandService.likeWalk(walkId);
+    public CustomResponse<WalkResponse.WalkLikeResponse> likeWalk(@AuthenticatedMember Member member, @PathVariable Long walkId) {
+        WalkResponse.WalkLikeResponse response = walkCommandService.likeWalk(member, walkId);
         return CustomResponse.ok(response);
     }
 }

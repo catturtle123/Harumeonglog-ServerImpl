@@ -1,11 +1,29 @@
 package com.example.harumeonglog.domain.walk.service;
 
+import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.member.repository.MemberRepository;
+import com.example.harumeonglog.domain.pet.entity.Pet;
+import com.example.harumeonglog.domain.pet.repository.MemberPetRepository;
+import com.example.harumeonglog.domain.pet.repository.PetRepository;
+import com.example.harumeonglog.domain.walk.converter.WalkConverter;
 import com.example.harumeonglog.domain.walk.dto.request.WalkRequest;
 import com.example.harumeonglog.domain.walk.dto.response.WalkResponse;
+import com.example.harumeonglog.domain.walk.entity.Track;
+import com.example.harumeonglog.domain.walk.entity.Walk;
+import com.example.harumeonglog.domain.walk.entity.enums.WalkStatus;
+import com.example.harumeonglog.domain.walk.repository.WalkLikeRepository;
 import com.example.harumeonglog.domain.walk.repository.WalkRepository;
+import com.example.harumeonglog.global.error.code.MemberErrorCode;
+import com.example.harumeonglog.global.error.code.PetErrorCode;
+import com.example.harumeonglog.global.error.code.WalkErrorCode;
+import com.example.harumeonglog.global.error.exception.MemberException;
+import com.example.harumeonglog.global.error.exception.PetException;
+import com.example.harumeonglog.global.error.exception.WalkException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
@@ -13,35 +31,121 @@ import org.springframework.transaction.annotation.Transactional;
 public class WalkCommandServiceImpl implements WalkCommandService {
 
     private final WalkRepository walkRepository;
+    private final PetRepository petRepository;
+    private final MemberRepository memberRepository;
+    private final MemberPetRepository memberPetRepository;
+    private final WalkLikeRepository walkLikeRepository;
+
+    private final WalkQueryService walkQueryService;
+    private final TrackCommandService trackCommandService;
+    private final MemberWalkCommandService memberWalkCommandService;
+    private final WalkPetCommandService walkPetCommandService;
+    private final WalkLikeCommandService walkLikeCommandService;
 
     @Override
-    public WalkResponse.WalkStartResponse startWalk(WalkRequest.WalkStartRequest request) {
-
-        return null;
+    public WalkResponse.WalkStartResponse startWalk(Member member, WalkRequest.WalkStartRequest request) {
+        Walk walk = createWalk(request.getStartLatitude(), request.getStartLongitude());
+        createWalkPet(member, walk, request.getPetId());
+        createMemberWalk(walk, request.getMemberId());
+        Track track = createTrack(walk);
+        return WalkConverter.toWalkStartResponse(walk, track);
     }
 
     @Override
     public WalkResponse.WalkPauseResponse pauseWalk(Long walkId) {
-        return null;
+        Walk walk = walkQueryService.findById(walkId);
+
+        if (!walkQueryService.hasStatus(walk, WalkStatus.PROCESS)) {
+            throw new WalkException(WalkErrorCode.CANNOT_CHANGE_STATUS);
+        }
+
+        walk.updateWalkStatus(WalkStatus.PAUSE);
+        return WalkConverter.toWalkPauseResponse(walk);
     }
 
     @Override
     public WalkResponse.WalkResumeResponse resumeWalk(Long walkId) {
-        return null;
+        Walk walk = walkQueryService.findById(walkId);
+
+        if (!walkQueryService.hasStatus(walk, WalkStatus.PAUSE)) {
+            throw new WalkException(WalkErrorCode.CANNOT_CHANGE_STATUS);
+        }
+
+        walk.updateWalkStatus(WalkStatus.PROCESS);
+        Track track = createTrack(walk);
+        return WalkConverter.toWalkResumeResponse(walk, track);
     }
 
     @Override
     public WalkResponse.WalkEndResponse endWalk(Long walkId) {
-        return null;
+        Walk walk = walkQueryService.findById(walkId);
+
+        if (!walkQueryService.hasStatus(walk, WalkStatus.PROCESS, WalkStatus.PAUSE)) {
+            throw new WalkException(WalkErrorCode.CANNOT_CHANGE_STATUS);
+        }
+
+        walk.updateWalkStatus(WalkStatus.DONE);
+        return WalkConverter.toWalkEndResponse(walk);
     }
 
     @Override
     public WalkResponse.WalkShareResponse shareWalk(Long id) {
-        return null;
+        Walk walk = walkQueryService.findById(id);
+
+        walk.invertShare();
+        return WalkConverter.toWalkShareResponse(walk);
     }
 
     @Override
-    public WalkResponse.WalkLikeResponse likeWalk(Long walkId) {
-        return null;
+    public WalkResponse.WalkLikeResponse likeWalk(Member member, Long walkId) {
+        Walk walk = walkQueryService.findById(walkId);
+
+        processLike(member, walk);
+        return WalkConverter.toWalkLikeResponse(walk);
+    }
+
+    private Walk createWalk(double startLatitude, double startLongitude) {
+        return walkRepository.save(WalkConverter.toWalk(startLatitude, startLongitude));
+    }
+
+    private Track createTrack(Walk walk) {
+        return trackCommandService.createNewTrack(walk);
+    }
+
+    private void processLike(Member member, Walk walk) {
+        walkLikeRepository.findByMemberAndWalk(member, walk).ifPresentOrElse(
+                walkLike -> {
+                    walkLikeCommandService.deleteWalkLike(walkLike);
+                    walk.changeLikeNum(-1L);
+                },
+                () ->  {
+                    walkLikeCommandService.createWalkLike(member, walk);
+                    walk.changeLikeNum(1L);
+                }
+        );
+    }
+
+    private void createWalkPet(Member member, Walk walk, Collection<Long> petIds) {
+        petIds.forEach(petId -> {
+            Pet pet = petRepository.findById(petId).orElseThrow(() ->
+                    new PetException(PetErrorCode.NOT_FOUND));
+            // 산책 가능 여부 확인
+            if (!isAvailableWalkWithPet(member, pet)) {
+                throw new WalkException(WalkErrorCode.UNAVAILABLE_WALK);
+            }
+            walkPetCommandService.createWalkPet(walk, pet);
+        });
+    }
+
+    private boolean isAvailableWalkWithPet(Member member, Pet pet) {
+        return memberPetRepository.existsByMemberAndPet(member ,pet);
+    }
+
+    private void createMemberWalk(Walk walk, Collection<Long> memberIds) {
+        memberIds.forEach(memberId -> {
+            Member foundMember = memberRepository.findById(memberId).orElseThrow(() ->
+                    new MemberException(MemberErrorCode.NOT_FOUND));
+            memberWalkCommandService.createMemberWalk(foundMember, walk);
+        });
     }
 }

@@ -21,6 +21,8 @@ public interface MemberPetRepository extends JpaRepository<MemberPet, Long> {
     @Query("SELECT mp FROM MemberPet mp JOIN FETCH mp.member m WHERE mp.pet.id = :petId")
     List<MemberPet> findByPet(@Param("petId") Long petId);
 
+    boolean existsByMemberAndPet(Member member, Pet pet);
+
     @Query("""
         SELECT mp
         FROM MemberPet mp
