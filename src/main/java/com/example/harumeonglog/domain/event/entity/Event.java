@@ -114,4 +114,8 @@ public class Event{
     public void restore(){
         this.deletedAt = null;
     }
+
+    public void check(){
+        this.done = !done;
+    }
 }

@@ -9,5 +9,5 @@ public interface EventCommandService {
     EventResponse.EventCreateResponse createEvent(EventRequest.EventRequestDTO request, Member member);
     EventResponse.BaseEventResponse updateEvent(Member member, Long eventId, EventRequest.EventRequestDTO request);
     void deleteEvent(Member member, Long eventId);
-    EventResponse.EventCompleteResponse completeEvent(Long eventId);
+    EventResponse.EventPreviewResponse completeEvent(Member member, Long eventId);
 }

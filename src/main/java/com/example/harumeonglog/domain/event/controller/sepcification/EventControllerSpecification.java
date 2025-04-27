@@ -52,6 +52,7 @@ public interface EventControllerSpecification {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "일정 수정 성공")
     })
+
     @PutMapping("/{eventId}")
     CustomResponse<EventResponse.BaseEventResponse> updateEvent(
             @AuthenticatedMember Member member,
@@ -67,6 +68,11 @@ public interface EventControllerSpecification {
     CustomResponse<String> deleteEvent(@PathVariable Long eventId,
                                        @AuthenticatedMember Member member);
 
+    @Operation(summary = "일정 체크 API by 백종우", description = "특정 id의 일정을 완료/미완료 합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "일정 체크 성공")
+    })
     @PatchMapping("/{eventId}")
-    CustomResponse<EventResponse.EventCompleteResponse> completeEvent(@PathVariable Long eventId);
+    CustomResponse<EventResponse.EventPreviewResponse> completeEvent(@PathVariable Long eventId,
+                                                                      @AuthenticatedMember Member member);
 }

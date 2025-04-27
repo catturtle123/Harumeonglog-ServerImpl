@@ -61,7 +61,8 @@ public class EventController implements EventControllerSpecification {
     }
 
     @PatchMapping("/{eventId}")
-    public CustomResponse<EventResponse.EventCompleteResponse> completeEvent(@PathVariable Long eventId){
-        return CustomResponse.ok(eventCommandService.completeEvent(eventId));
+    public CustomResponse<EventResponse.EventPreviewResponse> completeEvent(@PathVariable Long eventId,
+                                                                             @AuthenticatedMember Member member){
+        return CustomResponse.ok(eventCommandService.completeEvent(member, eventId));
     }
 }

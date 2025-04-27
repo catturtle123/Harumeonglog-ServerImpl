@@ -29,7 +29,6 @@ import java.util.List;
 public class EventCommandServiceImpl implements EventCommandService {
     private final EventRepository eventRepository;
     private final MemberPetRepository memberPetRepository;
-    private final MemberRepository memberRepository;
     private final PetRepository petRepository;
 
     @Override
@@ -95,8 +94,15 @@ public class EventCommandServiceImpl implements EventCommandService {
     }
 
     @Override
-    public EventResponse.EventCompleteResponse completeEvent(Long eventId) {
-        return null;
+    public EventResponse.EventPreviewResponse completeEvent(Member member, Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventException(PetErrorCode.NOT_FOUND));
+
+        checkMemberRole(member, event.getPet());
+
+        event.check();
+
+        return EventConverter.toEventPreviewDto(event);
     }
 
 
