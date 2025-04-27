@@ -5,6 +5,7 @@ import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.pet.dto.request.PetImageRequest;
 import com.example.harumeonglog.domain.pet.dto.response.PetImageResponse;
 import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,7 @@ public interface PetImageControllerSpecification {
             @PathVariable Long petId,
             @RequestParam(required = false) Long cursor,
             @RequestParam(defaultValue = "10") int size,
-            @AuthenticationPrincipal Member member
+            @AuthenticatedMember Member member
     );
 
     // 최근 이미지 조회는 주석 처리 유지
@@ -41,7 +42,7 @@ public interface PetImageControllerSpecification {
     @GetMapping("/images/{imageId}")
     CustomResponse<PetImageResponse.GetImageResponse> getImage(
             @PathVariable Long imageId,
-            @AuthenticationPrincipal Member member
+            @AuthenticatedMember Member member
     );
 
     @Operation(summary = "단일 이미지 삭제 API by 백종우", description = "특정 이미지 ID의 펫 이미지를 삭제합니다.")
@@ -49,7 +50,7 @@ public interface PetImageControllerSpecification {
     @DeleteMapping("/images/{imageId}")
     CustomResponse<String> deleteImage(
             @PathVariable Long imageId,
-            @AuthenticationPrincipal Member member
+            @AuthenticatedMember Member member
     );
 
     @Operation(summary = "다중 이미지 삭제 API by 백종우", description = "펫 ID와 이미지 ID 목록을 통해 여러 이미지를 삭제합니다.")
@@ -58,6 +59,6 @@ public interface PetImageControllerSpecification {
     CustomResponse<String> deleteImages(
             @PathVariable Long petId,
             @RequestBody PetImageRequest.DeleteImagesRequest request,
-            @AuthenticationPrincipal Member member
+            @AuthenticatedMember Member member
     );
 }
