@@ -22,4 +22,7 @@ public class WalkEvent extends Event {
 
     @Column(name = "duration")
     private String duration;
+
+    @Column(name = "details")
+    private String details;
 }

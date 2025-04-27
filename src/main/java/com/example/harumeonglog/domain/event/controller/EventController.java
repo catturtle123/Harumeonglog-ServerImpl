@@ -19,7 +19,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/events")
+@RequestMapping("/api/v1/events")
 public class EventController implements EventControllerSpecification {
 
     private final EventCommandService eventCommandService;

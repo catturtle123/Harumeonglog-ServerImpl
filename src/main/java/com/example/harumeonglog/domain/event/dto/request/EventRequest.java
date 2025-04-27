@@ -23,7 +23,7 @@ public class EventRequest {
         private LocalTime time;
         private EventCategory category;
         // 카테고리별 필드 (선택적)
-        private String details;        // GENERAL, HOSPITAL, MEDICINE
+        private String details;        // GENERAL, HOSPITAL, MEDICINE, WALK
         private String hospitalName;   // HOSPITAL
         private String department;     // HOSPITAL
         private Integer cost;          // HOSPITAL

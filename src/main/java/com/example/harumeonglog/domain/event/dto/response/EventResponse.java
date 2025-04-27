@@ -66,6 +66,7 @@ public class EventResponse {
     public static class WalkEventDetailResponse extends BaseEventResponse {
         private String distance;
         private String duration;
+        private String details;
 
 
     }
