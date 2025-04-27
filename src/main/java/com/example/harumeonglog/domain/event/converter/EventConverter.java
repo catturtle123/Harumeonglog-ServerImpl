@@ -183,7 +183,11 @@ public class EventConverter {
     }
 
 
-
+    public static EventResponse.EventDatesResponse toEventDatesResponse(List<LocalDate> dates) {
+        return EventResponse.EventDatesResponse.builder()
+                .dates(dates)
+                .build();
+    }
 
     public static EventResponse.BaseEventResponse toBaseEventResponse(Event event) {
         switch (event.getCategory()) {

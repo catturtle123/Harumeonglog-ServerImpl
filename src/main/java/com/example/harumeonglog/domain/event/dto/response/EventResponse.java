@@ -93,10 +93,10 @@ public class EventResponse {
         private Boolean done;
     }
 
+
     @Getter
     @Builder
-    public static class EventCompleteResponse {
-        private Long eventId;
-
+    public static class EventDatesResponse {
+        private List<LocalDate> dates;
     }
 }

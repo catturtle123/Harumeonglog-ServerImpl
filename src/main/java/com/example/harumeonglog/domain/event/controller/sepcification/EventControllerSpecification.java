@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -48,11 +50,24 @@ public interface EventControllerSpecification {
     @GetMapping("/{eventId}")
     CustomResponse<EventResponse.BaseEventResponse> getEvent(@PathVariable Long eventId);
 
+
+
+    @Operation(summary = "한달에 일정 있는 날 조회 API by 백종우", description = "연, 월을 입력하여 해당 월에 일정이 있는 날을 반환합니다. ")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "조회 성공")
+    })
+    @GetMapping("/monthly-dates")
+    CustomResponse<EventResponse.EventDatesResponse> getEventDates(
+            @AuthenticatedMember Member member,
+            @RequestParam @Min(2000) @Max(9999) Integer year,
+            @RequestParam @Min(1) @Max(12) Integer month);
+
+
+
     @Operation(summary = "일정 수정 API by 백종우", description = "특정 id의 일정을 수정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "일정 수정 성공")
     })
-
     @PutMapping("/{eventId}")
     CustomResponse<EventResponse.BaseEventResponse> updateEvent(
             @AuthenticatedMember Member member,

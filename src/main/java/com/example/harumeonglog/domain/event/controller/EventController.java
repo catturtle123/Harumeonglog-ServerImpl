@@ -10,6 +10,8 @@ import com.example.harumeonglog.domain.event.dto.request.EventRequest;
 import com.example.harumeonglog.domain.event.dto.response.EventResponse;
 import com.example.harumeonglog.domain.event.service.command.EventCommandService;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +45,14 @@ public class EventController implements EventControllerSpecification {
     @GetMapping("/{eventId}")
     public CustomResponse<EventResponse.BaseEventResponse> getEvent(@PathVariable Long eventId){
         return CustomResponse.ok(eventQueryService.getEvent(eventId));
+    }
+
+    @GetMapping("/monthly-dates")
+    public CustomResponse<EventResponse.EventDatesResponse> getEventDates(
+            @AuthenticatedMember Member member,
+            @RequestParam @Min(2000) @Max(9999) Integer year,
+            @RequestParam @Min(1) @Max(12) Integer month) {
+        return CustomResponse.ok(eventQueryService.getEventDates(member, year, month));
     }
 
     @PutMapping("/{eventId}")
