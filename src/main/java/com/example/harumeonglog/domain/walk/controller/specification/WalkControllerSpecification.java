@@ -7,6 +7,8 @@ import com.example.harumeonglog.global.common.response.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
 public interface WalkControllerSpecification {
@@ -20,11 +22,15 @@ public interface WalkControllerSpecification {
 
     @Operation(summary = "산책 재개 API by 서정모", description = "산책 다시 시작할 때 사용하는 API")
     @Parameter(name = "walkId", description = "산책 ID")
-    CustomResponse<WalkResponse.WalkResumeResponse> resumeWalk(Long walkId) ;
+    CustomResponse<WalkResponse.WalkResumeResponse> resumeWalk(Long walkId, WalkRequest.WalkResumeRequest request);
 
     @Operation(summary = "산책 종료 API by 서정모", description = "산책 종료할 때 사용하는 API")
     @Parameter(name = "walkId", description = "산책 ID")
     CustomResponse<WalkResponse.WalkEndResponse> endWalk(Long walkId);
+
+    @Operation(summary = "산책 위치 추가 API by 서정모", description = "산책 좌표 추가할 때 사용하는 API")
+    @Parameter(name = "trackId", description = "경로 ID")
+    CustomResponse<WalkResponse.PositionCreateResponse> addPosition(@PathVariable Long trackId, @RequestBody WalkRequest.PositionRequest request);
 
     @Operation(summary = "산책 가능한 펫 API by 서정모", description = "산책 가능한 펫들 가져오는 API")
     CustomResponse<WalkResponse.WalkAvailablePetListResponse> getAvailablePetList(Member member);

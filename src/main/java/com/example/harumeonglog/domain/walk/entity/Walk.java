@@ -29,7 +29,7 @@ public class Walk extends BaseEntity {
 
     @Column(name = "time")
     @Builder.Default
-    private Integer time = 0;
+    private Long time = 0L;
 
     @Column(name = "start_latitude", nullable = false)
     private Double startLatitude;
@@ -62,5 +62,13 @@ public class Walk extends BaseEntity {
 
     public void changeLikeNum(Long likeNum) {
         this.walkLikeNum += likeNum;
+    }
+
+    public void addDistance(Double distance) {
+        this.distance += distance;
+    }
+
+    public void updateTime(long time) {
+        this.time = time;
     }
 }

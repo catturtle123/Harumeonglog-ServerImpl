@@ -127,6 +127,15 @@ public class WalkResponse {
 
     @Getter
     @Builder
+    public static class PositionCreateResponse {
+        private Long trackId;
+        private Long positionId;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+    }
+
+    @Getter
+    @Builder
     public static class Track {
         private Long trackId;
         private List<Position> positions;

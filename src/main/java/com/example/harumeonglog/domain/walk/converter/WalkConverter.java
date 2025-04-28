@@ -5,6 +5,7 @@ import com.example.harumeonglog.domain.pet.entity.Pet;
 import com.example.harumeonglog.domain.walk.dto.response.WalkResponse;
 import com.example.harumeonglog.domain.walk.entity.Track;
 import com.example.harumeonglog.domain.walk.entity.Walk;
+import com.example.harumeonglog.domain.walk.entity.WalkPosition;
 import com.example.harumeonglog.domain.walk.entity.enums.WalkStatus;
 
 import java.util.Collection;
@@ -15,7 +16,7 @@ public class WalkConverter {
     public static Walk toWalk(double startLatitude, double startLongitude) {
         return Walk.builder()
                 .distance(0.0)
-                .time(0)
+                .time(0L)
                 .startLatitude(startLatitude)
                 .startLongitude(startLongitude)
                 .walkLikeNum(0L)
@@ -108,6 +109,15 @@ public class WalkConverter {
                 .items(items)
                 .hasNext(hasNext)
                 .cursor(cursor)
+                .build();
+    }
+
+    public static WalkResponse.PositionCreateResponse toPositionCreateResponse(Track track, WalkPosition walkPosition) {
+        return WalkResponse.PositionCreateResponse.builder()
+                .trackId(track.getId())
+                .positionId(walkPosition.getId())
+                .createdAt(walkPosition.getCreatedAt())
+                .updatedAt(walkPosition.getUpdatedAt())
                 .build();
     }
 }

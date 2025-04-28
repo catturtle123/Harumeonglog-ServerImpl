@@ -29,6 +29,20 @@ public class WalkRequest {
     }
 
     @Getter
+    public static class WalkResumeRequest {
+        private final Double latitude;
+        private final Double longitude;
+
+        public WalkResumeRequest(
+                @JsonProperty("latitude") Double latitude,
+                @JsonProperty("longitude") Double longitude
+        ) {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+    }
+
+    @Getter
     public static class AvailableMemberRequest {
         private final List<Long> petId;
 
@@ -40,22 +54,11 @@ public class WalkRequest {
     }
 
     @Getter
-    public static class Track {
-        private final List<Position> positions;
-
-        public Track(
-                @JsonProperty("positions") List<Position> positions
-        ) {
-            this.positions = positions;
-        }
-    }
-
-    @Getter
-    public static class Position {
+    public static class PositionRequest {
         private final Double latitude;
         private final Double longitude;
 
-        public Position(
+        public PositionRequest(
                 @JsonProperty("latitude") Double latitude,
                 @JsonProperty("longitude") Double longitude
         ) {

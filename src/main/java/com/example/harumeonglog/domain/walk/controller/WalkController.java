@@ -32,14 +32,20 @@ public class WalkController implements WalkControllerSpecification {
     }
 
     @PatchMapping("/{walkId}/resume")
-    public CustomResponse<WalkResponse.WalkResumeResponse> resumeWalk(@PathVariable Long walkId) {
-        WalkResponse.WalkResumeResponse response = walkCommandService.resumeWalk(walkId);
+    public CustomResponse<WalkResponse.WalkResumeResponse> resumeWalk(@PathVariable Long walkId, @RequestBody WalkRequest.WalkResumeRequest request) {
+        WalkResponse.WalkResumeResponse response = walkCommandService.resumeWalk(walkId, request);
         return CustomResponse.ok(response);
     }
 
     @PatchMapping("/{walkId}/end")
     public CustomResponse<WalkResponse.WalkEndResponse> endWalk(@PathVariable Long walkId) {
         WalkResponse.WalkEndResponse response = walkCommandService.endWalk(walkId);
+        return CustomResponse.ok(response);
+    }
+
+    @PostMapping("/tracks/{trackId}/positions")
+    public CustomResponse<WalkResponse.PositionCreateResponse> addPosition(@PathVariable Long trackId, @RequestBody WalkRequest.PositionRequest request) {
+        WalkResponse.PositionCreateResponse response = walkCommandService.addPosition(request, trackId);
         return CustomResponse.ok(response);
     }
 
