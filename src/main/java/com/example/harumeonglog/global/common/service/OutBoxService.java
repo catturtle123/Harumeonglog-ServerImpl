@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -21,5 +23,10 @@ public class OutBoxService {
                 .build();
 
         outBoxRepository.save(outbox);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OutBox> findTop100(Integer maxRetryCount) {
+        return outBoxRepository.findTop100ByProcessedFalseAndRetryCountLessThanOrderByCreatedAtAsc(maxRetryCount);
     }
 }

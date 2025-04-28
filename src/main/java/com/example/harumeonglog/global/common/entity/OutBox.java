@@ -26,5 +26,16 @@ public class OutBox extends BaseEntity {
 
     @Column(name = "processed", nullable = false)
     private Boolean processed;
+
+    @Column(name = "retry_count", nullable = false)
+    private Integer retryCount;
+
+    public void markProcessed() {
+        this.processed = true;
+    }
+
+    public void increaseRetryCount() {
+        this.retryCount++;
+    }
 }
 
