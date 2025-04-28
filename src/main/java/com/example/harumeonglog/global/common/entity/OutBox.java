@@ -28,7 +28,8 @@ public class OutBox extends BaseEntity {
     private Boolean processed;
 
     @Column(name = "retry_count", nullable = false)
-    private Integer retryCount;
+    @Builder.Default
+    private Integer retryCount = 0;
 
     public void markProcessed() {
         this.processed = true;
