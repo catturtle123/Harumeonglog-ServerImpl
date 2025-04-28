@@ -7,4 +7,8 @@ import com.example.harumeonglog.domain.member.entity.Member;
 public interface MemberCommandService {
     MemberResponse.MemberInfoUpdateResponse updateInfo(Member member, MemberRequest.MemberInfoUpdateRequest request);
     void softDeleteMember(Member member);
+
+    void saveFCM(Member member, MemberRequest.FCMRequest fcmRequest);
+
+    void notDeadLockFcmSignOut(Member member);
 }

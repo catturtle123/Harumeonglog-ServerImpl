@@ -24,9 +24,10 @@ public class CommentController implements CommentControllerSpecification {
     public CustomResponse<CommentResponse.CommentPreviewListResponse> getComments(
             @PathVariable Long postId,
             @RequestParam Long cursor,
-            @RequestParam Integer size
+            @RequestParam Integer size,
+            @AuthenticatedMember Member member
     ) {
-        CommentResponse.CommentPreviewListResponse commentPreviewListResponse = commentQueryService.getComments(postId, cursor, size);
+        CommentResponse.CommentPreviewListResponse commentPreviewListResponse = commentQueryService.getComments(postId, cursor, size, member);
         return CustomResponse.ok(commentPreviewListResponse);
     }
 

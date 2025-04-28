@@ -32,4 +32,15 @@ public class MemberCommandServiceImpl implements MemberCommandService {
                 new MemberException(MemberErrorCode.NOT_FOUND));
         deletedMember.softDelete();
     }
+
+    @Override
+    public void saveFCM(Member member, MemberRequest.FCMRequest fcmRequest) {
+        member.updateFCMToken(fcmRequest.getFcmToken());
+        memberRepository.save(member);
+    }
+
+    @Override
+    public void notDeadLockFcmSignOut(Member member) {
+        memberRepository.updateDeviceIdByMember(member);
+    }
 }

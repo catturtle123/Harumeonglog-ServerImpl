@@ -66,11 +66,22 @@ public class CommentCommandServiceImpl implements CommentCommandService {
     public CommentResponse.CommentCreateResponse createComment(CommentRequest.CommentCreateRequest commentCreateRequest, Long postId, Member member) {
         Post post = postRepository.findById(postId).orElseThrow(()-> new PostException(PostErrorCode.NOT_FOUND));
 
-        Comment comment = CommentConverter.toComment(commentCreateRequest, member);
+        Comment comment;
+        if (commentCreateRequest.getParentId() == null) {
+            comment = CommentConverter.toComment(commentCreateRequest, member);
 
-        comment.addPost(post);
+            comment.addPost(post);
 
-        commentRepository.save(comment);
+            commentRepository.save(comment);
+        } else {
+            Comment parent = commentRepository.findById(commentCreateRequest.getParentId()).orElseThrow(() -> new CommentException(CommentErrorCode.NOT_PARENT));
+
+            comment = CommentConverter.toComment(commentCreateRequest, member);
+
+            comment.addCommentComment(parent, post);
+
+            commentRepository.save(comment);
+        }
 
         return CommentConverter.toCommentCreateResponse(comment);
     }

@@ -7,9 +7,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "walk_event")
@@ -20,4 +22,7 @@ public class WalkEvent extends Event {
 
     @Column(name = "duration")
     private String duration;
+
+    @Column(name = "details")
+    private String details;
 }

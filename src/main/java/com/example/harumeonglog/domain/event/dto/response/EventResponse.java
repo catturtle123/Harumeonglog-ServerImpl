@@ -2,11 +2,14 @@ package com.example.harumeonglog.domain.event.dto.response;
 
 
 import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
+import com.example.harumeonglog.domain.event.entity.enums.RepeatDay;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class EventResponse {
@@ -14,7 +17,8 @@ public class EventResponse {
     @Builder
     public static class EventCreateResponse {
         private Long eventId;
-
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
     @Getter
     @SuperBuilder
@@ -23,17 +27,18 @@ public class EventResponse {
         private String title;
         private LocalDate date;
         private Boolean isRepeated;
+        private List<RepeatDay> repeatDays;
         private LocalDate expiredDate;
         private Boolean hasNotice;
         private EventCategory category;
+        private LocalTime time;
+        private LocalDateTime updatedAt;
     }
 
     @Getter
     @SuperBuilder
     public static class GeneralEventDetailResponse extends BaseEventResponse {
         private String details;
-
-
     }
 
     @Getter
@@ -61,6 +66,7 @@ public class EventResponse {
     public static class WalkEventDetailResponse extends BaseEventResponse {
         private String distance;
         private String duration;
+        private String details;
 
 
     }
@@ -75,23 +81,23 @@ public class EventResponse {
     @Getter
     @Builder
     public static class EventDayResponse{
-        private List<EventShortResponse> events;
-
-
+        private List<EventPreviewResponse> events;
+        private Long cursor;
+        private Boolean hasNext;
     }
 
     @Getter
     @Builder
-    public static class EventShortResponse{
+    public static class EventPreviewResponse {
         private Long id;
         private String title;
         private Boolean done;
     }
 
+
     @Getter
     @Builder
-    public static class EventCompleteResponse {
-        private Long eventId;
-
+    public static class EventDatesResponse {
+        private List<LocalDate> dates;
     }
 }

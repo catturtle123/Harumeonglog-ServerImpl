@@ -10,6 +10,7 @@ public enum CommentErrorCode implements BaseErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT404", "댓글을 찾지 못했습니다."),
     NOT_OWN(HttpStatus.FORBIDDEN, "COMMENT403", "자신의 댓글이 아닙니다."),
     IS_ALREADY(HttpStatus.BAD_REQUEST, "COMMENT400", "이미 차단된 댓글입니다."),
+    NOT_PARENT(HttpStatus.NOT_FOUND, "COMMENT404", "부모의 댓글이 존재하지 않습니다.")
     ;
 
     private final HttpStatus httpStatus;

@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -43,6 +45,13 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
+
+    @OneToMany(mappedBy = "parent")
+    private List<Comment> commentList = new ArrayList<>();
+
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
@@ -56,6 +65,14 @@ public class Comment extends BaseEntity {
     }
 
     public void addPost(Post post) {
+        this.post = post;
+        post.getCommentList().add(this);
+    }
+
+    public void addCommentComment(Comment parent, Post post) {
+        parent.commentList.add(this);
+        this.parent = parent;
+        post.getCommentList().add(this);
         this.post = post;
     }
 }
