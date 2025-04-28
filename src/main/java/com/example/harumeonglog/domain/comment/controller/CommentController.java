@@ -32,12 +32,12 @@ public class CommentController implements CommentControllerSpecification {
     }
 
     @GetMapping("/comments/me")
-    public CustomResponse<CommentResponse.CommentPreviewListResponse> getMyComments(
+    public CustomResponse<CommentResponse.CommentMyPreviewListResponse> getMyComments(
             @AuthenticatedMember Member member,
             @RequestParam Long cursor,
             @RequestParam Integer size
     ) {
-        CommentResponse.CommentPreviewListResponse commentPreviewListResponse = commentQueryService.getMyComments(member, cursor, size);
+        CommentResponse.CommentMyPreviewListResponse commentPreviewListResponse = commentQueryService.getMyComments(member, cursor, size);
         return CustomResponse.ok(commentPreviewListResponse);
     }
 

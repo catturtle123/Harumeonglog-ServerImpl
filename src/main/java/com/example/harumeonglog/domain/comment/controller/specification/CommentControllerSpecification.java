@@ -32,7 +32,7 @@ public interface CommentControllerSpecification {
 
     @Operation(summary = "내가 쓴 Comment 조회 API by 김준환", description = "내가 쓴 comment 조회")
     @GetMapping("/comments/me")
-    CustomResponse<CommentResponse.CommentPreviewListResponse> getMyComments(
+    CustomResponse<CommentResponse.CommentMyPreviewListResponse> getMyComments(
             @AuthenticatedMember Member member,
             @RequestParam Long cursor,
             @RequestParam Integer size

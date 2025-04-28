@@ -41,4 +41,20 @@ public class CommentResponse {
         private String content;
         private MemberResponse.MemberInfoResponse memberInfoResponse;
     }
+
+    @Getter
+    @Builder
+    public static class CommentMyPreviewListResponse {
+        private List<CommentMyPreviewResponse> items;
+        private Boolean hasNext;
+        private Long cursor;
+    }
+
+    @Getter
+    @Builder
+    public static class CommentMyPreviewResponse {
+        private Long commentId;
+        private String content;
+        private LocalDateTime createAt;
+    }
 }

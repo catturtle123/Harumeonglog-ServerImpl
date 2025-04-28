@@ -17,7 +17,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("select c " +
             "from Comment c join fetch c.member m " +
-            "where c.member = :member and c.parent is null and c.id < :cursor order by c.id desc")
-    Slice<Comment> findCommentSliceByMember(Member member, Long cursor, Pageable pageable);
+            "where c.member = :member and c.deletedAt is null and c.parent is null and c.id < :cursor order by c.id desc")
+    Slice<Comment> findCommentSliceByMyMember(Member member, Long cursor, Pageable pageable);
 
 }

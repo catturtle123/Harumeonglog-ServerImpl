@@ -3,6 +3,8 @@ package com.example.harumeonglog.domain.comment.converter;
 import com.example.harumeonglog.domain.comment.dto.request.CommentRequest;
 import com.example.harumeonglog.domain.comment.dto.response.CommentResponse;
 import com.example.harumeonglog.domain.comment.dto.response.CommentResponse.CommentCommentPreviewResponse;
+import com.example.harumeonglog.domain.comment.dto.response.CommentResponse.CommentMyPreviewListResponse;
+import com.example.harumeonglog.domain.comment.dto.response.CommentResponse.CommentMyPreviewResponse;
 import com.example.harumeonglog.domain.comment.dto.response.CommentResponse.CommentPreviewResponse;
 import com.example.harumeonglog.domain.comment.entity.Comment;
 import com.example.harumeonglog.domain.member.converter.MemberConverter;
@@ -55,6 +57,23 @@ public class CommentConverter {
                 .commentId(comment.getId())
                 .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember()))
                 .content(isBlockOrDeletedComment(comment, isBlocked))
+                .build();
+    }
+
+    public static CommentMyPreviewListResponse toCommentMyPreviewListResponse(List<CommentMyPreviewResponse> commentList, Boolean hasNext, Long cursor) {
+        return CommentResponse.CommentMyPreviewListResponse.builder()
+                .items(commentList)
+                .cursor(cursor)
+                .hasNext(hasNext)
+                .build();
+    }
+
+
+    public static CommentMyPreviewResponse toCommentMyPreviewResponse(Comment comment) {
+        return CommentMyPreviewResponse.builder()
+                .commentId(comment.getId())
+                .content(comment.getContent())
+                .createAt(comment.getCreatedAt())
                 .build();
     }
 

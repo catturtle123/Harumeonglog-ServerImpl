@@ -6,5 +6,5 @@ import com.example.harumeonglog.domain.member.entity.Member;
 public interface CommentQueryService {
     CommentResponse.CommentPreviewListResponse getComments(Long postId, Long cursor, Integer size, Member member);
 
-    CommentResponse.CommentPreviewListResponse getMyComments(Member member, Long cursor, Integer size);
+    CommentResponse.CommentMyPreviewListResponse getMyComments(Member member, Long cursor, Integer size);
 }

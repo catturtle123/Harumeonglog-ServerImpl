@@ -64,25 +64,17 @@ public class CommentQueryServiceImpl implements CommentQueryService {
     }
 
     @Override
-    public CommentResponse.CommentPreviewListResponse getMyComments(Member member, Long cursor, Integer size) {
+    public CommentResponse.CommentMyPreviewListResponse getMyComments(Member member, Long cursor, Integer size) {
         if (cursor == 0) {
             cursor = Long.MAX_VALUE;
         }
 
-        Slice<Comment> commentSlice = commentRepository.findCommentSliceByMember(member, cursor, PageRequest.of(0, size));
+        Slice<Comment> commentSlice = commentRepository.findCommentSliceByMyMember(member, cursor, PageRequest.of(0, size));
 
         List<Comment> commentList = commentSlice.toList();
 
-        List<CommentBlock> commentBlockList = commentBlockRepository.findByMember(member);
-
-        Set<Long> blockedCommentIdSet = commentBlockList.stream()
-                .map(cb -> cb.getComment().getId())
-                .collect(Collectors.toSet());
-
-        List<CommentResponse.CommentPreviewResponse> responses = commentList.stream()
-                .map(comment -> {
-                    return CommentConverter.toCommentPreviewResponse(comment, blockedCommentIdSet);
-                })
+        List<CommentResponse.CommentMyPreviewResponse> responses = commentList.stream()
+                .map(CommentConverter::toCommentMyPreviewResponse)
                 .toList();
 
         Long nextCursor = null;
@@ -90,6 +82,6 @@ public class CommentQueryServiceImpl implements CommentQueryService {
             nextCursor = commentList.get(commentList.size() - 1).getId();
         }
 
-        return CommentConverter.toCommentPreviewListResponse(responses, commentSlice.hasNext(), nextCursor);
+        return CommentConverter.toCommentMyPreviewListResponse(responses, commentSlice.hasNext(), nextCursor);
     }
 }
