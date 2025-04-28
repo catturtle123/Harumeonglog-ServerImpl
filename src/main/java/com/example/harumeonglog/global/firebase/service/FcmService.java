@@ -30,8 +30,6 @@ public class FcmService {
             return;
         }
 
-        int alarmCount = noticeRepository.countAlarm(receiver);
-
         Notification notification = Notification.builder()
                 .setTitle(title)
                 .setBody(body)
@@ -56,7 +54,6 @@ public class FcmService {
                 .setNotification(notification)
                 .setToken(receiver.getDeviceId())
                 .setApnsConfig(apnsConfig)
-                .putData("count", String.valueOf(alarmCount))
                 .build();
 
         try {
