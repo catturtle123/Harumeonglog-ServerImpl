@@ -4,6 +4,7 @@ import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.global.common.entity.OutBox;
+import com.example.harumeonglog.global.common.entity.enums.EventType;
 import com.example.harumeonglog.global.common.service.OutBoxService;
 import com.example.harumeonglog.global.firebase.service.FcmService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,7 +32,7 @@ public class OutBoxScheduler {
     @Scheduled(fixedDelay = 10000)
     @Transactional
     public void processOutBoxAboutFCM() {
-        List<OutBox> events = outBoxService.findTop100(MAX_RETRY_COUNT);
+        List<OutBox> events = outBoxService.findTop100(MAX_RETRY_COUNT, EventType.FCM, 100);
 
         for (OutBox event : events) {
             try {

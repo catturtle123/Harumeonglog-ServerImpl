@@ -4,6 +4,7 @@ import com.example.harumeonglog.global.common.entity.OutBox;
 import com.example.harumeonglog.global.common.entity.enums.EventType;
 import com.example.harumeonglog.global.common.repository.OutBoxRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ public class OutBoxService {
     }
 
     @Transactional(readOnly = true)
-    public List<OutBox> findTop100(Integer maxRetryCount) {
-        return outBoxRepository.findTop100ByProcessedFalseAndRetryCountLessThanOrderByCreatedAtAsc(maxRetryCount);
+    public List<OutBox> findTop100(Integer maxRetryCount, EventType eventType, Integer batchSize) {
+        return outBoxRepository.findTopOutBox(maxRetryCount, eventType, PageRequest.of(0, batchSize));
     }
 }
