@@ -17,14 +17,26 @@ import java.util.List;
 public class OutBoxServiceImpl implements OutBoxService {
     private final OutBoxRepository outBoxRepository;
 
+    @Override
     public void saveFCMEvent(String payload) {
         OutBox outbox = OutBoxConverter.toFCMOutBox(payload);
 
         outBoxRepository.save(outbox);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<OutBox> findTop100(Integer maxRetryCount, EventType eventType, Integer batchSize) {
         return outBoxRepository.findTopOutBox(maxRetryCount, eventType, PageRequest.of(0, batchSize));
+    }
+
+    @Override
+    public void updateSuccessFCMOutBox(List<OutBox> outBoxList) {
+        outBoxRepository.updateSuccessFCMOutBox(outBoxList);
+    }
+
+    @Override
+    public void updateFailedFCMOutBox(List<OutBox> failedOutBox) {
+        outBoxRepository.updateFailedFCMOutBox(failedOutBox);
     }
 }
