@@ -1,6 +1,7 @@
 package com.example.harumeonglog.global.security;
 
 import com.example.harumeonglog.domain.auth.service.*;
+import com.example.harumeonglog.global.data.CorsConfigData;
 import com.example.harumeonglog.global.security.filter.AbstractTokenFilter;
 import com.example.harumeonglog.global.security.filter.AbstractTokenLogoutFilter;
 import com.example.harumeonglog.global.security.filter.JwtTokenFilter;
@@ -32,6 +33,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -39,6 +43,7 @@ public class SecurityConfig {
 
     private final SwaggerConfigData swaggerConfigData;
     private final ProfileConfigData profileConfigData;
+    private final CorsConfigData corsConfigData;
 
     private final TokenQueryService tokenQueryService;
     private final RedisCommandService redisCommandService;
@@ -71,6 +76,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                .cors(cors -> cors.configurationSource(apiConfigurationSource()))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(allowUrl).permitAll()
                         .anyRequest().authenticated()
@@ -154,5 +160,18 @@ public class SecurityConfig {
     @Bean
     SecurityContextRepository securityContextRepository() {
         return jwtTokenFilter().getSecurityContextRepository();
+    }
+
+    @Bean
+    CorsConfigurationSource apiConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(corsConfigData.getUrls());
+        configuration.setAllowedMethods(corsConfigData.getMethods());
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }
