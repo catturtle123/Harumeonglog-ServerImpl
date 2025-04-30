@@ -115,6 +115,7 @@ public class SecurityConfig {
                         .requestMatchers(formLoginUrl).permitAll()
                         .anyRequest().authenticated()
                 )
+                .cors(cors -> cors.configurationSource(apiConfigurationSource()))
                 .formLogin(Customizer.withDefaults())
                 .userDetailsService(inMemoryUserDetailsManager())
                 .sessionManagement(management -> management
