@@ -6,6 +6,7 @@ import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.global.common.entity.OutBox;
 import com.example.harumeonglog.global.common.entity.enums.EventType;
 import com.example.harumeonglog.global.common.service.OutBoxService;
+import com.example.harumeonglog.global.common.service.OutBoxServiceImpl;
 import com.example.harumeonglog.global.firebase.service.FcmService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
