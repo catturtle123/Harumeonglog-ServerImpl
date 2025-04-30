@@ -1,5 +1,7 @@
 package com.example.harumeonglog.global.common.util;
 
+import com.example.harumeonglog.global.error.code.JsonDeserializationErrorCode;
+import com.example.harumeonglog.global.error.exception.JsonDeserializationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonUtils {
@@ -9,7 +11,7 @@ public class JsonUtils {
         try {
             return objectMapper.readValue(json, clazz);
         } catch (Exception e) {
-            throw new RuntimeException("JSON 역직렬화 실패: " + clazz.getSimpleName(), e);
+            throw new JsonDeserializationException(JsonDeserializationErrorCode._JSON_DESERIALIZATION_FAILED);
         }
     }
 }

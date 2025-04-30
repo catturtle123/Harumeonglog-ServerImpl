@@ -3,6 +3,9 @@ package com.example.harumeonglog.global.outbox.scheduler;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
+import com.example.harumeonglog.global.error.code.MemberErrorCode;
+import com.example.harumeonglog.global.error.exception.JsonDeserializationException;
+import com.example.harumeonglog.global.error.exception.MemberException;
 import com.example.harumeonglog.global.outbox.dto.FcmPayload;
 import com.example.harumeonglog.global.outbox.entity.OutBox;
 import com.example.harumeonglog.global.outbox.entity.enums.EventType;
@@ -38,15 +41,28 @@ public class OutBoxScheduler {
                 FcmPayload fcmPayload = JsonUtils.fromJson(event.getPayload(), FcmPayload.class);
 
                 Member receiver = memberRepository.findById(fcmPayload.getReceiverId())
-                        .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
+                        .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
-                fcmService.sendPushNotification(receiver, fcmPayload.getTitle(), fcmPayload.getBody(), NoticeType.valueOf(fcmPayload.getNoticeType()));
+                fcmService.sendPushNotification(
+                        receiver,
+                        fcmPayload.getTitle(),
+                        fcmPayload.getBody(),
+                        NoticeType.valueOf(fcmPayload.getNoticeType())
+                );
 
-                event.markProcessed(); // OutBox processed = true 처리
+                event.markProcessed();
                 log.info("OutBox 처리 성공: id={}", event.getId());
 
+            } catch (JsonDeserializationException e) {
+                log.error("JSON 역직렬화 실패 (id={}): {}", event.getId(), event.getPayload(), e);
+                event.increaseRetryCount();
+
+            } catch (MemberException e) {
+                log.error("알림 수신자 없음 (id={}): {}", event.getId(), e.getMessage(), e);
+                event.increaseRetryCount();
+
             } catch (Exception e) {
-                log.error("OutBox 처리 실패: id={}", event.getId(), e);
+                log.error("FCM 전송 실패 또는 알 수 없는 에러 (id={}): {}", event.getId(), e.getMessage(), e);
                 event.increaseRetryCount();
             }
         }
