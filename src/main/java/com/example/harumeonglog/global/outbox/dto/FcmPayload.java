@@ -1,10 +1,11 @@
 package com.example.harumeonglog.global.outbox.dto;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class FcmPayload {
     private Long receiverId;
     private String title;
