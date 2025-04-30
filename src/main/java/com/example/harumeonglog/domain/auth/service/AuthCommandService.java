@@ -6,6 +6,6 @@ import com.example.harumeonglog.domain.member.entity.Member;
 
 public interface AuthCommandService {
     AuthResponse.AuthLoginResponse login(String provider, AuthRequest.AuthLoginRequest request);
-    AuthResponse.AuthLogoutResponse logout(Member member);
+    String logout(Member member);
     AuthResponse.AuthAccessReissueResponse reissueAccess(AuthRequest.AuthAccessReissueRequest request);
 }

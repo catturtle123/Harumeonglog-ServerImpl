@@ -6,6 +6,7 @@ import com.example.harumeonglog.domain.auth.dto.response.AuthResponse;
 import com.example.harumeonglog.domain.auth.service.AuthCommandService;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +25,8 @@ public class AuthController implements AuthControllerSpecification {
 
 
     @PostMapping("/logout")
-    public CustomResponse<AuthResponse.AuthLogoutResponse> logout() {
-        // TODO: Annotation으로 변경 필요
-        Member member = Member.builder().build();
-        AuthResponse.AuthLogoutResponse response = authCommandService.logout(member);
+    public CustomResponse<String> logout(@AuthenticatedMember Member member) {
+        String response = authCommandService.logout(member);
         return CustomResponse.ok(response);
     }
 

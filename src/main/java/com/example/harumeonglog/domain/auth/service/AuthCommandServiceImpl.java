@@ -42,8 +42,8 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public AuthResponse.AuthLogoutResponse logout(Member member) {
-        return null;
+    public String logout(Member member) {
+        return "로그아웃에 성공했습니다.";
     }
 
     @Override
