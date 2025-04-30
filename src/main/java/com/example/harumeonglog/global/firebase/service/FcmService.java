@@ -2,8 +2,6 @@ package com.example.harumeonglog.global.firebase.service;
 
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
-import com.example.harumeonglog.domain.member.repository.MemberRepository;
-import com.example.harumeonglog.domain.member.repository.NoticeRepository;
 import com.example.harumeonglog.domain.member.service.MemberCommandService;
 import com.example.harumeonglog.global.discord.DiscordApiUtil;
 import com.example.harumeonglog.global.discord.dto.DiscordMessage;
@@ -20,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FcmService {
 
-    private final NoticeRepository noticeRepository;
     private final Environment environment;
     private final MemberCommandService memberCommandService;
     private final DiscordApiUtil discordApiUtil;
@@ -29,8 +26,6 @@ public class FcmService {
         if (receiver.getDeviceId() == null) {
             return;
         }
-
-        int alarmCount = noticeRepository.countAlarm(receiver);
 
         Notification notification = Notification.builder()
                 .setTitle(title)
@@ -56,7 +51,6 @@ public class FcmService {
                 .setNotification(notification)
                 .setToken(receiver.getDeviceId())
                 .setApnsConfig(apnsConfig)
-                .putData("count", String.valueOf(alarmCount))
                 .build();
 
         try {
