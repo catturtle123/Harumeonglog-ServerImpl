@@ -12,6 +12,7 @@ import com.example.harumeonglog.domain.post.service.PostQueryService;
 
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,7 +48,7 @@ public class PostController implements PostControllerSpecification {
 
     @PostMapping
     public CustomResponse<PostResponse.PostCreateResponse> createPost(
-            @RequestBody PostRequest.PostCreateRequest postCreateRequest,
+            @RequestBody @Valid PostRequest.PostCreateRequest postCreateRequest,
             @AuthenticatedMember Member member
             ) {
         PostResponse.PostCreateResponse postCreateResponse = postCommandService.createPost(postCreateRequest, member);
@@ -57,7 +58,7 @@ public class PostController implements PostControllerSpecification {
     @PatchMapping("/{postId}")
     public CustomResponse<PostResponse.PostUpdateResponse> updatePost(
             @PathVariable Long postId,
-            @RequestBody PostRequest.PostUpdateRequest postUpdateRequest,
+            @RequestBody @Valid PostRequest.PostUpdateRequest postUpdateRequest,
             @AuthenticatedMember Member member
     ) {
         PostResponse.PostUpdateResponse postUpdateResponse = postCommandService.updatePost(postId, postUpdateRequest, member);

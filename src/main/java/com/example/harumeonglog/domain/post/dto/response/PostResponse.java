@@ -26,6 +26,7 @@ public class PostResponse {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class PostPreviewResponse {
         private Long postId;
+        private String title;
         private String content;
         private Long likeNum;
         private Long commentNum;
@@ -41,6 +42,7 @@ public class PostResponse {
     public static class PostDetailResponse {
         private Long postId;
         private String content;
+        private String title;
         private Long likeNum;
         private Long commentNum;
         private PostCategory postCategory;
@@ -54,6 +56,7 @@ public class PostResponse {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class PostUpdateResponse {
         private Long postId;
+        private String title;
         private String content;
         private PostCategory postCategory;
         private List<String> postImageList;

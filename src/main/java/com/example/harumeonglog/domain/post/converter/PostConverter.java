@@ -15,6 +15,7 @@ public class PostConverter {
     public static PostResponse.PostDetailResponse toPostDetailResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, List<String> imageList) {
         return PostResponse.PostDetailResponse.builder()
                 .postId(post.getId())
+                .title(post.getTitle())
                 .postCategory(post.getCategory())
                 .memberInfoResponse(memberInfoResponse)
                 .likeNum(post.getPostLikeNum())
@@ -26,6 +27,7 @@ public class PostConverter {
     public static PostResponse.PostPreviewResponse toPostPreviewResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, String image) {
         return PostResponse.PostPreviewResponse.builder()
                 .postId(post.getId())
+                .title(post.getTitle())
                 .postCategory(post.getCategory())
                 .content(post.getContent())
                 .likeNum(post.getPostLikeNum())
@@ -45,6 +47,7 @@ public class PostConverter {
 
     public static Post toPost(PostRequest.PostCreateRequest postCreateRequest, Member member) {
         return Post.builder()
+                .title(postCreateRequest.getTitle())
                 .content(postCreateRequest.getContent())
                 .category(postCreateRequest.getPostCategory())
                 .member(member)
@@ -57,6 +60,7 @@ public class PostConverter {
 
         return PostResponse.PostUpdateResponse.builder()
                 .postId(post.getId())
+                .title(post.getTitle())
                 .postCategory(post.getCategory())
                 .postImageList(postImageList)
                 .updateAt(post.getUpdatedAt())

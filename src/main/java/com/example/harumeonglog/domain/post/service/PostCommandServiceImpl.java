@@ -49,7 +49,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         isOwnPost(member, post);
 
         List<PostImage> postImageList = postUpdateRequest.getPostImageList().stream().map(PostImageConverter::toPostImage).toList();
-        post.update(postUpdateRequest.getContent(), postUpdateRequest.getPostCategory(), postImageList);
+        post.update(postUpdateRequest.getTitle(), postUpdateRequest.getContent(), postUpdateRequest.getPostCategory(), postImageList);
 
         return PostConverter.toPostUpdateResponse(post);
     }
