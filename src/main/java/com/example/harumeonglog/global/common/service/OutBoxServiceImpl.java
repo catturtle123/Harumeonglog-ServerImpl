@@ -1,5 +1,6 @@
 package com.example.harumeonglog.global.common.service;
 
+import com.example.harumeonglog.global.common.converter.OutBoxConverter;
 import com.example.harumeonglog.global.common.entity.OutBox;
 import com.example.harumeonglog.global.common.entity.enums.EventType;
 import com.example.harumeonglog.global.common.repository.OutBoxRepository;
@@ -17,11 +18,7 @@ public class OutBoxServiceImpl implements OutBoxService {
     private final OutBoxRepository outBoxRepository;
 
     public void saveFCMEvent(String payload) {
-        OutBox outbox = OutBox.builder()
-                .eventType(EventType.FCM)
-                .payload(payload)
-                .processed(false)
-                .build();
+        OutBox outbox = OutBoxConverter.toFCMOutBox(payload);
 
         outBoxRepository.save(outbox);
     }
