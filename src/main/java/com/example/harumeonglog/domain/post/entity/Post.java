@@ -24,6 +24,9 @@ public class Post extends BaseEntity {
     @Column(name = "post_id")
     private Long id;
 
+    @Column(length = 100, nullable = false)
+    private String title;
+
     @Column(name = "post_like_num", nullable = false)
     @Builder.Default
     private Long postLikeNum = 0L;
