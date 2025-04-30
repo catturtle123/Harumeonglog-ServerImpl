@@ -3,13 +3,12 @@ package com.example.harumeonglog.global.common.scheduler;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
+import com.example.harumeonglog.global.common.dto.FcmPayload;
 import com.example.harumeonglog.global.common.entity.OutBox;
 import com.example.harumeonglog.global.common.entity.enums.EventType;
 import com.example.harumeonglog.global.common.service.OutBoxService;
-import com.example.harumeonglog.global.common.service.OutBoxServiceImpl;
+import com.example.harumeonglog.global.common.util.JsonUtils;
 import com.example.harumeonglog.global.firebase.service.FcmService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,7 +25,6 @@ public class OutBoxScheduler {
     private final OutBoxService outBoxService;
     private final MemberRepository memberRepository;
     private final FcmService fcmService;
-    private final ObjectMapper objectMapper;
 
     private static final int MAX_RETRY_COUNT = 3;
 
@@ -37,17 +35,12 @@ public class OutBoxScheduler {
 
         for (OutBox event : events) {
             try {
-                JsonNode payload = objectMapper.readTree(event.getPayload());
+                FcmPayload fcmPayload = JsonUtils.fromJson(event.getPayload(), FcmPayload.class);
 
-                Long memberId = payload.get("receiverId").asLong();  // 알림 받을 사람
-                String title = payload.get("title").asText();
-                String body = payload.get("body").asText();
-                String noticeType = payload.get("noticeType").asText();
-
-                Member receiver = memberRepository.findById(memberId)
+                Member receiver = memberRepository.findById(fcmPayload.getReceiverId())
                         .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
 
-                fcmService.sendPushNotification(receiver, title, body, NoticeType.valueOf(noticeType));
+                fcmService.sendPushNotification(receiver, fcmPayload.getTitle(), fcmPayload.getBody(), NoticeType.valueOf(fcmPayload.getNoticeType()));
 
                 event.markProcessed(); // OutBox processed = true 처리
                 log.info("OutBox 처리 성공: id={}", event.getId());
