@@ -13,7 +13,9 @@ public enum GeneralErrorCode implements BaseErrorCode {
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON401", "인증이 필요합니다."),
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
     _NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON404", "리소스를 찾을 수 없습니다."),
-    _IS_ALREADY(HttpStatus.BAD_REQUEST, "COMMON400", "이미 해당 리소스가 존재합니다.")
+    _IS_ALREADY(HttpStatus.BAD_REQUEST, "COMMON400", "이미 해당 리소스가 존재합니다."),
+    NOT_VALID_CURSOR(HttpStatus.BAD_REQUEST, "PAGE_001", "커서 값이 유효하지 않습니다."),
+    NOT_VALID_SIZE(HttpStatus.BAD_REQUEST, "PAGE_004", "size 값이 유효하지 않습니다.")
     ;
 
     private final HttpStatus httpStatus;
