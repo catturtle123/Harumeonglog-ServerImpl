@@ -11,14 +11,18 @@ import com.example.harumeonglog.domain.post.service.PostCommandService;
 import com.example.harumeonglog.domain.post.service.PostQueryService;
 
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import com.example.harumeonglog.global.validation.annotation.CheckCursorValidation;
+import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/posts")
+@Validated
 @Tag(name = "Post", description = "Post 관련 API")
 public class PostController implements PostControllerSpecification {
 
@@ -30,8 +34,8 @@ public class PostController implements PostControllerSpecification {
     public CustomResponse<PostResponse.PostPreviewListResponse> getPosts(
             @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "postRequestCategory") PostRequestCategory postRequestCategory,
-            @RequestParam(name = "cursor") Long cursor,
-            @RequestParam(name = "size") Integer size
+            @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @RequestParam(name = "size") @CheckSizeValidation Integer size
     ) {
         PostResponse.PostPreviewListResponse postListResponse = postQueryService.getPosts(cursor, size, search, postRequestCategory);
         return CustomResponse.ok(postListResponse);
@@ -95,8 +99,8 @@ public class PostController implements PostControllerSpecification {
 
     @GetMapping("/me")
     public CustomResponse<PostResponse.PostPreviewListResponse> getMyPost(
-            @RequestParam(name = "cursor") Long cursor,
-            @RequestParam(name = "size") Integer size,
+            @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @RequestParam(name = "size") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member
     ) {
         PostResponse.PostPreviewListResponse postPreviewListResponse = postQueryService.getMyPost(cursor, size, member);
@@ -105,8 +109,8 @@ public class PostController implements PostControllerSpecification {
 
     @GetMapping("/me/likes")
     public CustomResponse<PostResponse.PostPreviewListResponse> getMyLikePost(
-            @RequestParam(name = "cursor") Long cursor,
-            @RequestParam(name = "size") Integer size,
+            @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @RequestParam(name = "size") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member
     ) {
         PostResponse.PostPreviewListResponse postPreviewListResponse = postQueryService.getMyLikePost(cursor, size, member);

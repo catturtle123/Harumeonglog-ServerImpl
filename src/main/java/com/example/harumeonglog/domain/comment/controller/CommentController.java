@@ -9,6 +9,8 @@ import com.example.harumeonglog.domain.comment.service.CommentQueryService;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import com.example.harumeonglog.global.validation.annotation.CheckCursorValidation;
+import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +25,8 @@ public class CommentController implements CommentControllerSpecification {
     @GetMapping("/posts/{postId}/comments")
     public CustomResponse<CommentResponse.CommentPreviewListResponse> getComments(
             @PathVariable Long postId,
-            @RequestParam Long cursor,
-            @RequestParam Integer size,
+            @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @RequestParam(name = "size") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member
     ) {
         CommentResponse.CommentPreviewListResponse commentPreviewListResponse = commentQueryService.getComments(postId, cursor, size, member);
@@ -34,8 +36,8 @@ public class CommentController implements CommentControllerSpecification {
     @GetMapping("/comments/me")
     public CustomResponse<CommentResponse.CommentMyPreviewListResponse> getMyComments(
             @AuthenticatedMember Member member,
-            @RequestParam Long cursor,
-            @RequestParam Integer size
+            @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @RequestParam(name = "size") @CheckSizeValidation Integer size
     ) {
         CommentResponse.CommentMyPreviewListResponse commentPreviewListResponse = commentQueryService.getMyComments(member, cursor, size);
         return CustomResponse.ok(commentPreviewListResponse);
