@@ -6,6 +6,8 @@ import com.example.harumeonglog.domain.pet.dto.request.PetImageRequest;
 import com.example.harumeonglog.domain.pet.dto.response.PetImageResponse;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import com.example.harumeonglog.global.validation.annotation.CheckCursorValidation;
+import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,8 +28,8 @@ public interface PetImageControllerSpecification {
     @GetMapping("/{petId}/images")
     CustomResponse<PetImageResponse.GetImagesResponse> getImages(
             @PathVariable Long petId,
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @CheckCursorValidation Long cursor,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,
             @AuthenticatedMember Member member
     );
 
