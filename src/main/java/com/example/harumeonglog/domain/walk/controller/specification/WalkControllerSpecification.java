@@ -9,9 +9,11 @@ import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
+@Tag(name = "Walk", description = "산책 관련 API")
 @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
 public interface WalkControllerSpecification {
 
