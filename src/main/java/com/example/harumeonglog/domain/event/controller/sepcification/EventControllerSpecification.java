@@ -6,6 +6,8 @@ import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import com.example.harumeonglog.global.validation.annotation.CheckCursorValidation;
+import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -73,8 +75,8 @@ public interface EventControllerSpecification {
             @AuthenticatedMember Member member,
             @RequestParam(defaultValue = "2025-04-26") LocalDate date,
             @RequestParam(required = false) EventCategory category,
-            @RequestParam Integer size,
-            @RequestParam Long cursor
+            @RequestParam(required = false) @CheckCursorValidation Long cursor,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size
             );
 
 

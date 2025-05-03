@@ -10,6 +10,8 @@ import com.example.harumeonglog.domain.event.dto.request.EventRequest;
 import com.example.harumeonglog.domain.event.dto.response.EventResponse;
 import com.example.harumeonglog.domain.event.service.command.EventCommandService;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import com.example.harumeonglog.global.validation.annotation.CheckCursorValidation;
+import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +39,8 @@ public class EventController implements EventControllerSpecification {
             @AuthenticatedMember Member member,
             @RequestParam(defaultValue = "2025-04-26") LocalDate date,
             @RequestParam(required = false) EventCategory category,
-            @RequestParam Integer size,
-            @RequestParam Long cursor){
+            @RequestParam(required = false) @CheckCursorValidation Long cursor,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size){
         return CustomResponse.ok(eventQueryService.getDayEvents(date, category, cursor, size, member));
     }
 
