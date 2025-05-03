@@ -46,7 +46,7 @@ public class PetController implements PetControllerSpecification {
     @GetMapping
     public CustomResponse<PetResponse.GetPetsResponse> getPets(
             @RequestParam(required = false) @CheckCursorValidation Long cursor, // 커서 (마지막 펫 ID)
-            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,  // 페이지 크기
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,  // 페이지 크기
             @AuthenticatedMember Member member) {
         return CustomResponse.ok(petQueryService.getPets(cursor, size, member));
     }
@@ -54,7 +54,7 @@ public class PetController implements PetControllerSpecification {
     @GetMapping("/active")
     public CustomResponse<PetResponse.PetListPreviewResponse> getActivePets(
             @RequestParam(required = false) @CheckCursorValidation Long cursor, // 커서 (마지막 펫 ID)
-            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,  // 페이지 크기
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,  // 페이지 크기
             @AuthenticatedMember Member member) {
         return CustomResponse.ok(petQueryService.getChangePet(cursor, size, member));
     }
@@ -93,7 +93,7 @@ public class PetController implements PetControllerSpecification {
     public CustomResponse<PetResponse.SearchMemberResponse> searchMember(
             @RequestParam String email,
             @RequestParam(required = false) @CheckCursorValidation Long cursor,
-            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member
     ) {
         PetResponse.SearchMemberResponse result = petQueryService.searchMember(email, member, cursor, size);

@@ -35,7 +35,7 @@ public class PetImageController implements PetImageControllerSpecification {
     public CustomResponse<PetImageResponse.GetImagesResponse> getImages(
             @PathVariable Long petId,
             @RequestParam(required = false) @CheckCursorValidation Long cursor,
-            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member) {
         return CustomResponse.ok(petImageQueryService.getImages(petId, member, cursor, size));
     }

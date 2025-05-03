@@ -29,7 +29,7 @@ public interface PetImageControllerSpecification {
     CustomResponse<PetImageResponse.GetImagesResponse> getImages(
             @PathVariable Long petId,
             @RequestParam(required = false) @CheckCursorValidation Long cursor,
-            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member
     );
 

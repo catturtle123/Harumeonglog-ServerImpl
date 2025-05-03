@@ -43,7 +43,7 @@ public interface PetControllerSpecification {
     @GetMapping
     CustomResponse<PetResponse.GetPetsResponse> getPets(
             @RequestParam(required = false) @CheckCursorValidation Long cursor,
-            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member
     );
 
@@ -51,7 +51,7 @@ public interface PetControllerSpecification {
     @GetMapping("/active")
     CustomResponse<PetResponse.PetListPreviewResponse> getActivePets(
             @RequestParam(required = false) @CheckCursorValidation Long cursor,
-            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member) ;
 
     @Operation(summary = "현재 펫 변경 API by 백종우", description = "대표 펫을 변경합니다.")
@@ -91,7 +91,7 @@ public interface PetControllerSpecification {
     CustomResponse<PetResponse.SearchMemberResponse> searchMember(
             @RequestParam String email,
             @RequestParam(required = false) @CheckCursorValidation Long cursor,
-            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member
     );
 
