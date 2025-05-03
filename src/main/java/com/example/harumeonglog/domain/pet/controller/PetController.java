@@ -13,6 +13,8 @@ import com.example.harumeonglog.domain.pet.service.command.PetCommandService;
 import com.example.harumeonglog.domain.pet.service.query.PetQueryService;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import com.example.harumeonglog.global.validation.annotation.CheckCursorValidation;
+import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -43,16 +45,16 @@ public class PetController implements PetControllerSpecification {
 
     @GetMapping
     public CustomResponse<PetResponse.GetPetsResponse> getPets(
-            @RequestParam(required = false) Long cursor, // 커서 (마지막 펫 ID)
-            @RequestParam(defaultValue = "10") int size,  // 페이지 크기
+            @RequestParam(required = false) @CheckCursorValidation Long cursor, // 커서 (마지막 펫 ID)
+            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,  // 페이지 크기
             @AuthenticatedMember Member member) {
         return CustomResponse.ok(petQueryService.getPets(cursor, size, member));
     }
 
     @GetMapping("/active")
     public CustomResponse<PetResponse.PetListPreviewResponse> getActivePets(
-            @RequestParam(required = false) Long cursor, // 커서 (마지막 펫 ID)
-            @RequestParam(defaultValue = "10") int size,  // 페이지 크기
+            @RequestParam(required = false) @CheckCursorValidation Long cursor, // 커서 (마지막 펫 ID)
+            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,  // 페이지 크기
             @AuthenticatedMember Member member) {
         return CustomResponse.ok(petQueryService.getChangePet(cursor, size, member));
     }
@@ -90,8 +92,8 @@ public class PetController implements PetControllerSpecification {
     @GetMapping("/members")
     public CustomResponse<PetResponse.SearchMemberResponse> searchMember(
             @RequestParam String email,
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @CheckCursorValidation Long cursor,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation int size,
             @AuthenticatedMember Member member
     ) {
         PetResponse.SearchMemberResponse result = petQueryService.searchMember(email, member, cursor, size);
