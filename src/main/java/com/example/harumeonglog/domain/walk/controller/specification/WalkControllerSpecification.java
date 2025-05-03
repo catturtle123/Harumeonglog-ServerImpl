@@ -4,10 +4,14 @@ import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.walk.dto.request.WalkRequest;
 import com.example.harumeonglog.domain.walk.dto.response.WalkResponse;
 import com.example.harumeonglog.global.common.response.CustomResponse;
+import com.example.harumeonglog.global.validation.annotation.CheckCursorValidation;
+import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
 public interface WalkControllerSpecification {
 
@@ -33,8 +37,8 @@ public interface WalkControllerSpecification {
     @Operation(summary = "산책 전체 조회 API by 서정모", description = "산책 전체 조회 API, SORT 부분 미완성")
     CustomResponse<WalkResponse.WalkSearchListResponse> getWalkList(Member member,
                                                                     String sort,
-                                                                    Long cursor,
-                                                                    int offset);
+                                                                    @CheckCursorValidation Long cursor,
+                                                                    @CheckSizeValidation Integer size);
 
     @Operation(summary = "산책 하나의 세부정보 조회 API by 서정모", description = "산책 세부 정보 조회")
     @Parameter(name = "walkId", description = "산책 ID")

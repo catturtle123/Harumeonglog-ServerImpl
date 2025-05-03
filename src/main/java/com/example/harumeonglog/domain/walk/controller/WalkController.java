@@ -8,6 +8,7 @@ import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.domain.walk.dto.request.WalkRequest;
 import com.example.harumeonglog.domain.walk.dto.response.WalkResponse;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import com.example.harumeonglog.global.validation.annotation.CheckCursorValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,9 +53,9 @@ public class WalkController implements WalkControllerSpecification {
     @GetMapping
     public CustomResponse<WalkResponse.WalkSearchListResponse> getWalkList(@AuthenticatedMember Member member,
                                                                            @RequestParam(value = "sort", defaultValue = "RECOMMEND") String sort,
-                                                                           @RequestParam(value = "cursor", required = false) Long cursor,
-                                                                           @RequestParam(value = "size", defaultValue = "10") int offset) {
-        WalkResponse.WalkSearchListResponse response = walkQueryService.getWalkList(member, sort, cursor, offset);
+                                                                           @RequestParam(value = "cursor", required = false) @CheckCursorValidation Long cursor,
+                                                                           @RequestParam(value = "size", defaultValue = "10") @CheckCursorValidation Integer size) {
+        WalkResponse.WalkSearchListResponse response = walkQueryService.getWalkList(member, sort, cursor, size);
         return CustomResponse.ok(response);
     }
 
