@@ -14,10 +14,12 @@ import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/v1/pets")
 @Tag(name = "PetImage", description = "Pet 이미지 관련 API")
 public class PetImageController implements PetImageControllerSpecification {

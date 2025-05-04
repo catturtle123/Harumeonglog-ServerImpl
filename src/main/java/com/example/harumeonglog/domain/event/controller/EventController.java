@@ -15,12 +15,14 @@ import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/v1/events")
 public class EventController implements EventControllerSpecification {
 
