@@ -5,6 +5,8 @@ import com.example.harumeonglog.domain.pet.dto.request.PetRequest;
 import com.example.harumeonglog.domain.pet.dto.response.PetResponse;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import com.example.harumeonglog.global.validation.annotation.CheckCursorValidation;
+import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -40,16 +42,16 @@ public interface PetControllerSpecification {
     })
     @GetMapping
     CustomResponse<PetResponse.GetPetsResponse> getPets(
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @CheckCursorValidation Long cursor,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member
     );
 
     @Operation(summary = "현재 펫 변경 시 보유 펫 조회 API by 백종우",description = "대표 펫 변경 시 보유 펫 조회")
     @GetMapping("/active")
     CustomResponse<PetResponse.PetListPreviewResponse> getActivePets(
-            @RequestParam(required = false) Long cursor, // 커서 (마지막 펫 ID)
-            @RequestParam(defaultValue = "10") int size,  // 페이지 크기
+            @RequestParam(required = false) @CheckCursorValidation Long cursor,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member) ;
 
     @Operation(summary = "현재 펫 변경 API by 백종우", description = "대표 펫을 변경합니다.")
@@ -88,8 +90,8 @@ public interface PetControllerSpecification {
     @GetMapping("/members")
     CustomResponse<PetResponse.SearchMemberResponse> searchMember(
             @RequestParam String email,
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @CheckCursorValidation Long cursor,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member
     );
 

@@ -9,13 +9,17 @@ import com.example.harumeonglog.domain.pet.service.command.PetImageCommandServic
 import com.example.harumeonglog.domain.pet.service.query.PetImageQueryService;
 import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import com.example.harumeonglog.global.validation.annotation.CheckCursorValidation;
+import com.example.harumeonglog.global.validation.annotation.CheckSizeValidation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/v1/pets")
 @Tag(name = "PetImage", description = "Pet 이미지 관련 API")
 public class PetImageController implements PetImageControllerSpecification {
@@ -32,8 +36,8 @@ public class PetImageController implements PetImageControllerSpecification {
     @GetMapping("/{petId}/images")
     public CustomResponse<PetImageResponse.GetImagesResponse> getImages(
             @PathVariable Long petId,
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @CheckCursorValidation Long cursor,
+            @RequestParam(defaultValue = "10") @CheckSizeValidation Integer size,
             @AuthenticatedMember Member member) {
         return CustomResponse.ok(petImageQueryService.getImages(petId, member, cursor, size));
     }
