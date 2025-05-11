@@ -19,6 +19,7 @@ public class OutBox extends BaseEntity {
     private Long id;
 
     @Column(name = "event_type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private EventType eventType;
 
     @Lob
