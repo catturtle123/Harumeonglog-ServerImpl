@@ -2,6 +2,9 @@ package com.example.harumeonglog.global.s3.service;
 
 import com.example.harumeonglog.global.error.code.S3ErrorCode;
 import com.example.harumeonglog.global.error.exception.S3Exception;
+import com.example.harumeonglog.global.outbox.converter.OutBoxConverter;
+import com.example.harumeonglog.global.outbox.entity.OutBox;
+import com.example.harumeonglog.global.outbox.repository.OutBoxRepository;
 import com.example.harumeonglog.global.s3.converter.S3Converter;
 import com.example.harumeonglog.global.s3.dto.request.S3RequestDTO;
 import com.example.harumeonglog.global.s3.dto.response.S3ResponseDTO;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 public class S3ServiceImpl implements S3Service {
 
     private final S3Util s3Util;
+    private final OutBoxRepository outBoxRepository;
 
     private List<String> acceptImageType = List.of("image/jpeg", "image/png", "image/gif", "image/jpg");
 
@@ -38,6 +42,10 @@ public class S3ServiceImpl implements S3Service {
 
         // Presigned URL 생성
         String presignedUrl = generatePresignedUrl(imageKey, request.getImage().getContentType());
+
+        // Outbox 생성
+        OutBox outBox = OutBoxConverter.toS3OutBox(imageKey);
+        outBoxRepository.save(outBox);
 
         return S3Converter.toS3ResponsePreviewDTO(presignedUrl, imageKey);
     }
@@ -58,6 +66,7 @@ public class S3ServiceImpl implements S3Service {
 
         return S3Converter.toS3ResponseListDTO(imageList);
     }
+
 
     private String geneerateImageKey(Long entityId, S3Domain domain, String filename){
         String uuid = UUID.randomUUID().toString();
