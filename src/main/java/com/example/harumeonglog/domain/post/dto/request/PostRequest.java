@@ -14,7 +14,7 @@ public class PostRequest {
     public static class PostCreateRequest {
         private PostCategory postCategory;
         @Schema(maxLength = 100)
-        @Size(max = 2)
+        @Size(max = 100)
         private String title;
         @Schema(maxLength = 2000)
         @Size(max = 2000)
@@ -26,7 +26,7 @@ public class PostRequest {
     public static class PostUpdateRequest {
         private PostCategory postCategory;
         @Schema(maxLength = 100)
-        @Size(max = 2)
+        @Size(max = 100)
         private String title;
         @Schema(maxLength = 2000)
         @Size(max = 2000)
