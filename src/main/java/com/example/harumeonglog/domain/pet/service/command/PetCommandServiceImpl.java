@@ -58,7 +58,7 @@ public class PetCommandServiceImpl implements PetCommandService {
             member.updateCurrentPetId(pet.getId());
 
             // Outbox 상태 변경
-            if(s3Util.isObjectExists(request.getMainImageKey())) {
+            if(!s3Util.isObjectExists(request.getMainImageKey())) {
                 throw new S3Exception(S3ErrorCode.NOT_FOUND);
             }
             outboxUtil.changeS3OutboxStatus(request.getMainImageKey());
@@ -99,7 +99,7 @@ public class PetCommandServiceImpl implements PetCommandService {
             String imageUrl = s3Util.getUrlFromKey(newMainImageKey);
 
             // Outbox 상태 변경
-            if(s3Util.isObjectExists(request.getNewMainImageKey())) {
+            if(!s3Util.isObjectExists(request.getNewMainImageKey())) {
                 throw new S3Exception(S3ErrorCode.NOT_FOUND);
             }
             outboxUtil.changeS3OutboxStatus(request.getNewMainImageKey());
