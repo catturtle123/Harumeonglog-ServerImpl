@@ -11,7 +11,4 @@ public interface OutBoxService {
     void updateSuccessFCMOutBox(List<OutBox> outBoxList);
 
     void updateFailedFCMOutBox(List<OutBox> failedOutBox);
-
-    void updateSuccessS3OutBox(List<OutBox> outBoxList);
-    void updateFailedS3OutBox(List<OutBox> failedOutBox);
 }

@@ -24,13 +24,7 @@ public interface OutBoxRepository extends JpaRepository<OutBox, Long> {
     @Query("update OutBox o set o.retryCount = o.retryCount + 1 where o in :failedOutBox")
     void updateFailedFCMOutBox(List<OutBox> failedOutBox);
 
-    @Modifying
-    @Query("UPDATE OutBox o SET o.processed = true WHERE o IN :outBoxList")
-    void updateSuccessS3OutBox(@Param("outBoxList") List<OutBox> outBoxList);
-
-    @Modifying
-    @Query("UPDATE OutBox o SET o.retryCount = o.retryCount + 1 WHERE o IN :outBoxList")
-    void updateFailedS3OutBox(@Param("outBoxList") List<OutBox> outBoxList);
-
     Optional<OutBox> findByPayloadAndEventType(String payload, EventType eventType);
+
+    List<OutBox> findByEventTypeAndProcessedFalse(EventType eventType);
 }

@@ -11,6 +11,7 @@ import com.example.harumeonglog.global.firebase.service.FcmService;
 import com.example.harumeonglog.global.outbox.dto.FcmPayload;
 import com.example.harumeonglog.global.outbox.entity.OutBox;
 import com.example.harumeonglog.global.outbox.entity.enums.EventType;
+import com.example.harumeonglog.global.outbox.repository.OutBoxRepository;
 import com.example.harumeonglog.global.outbox.service.OutBoxService;
 import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class OutBoxScheduler {
     private final S3Util s3Util;
 
     private static final int MAX_RETRY_COUNT = 3;
+    private final OutBoxRepository outBoxRepository;
 
     @Scheduled(fixedDelay = 10000)
     @Transactional
@@ -83,34 +85,28 @@ public class OutBoxScheduler {
         }
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 3600000)
     @Transactional
     public void processOutBoxAboutS3() {
-        List<OutBox> events = outBoxService.findTop100(MAX_RETRY_COUNT, EventType.S3, 100);
-        Map<Boolean, List<OutBox>> partitionedEvents = events.stream().collect(Collectors.partitioningBy(event -> {
+        List<OutBox> events = outBoxRepository.findByEventTypeAndProcessedFalse(EventType.S3);
+        events.forEach(event -> {
             try {
-                String imageKey = event.getPayload(); // OutBox에 이미지 Key가 payload로 저장된 경우
+                String imageKey = event.getPayload();
                 if (s3Util.isObjectExists(imageKey)) {
                     log.info("S3 파일 확인 성공: key={}", imageKey);
-                    return true;
+                    s3Util.deleteFile(imageKey);
                 } else {
                     log.warn("S3 파일이 존재하지 않음: key={}", imageKey);
+                    event.increaseRetryCount();
+                    if(event.getRetryCount() >= MAX_RETRY_COUNT) {
+                        log.error("최대 재시도 횟수 초과. OutBox 제거: key={}", imageKey);
+                        outBoxRepository.delete(event);
+                    }
                 }
             } catch (Exception e) {
                 log.error("S3 파일 확인 실패 (key={}): {}", event.getPayload(), e.getMessage(), e);
+                event.increaseRetryCount();
             }
-            return false;
-        }));
-
-        List<OutBox> successOutBox = partitionedEvents.get(true);
-        List<OutBox> failedOutBox = partitionedEvents.get(false);
-
-        if (!successOutBox.isEmpty()) {
-            outBoxService.updateSuccessS3OutBox(successOutBox);
-        }
-
-        if (!failedOutBox.isEmpty()) {
-            outBoxService.updateFailedS3OutBox(failedOutBox);
-        }
+        });
     }
 }
