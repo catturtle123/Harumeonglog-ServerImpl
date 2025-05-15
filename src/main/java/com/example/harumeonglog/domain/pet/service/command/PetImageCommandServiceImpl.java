@@ -49,7 +49,8 @@ public class PetImageCommandServiceImpl implements PetImageCommandService {
                 .toList();
 
         // Outbox 상태 변경
-        request.getImageKeys().forEach(imageKey -> outboxUtil.changeOutboxStatus(imageKey, EventType.S3));
+        request.getImageKeys().forEach(
+                outboxUtil::changeS3OutboxStatus);
 
         LocalDateTime time = savedImages.isEmpty() ? LocalDateTime.now().withNano(0) : savedImages.get(0).getCreatedAt();
 
