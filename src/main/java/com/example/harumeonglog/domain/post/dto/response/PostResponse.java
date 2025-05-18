@@ -30,6 +30,7 @@ public class PostResponse {
         private String content;
         private Long likeNum;
         private Long commentNum;
+        private Long elapsedTime;
         private PostCategory postCategory;
         private MemberInfoResponse memberInfoResponse;
         private String imageKeyName;
@@ -43,6 +44,7 @@ public class PostResponse {
         private Long postId;
         private String content;
         private String title;
+        private Long elapsedTime;
         private Long likeNum;
         private Long commentNum;
         private PostCategory postCategory;
