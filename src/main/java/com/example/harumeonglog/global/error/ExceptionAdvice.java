@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -60,12 +61,33 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<CustomResponse<String>> handleDuplicateEntry(DataIntegrityViolationException e) {
+    public ResponseEntity<CustomResponse<String>> handleDuplicateEntry(DataIntegrityViolationException e, HttpServletRequest request) {
         loggingError(e, e.getMessage());
 
-        BaseErrorCode code = GeneralErrorCode._IS_ALREADY;
+        Throwable rootCause = NestedExceptionUtils.getMostSpecificCause(e);
+        String message = rootCause.getMessage();
+        BaseErrorCode code;
 
-        return ResponseEntity.status(code.getHttpStatus()).body(CustomResponse.fail(code, null));
+        List<String> uniqueConstraintNames = List.of(
+                "uk_comment_block_comment_member",
+                "uk_comment_like_comment_member",
+                "uk_comment_report_comment_member"
+        );
+
+        if (message != null && uniqueConstraintNames.stream().anyMatch(message::contains)) {
+            code = GeneralErrorCode._IS_ALREADY;
+            return ResponseEntity.status(code.getHttpStatus())
+                    .body(CustomResponse.fail(code, null));
+        }
+
+        code = GeneralErrorCode._DB_ERROR;
+
+        if (!profileConfigData.getOnProfile().equals("local")) {
+            sendDiscordMessage(request, e);
+        }
+
+        return ResponseEntity.status(code.getHttpStatus())
+                .body(CustomResponse.fail(code, message));
     }
 
 

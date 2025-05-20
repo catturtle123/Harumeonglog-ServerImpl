@@ -12,7 +12,10 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "comment_like",
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"comment_id", "member_id"})
+            @UniqueConstraint(
+                    name = "uk_comment_like_comment_member",
+                    columnNames = {"comment_id", "member_id"}
+            )
         }
 )
 public class CommentLike extends BaseEntity {
