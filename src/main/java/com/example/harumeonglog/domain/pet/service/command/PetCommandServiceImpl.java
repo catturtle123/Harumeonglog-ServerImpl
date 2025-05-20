@@ -121,6 +121,7 @@ public class PetCommandServiceImpl implements PetCommandService {
                 .orElseThrow(() -> new PetException(PetErrorCode.NOT_IN_GROUP));
 
         member.updateCurrentPetId(pet.getId());
+        memberRepository.save(member);
     }
 
     @Override
