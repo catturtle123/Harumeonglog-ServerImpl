@@ -83,6 +83,7 @@ public class EventController {
             @ApiResponse(responseCode = "PETROLE400", description = "존재하지 않는 권한입니다."),
             @ApiResponse(responseCode = "AUTH401", description = "인증되지 않은 사용자")
     })
+    @GetMapping
     public CustomResponse<EventResponse.EventDayResponse> getDayEvent(
             @AuthenticatedMember Member member,
             @RequestParam(defaultValue = "2025-04-26") LocalDate date,

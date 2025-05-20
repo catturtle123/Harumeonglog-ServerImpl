@@ -55,7 +55,8 @@ public class PetCommandServiceImpl implements PetCommandService {
             memberPetRepository.save(memberPet);
 
             // member의 currentPetId 지정
-            member.updateCurrentPetId(pet.getId());
+            member.updateCurrentPetId(savedPet.getId());
+            memberRepository.save(member);
 
             // Outbox 상태 변경
             if(!s3Util.isObjectExists(request.getMainImageKey())) {

@@ -35,10 +35,11 @@ public class EventQueryServiceImpl implements EventQueryService{
 
         Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.ASC, "createdAt"));
 
+        Pet pet = checkCurrentPetId(member);
 
         Slice<Event> eventSlice = (category == null) ?
-                eventRepository.findByDateAndMemberAndDeletedAtIsNull(date, member, cursor, pageable) :
-                eventRepository.findByDateAndCategoryAndMemberAndDeletedAtIsNull(date, category, member, cursor, pageable);
+                eventRepository.findByDateAndPetAndDeletedAtIsNull(date, pet, cursor, pageable) :
+                eventRepository.findByDateAndCategoryAndPetAndDeletedAtIsNull(date, category, pet, cursor, pageable);
 
 
         return EventConverter.toEventDayResponse(eventSlice);
@@ -54,8 +55,7 @@ public class EventQueryServiceImpl implements EventQueryService{
 
     @Override
     public EventResponse.EventDatesResponse getEventDates(Member member, Integer year, Integer month) {
-        Pet pet = petRepository.findById(member.getCurrentPetId()).orElseThrow(
-                () -> new PetException(PetErrorCode.NOT_FOUND));
+        Pet pet = checkCurrentPetId(member);
 
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
@@ -63,5 +63,12 @@ public class EventQueryServiceImpl implements EventQueryService{
         List<LocalDate> dates = eventRepository.findDistinctDatesByMemberAndDateBetweenAndDeletedAtIsNull(pet, startDate, endDate);
 
         return EventConverter.toEventDatesResponse(dates);
+    }
+
+    private Pet checkCurrentPetId(Member member){
+        if(member.getCurrentPetId() == null){
+            throw new PetException(PetErrorCode.CURRENT_PET_NOT_FOUND);
+        }
+        return petRepository.findById(member.getCurrentPetId()).orElseThrow(() -> new PetException(PetErrorCode.NOT_FOUND));
     }
 }

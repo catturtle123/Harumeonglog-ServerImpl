@@ -2,7 +2,6 @@ package com.example.harumeonglog.domain.event.repository;
 
 import com.example.harumeonglog.domain.event.entity.Event;
 import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
-import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.pet.entity.Pet;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Pageable;
@@ -17,27 +16,27 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e " +
             "WHERE e.date = :date " +
-            "AND e.member = :member " +
+            "AND e.pet = :pet " +
             "AND e.deletedAt IS NULL " +
             "AND (:cursor IS NULL OR e.id > :cursor) " +
             "ORDER BY e.createdAt ASC")
-    Slice<Event> findByDateAndMemberAndDeletedAtIsNull(
+    Slice<Event> findByDateAndPetAndDeletedAtIsNull(
             @Param("date") LocalDate date,
-            @Param("member") Member member,
+            @Param("pet") Pet pet,
             @Param("cursor") Long cursor,
             Pageable pageable);
 
     @Query("SELECT e FROM Event e " +
             "WHERE e.date = :date " +
             "AND e.category = :category " +
-            "AND e.member = :member " +
+            "AND e.pet = :pet " +
             "AND e.deletedAt IS NULL " +
             "AND (:cursor IS NULL OR e.id > :cursor) " +
             "ORDER BY e.createdAt ASC")
-    Slice<Event> findByDateAndCategoryAndMemberAndDeletedAtIsNull(
+    Slice<Event> findByDateAndCategoryAndPetAndDeletedAtIsNull(
             @Param("date") LocalDate date,
             @Param("category") EventCategory category,
-            @Param("member") Member member,
+            @Param("pet") Pet pet,
             @Param("cursor") Long cursor,
             Pageable pageable);
 
