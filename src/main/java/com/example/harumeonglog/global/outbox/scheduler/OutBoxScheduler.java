@@ -100,7 +100,6 @@ public class OutBoxScheduler {
                     event.increaseRetryCount();
                     if(event.getRetryCount() >= MAX_RETRY_COUNT) {
                         log.error("최대 재시도 횟수 초과. OutBox 제거: key={}", imageKey);
-                        outBoxRepository.delete(event);
                     }
                 }
             } catch (Exception e) {
