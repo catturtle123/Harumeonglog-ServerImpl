@@ -11,6 +11,7 @@ import com.example.harumeonglog.domain.member.dto.request.SettingRequest;
 import com.example.harumeonglog.domain.member.dto.response.MemberResponse;
 import com.example.harumeonglog.domain.member.dto.response.SettingResponse;
 import com.example.harumeonglog.global.security.annotation.AuthenticatedMember;
+import com.example.harumeonglog.global.util.S3Util;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,6 +28,7 @@ public class MemberController {
     private final MemberCommandService memberCommandService;
     private final SettingCommandService settingCommandService;
     private final SettingQueryService settingQueryService;
+    private final S3Util s3Util;
 
     @Operation(summary = "사용자 정보 API by 서정모", description = "사용자 정보 가져오는 API")
     @ApiResponses(value = {
@@ -34,7 +36,7 @@ public class MemberController {
     })
     @GetMapping("/info")
     public CustomResponse<MemberResponse.MemberInfoResponse> getInfo(@AuthenticatedMember Member member) {
-        return CustomResponse.ok(MemberConverter.toMemberInfoResponse(member, member.getImage()));
+        return CustomResponse.ok(MemberConverter.toMemberInfoResponse(member, s3Util));
     }
 
     @Operation(summary = "환경 설정 정보 API by 서정모", description = "환경 설정 정보 가져오는 API")

@@ -9,6 +9,7 @@ import com.example.harumeonglog.domain.comment.dto.response.CommentResponse.Comm
 import com.example.harumeonglog.domain.comment.entity.Comment;
 import com.example.harumeonglog.domain.member.converter.MemberConverter;
 import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.global.util.S3Util;
 
 import java.util.List;
 import java.util.Set;
@@ -24,13 +25,13 @@ public class CommentConverter {
                 .build();
     }
 
-    public static CommentPreviewResponse toCommentPreviewResponse(Comment comment, Set<Long> isBlocked) {
+    public static CommentPreviewResponse toCommentPreviewResponse(Comment comment, Set<Long> isBlocked, S3Util s3Util) {
 
-        List<CommentCommentPreviewResponse> commentcommentReponseList = comment.getCommentList().stream().map((c)->toCommentCommentPreviewResponse(c, isBlocked)).toList();
+        List<CommentCommentPreviewResponse> commentcommentReponseList = comment.getCommentList().stream().map((c)->toCommentCommentPreviewResponse(c, isBlocked, s3Util)).toList();
 
         return CommentPreviewResponse.builder()
                 .commentId(comment.getId())
-                .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember(), comment.getMember().getImage()))
+                .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember(), s3Util))
                 .content(isBlockOrDeletedComment(comment, isBlocked))
                 .commentcommentResponseList(commentcommentReponseList)
                 .build();
@@ -51,11 +52,11 @@ public class CommentConverter {
                 .build();
     }
 
-    private static CommentCommentPreviewResponse toCommentCommentPreviewResponse(Comment comment, Set<Long> isBlocked) {
+    private static CommentCommentPreviewResponse toCommentCommentPreviewResponse(Comment comment, Set<Long> isBlocked, S3Util s3Util) {
 
         return CommentCommentPreviewResponse.builder()
                 .commentId(comment.getId())
-                .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember(), comment.getMember().getImage()))
+                .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember(), s3Util))
                 .content(isBlockOrDeletedComment(comment, isBlocked))
                 .build();
     }

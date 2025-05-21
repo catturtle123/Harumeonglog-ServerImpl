@@ -11,6 +11,7 @@ import com.example.harumeonglog.domain.post.entity.Post;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
 import com.example.harumeonglog.global.error.code.PostErrorCode;
 import com.example.harumeonglog.global.error.exception.PostException;
+import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -30,6 +31,7 @@ public class CommentQueryServiceImpl implements CommentQueryService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final CommentBlockRepository commentBlockRepository;
+    private final S3Util s3Util;
 
     @Override
     public CommentResponse.CommentPreviewListResponse getComments(Long postId, Long cursor, Integer size, Member member) {
@@ -51,7 +53,7 @@ public class CommentQueryServiceImpl implements CommentQueryService {
 
         List<CommentResponse.CommentPreviewResponse> responses = commentList.stream()
                 .map(comment -> {
-                    return CommentConverter.toCommentPreviewResponse(comment, blockedCommentIdSet);
+                    return CommentConverter.toCommentPreviewResponse(comment, blockedCommentIdSet, s3Util);
                 })
                 .toList();
 

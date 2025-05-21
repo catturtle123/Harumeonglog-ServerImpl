@@ -50,7 +50,7 @@ public class PostQueryServiceImpl implements PostQueryService {
         List<String> postImageList = post.getPostImageList().stream()
                 .map((p)->s3Util.getUrlFromKey(p.getPostImageKeyName()))
                 .toList();
-        return PostConverter.toPostDetailResponse(post, MemberConverter.toMemberInfoResponse(post.getMember(), post.getMember().getImage()), postImageList);
+        return PostConverter.toPostDetailResponse(post, MemberConverter.toMemberInfoResponse(post.getMember(), s3Util), postImageList);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class PostQueryServiceImpl implements PostQueryService {
                 .map(post -> {
                     String postImageKey = post.getPostImageList().isEmpty() ? null :
                             s3Util.getUrlFromKey(post.getPostImageList().get(0).getPostImageKeyName());
-                    return PostConverter.toPostPreviewResponse(post, MemberConverter.toMemberInfoResponse(post.getMember(), post.getMember().getImage()), postImageKey);
+                    return PostConverter.toPostPreviewResponse(post, MemberConverter.toMemberInfoResponse(post.getMember(), s3Util), postImageKey);
                 })
                 .toList();
 

@@ -25,7 +25,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         Member updatedMember = memberRepository.findById(member.getId()).orElseThrow(() ->
                 new MemberException(MemberErrorCode.NOT_FOUND));
         updatedMember.update(request.getNickname(), request.getImageKey());
-        return MemberConverter.toMemberInfoUpdateResponse(updatedMember, s3Util.getUrlFromKey(updatedMember.getImage()));
+        return MemberConverter.toMemberInfoUpdateResponse(updatedMember, s3Util);
     }
 
     @Override
