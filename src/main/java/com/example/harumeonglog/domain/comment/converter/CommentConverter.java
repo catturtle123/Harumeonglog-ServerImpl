@@ -30,7 +30,7 @@ public class CommentConverter {
 
         return CommentPreviewResponse.builder()
                 .commentId(comment.getId())
-                .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember()))
+                .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember(), comment.getMember().getImage()))
                 .content(isBlockOrDeletedComment(comment, isBlocked))
                 .commentcommentResponseList(commentcommentReponseList)
                 .build();
@@ -55,7 +55,7 @@ public class CommentConverter {
 
         return CommentCommentPreviewResponse.builder()
                 .commentId(comment.getId())
-                .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember()))
+                .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember(), comment.getMember().getImage()))
                 .content(isBlockOrDeletedComment(comment, isBlocked))
                 .build();
     }

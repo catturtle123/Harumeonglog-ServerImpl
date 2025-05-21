@@ -34,7 +34,7 @@ public class MemberController {
     })
     @GetMapping("/info")
     public CustomResponse<MemberResponse.MemberInfoResponse> getInfo(@AuthenticatedMember Member member) {
-        return CustomResponse.ok(MemberConverter.toMemberInfoResponse(member));
+        return CustomResponse.ok(MemberConverter.toMemberInfoResponse(member, member.getImage()));
     }
 
     @Operation(summary = "환경 설정 정보 API by 서정모", description = "환경 설정 정보 가져오는 API")

@@ -5,19 +5,19 @@ import com.example.harumeonglog.domain.member.entity.Member;
 
 public class MemberConverter {
 
-    public static MemberResponse.MemberInfoResponse toMemberInfoResponse(Member member) {
+    public static MemberResponse.MemberInfoResponse toMemberInfoResponse(Member member, String imageUrl) {
         return MemberResponse.MemberInfoResponse.builder()
                 .memberId(member.getId())
-                .image(member.getImage())
+                .image(imageUrl)
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .build();
     }
 
-    public static MemberResponse.MemberInfoUpdateResponse toMemberInfoUpdateResponse(Member member) {
+    public static MemberResponse.MemberInfoUpdateResponse toMemberInfoUpdateResponse(Member member, String imageUrl) {
         return MemberResponse.MemberInfoUpdateResponse.builder()
                 .memberId(member.getId())
-                .image(member.getImage())
+                .image(imageUrl)
                 .nickname(member.getNickname())
                 .updatedAt(member.getUpdatedAt())
                 .build();

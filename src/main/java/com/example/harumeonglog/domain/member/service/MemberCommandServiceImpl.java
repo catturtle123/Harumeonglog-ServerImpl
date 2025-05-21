@@ -7,6 +7,7 @@ import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.global.error.code.MemberErrorCode;
 import com.example.harumeonglog.global.error.exception.MemberException;
+import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberCommandServiceImpl implements MemberCommandService {
 
     private final MemberRepository memberRepository;
+    private final S3Util s3Util;
 
     @Override
     public MemberResponse.MemberInfoUpdateResponse updateInfo(Member member, MemberRequest.MemberInfoUpdateRequest request) {
         Member updatedMember = memberRepository.findById(member.getId()).orElseThrow(() ->
                 new MemberException(MemberErrorCode.NOT_FOUND));
-        updatedMember.update(request.getNickname(), request.getImage());
-        return MemberConverter.toMemberInfoUpdateResponse(updatedMember);
+        updatedMember.update(request.getNickname(), request.getImageKey());
+        return MemberConverter.toMemberInfoUpdateResponse(updatedMember, s3Util.getUrlFromKey(updatedMember.getImage()));
     }
 
     @Override
