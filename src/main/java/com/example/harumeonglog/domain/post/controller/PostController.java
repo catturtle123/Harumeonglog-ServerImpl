@@ -39,9 +39,10 @@ public class PostController {
             @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "postRequestCategory") PostRequestCategory postRequestCategory,
             @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
-            @RequestParam(name = "size") @CheckSizeValidation Integer size
+            @RequestParam(name = "size") @CheckSizeValidation Integer size,
+            @AuthenticatedMember Member member
     ) {
-        PostResponse.PostPreviewListResponse postListResponse = postQueryService.getPosts(cursor, size, search, postRequestCategory);
+        PostResponse.PostPreviewListResponse postListResponse = postQueryService.getPosts(cursor, size, search, postRequestCategory, member);
         return CustomResponse.ok(postListResponse);
     }
 

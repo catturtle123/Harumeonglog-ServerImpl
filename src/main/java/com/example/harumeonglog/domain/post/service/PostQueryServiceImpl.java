@@ -7,6 +7,7 @@ import com.example.harumeonglog.domain.post.controller.enums.PostRequestCategory
 import com.example.harumeonglog.domain.post.converter.PostConverter;
 import com.example.harumeonglog.domain.post.dto.response.PostResponse;
 import com.example.harumeonglog.domain.post.entity.Post;
+import com.example.harumeonglog.domain.post.entity.PostLike;
 import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
 import com.example.harumeonglog.domain.post.repository.PostLikeRepository;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,7 +34,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final PostLikeRepository postLikeRepository;
 
     @Override
-    public PostResponse.PostPreviewListResponse getPosts(Long cursor, Integer size, String search, PostRequestCategory postRequestCategory) {
+    public PostResponse.PostPreviewListResponse getPosts(Long cursor, Integer size, String search, PostRequestCategory postRequestCategory, Member member) {
         cursor = normalizeCursor(cursor);
         search = normalizeSearch(search);
 
@@ -43,7 +46,7 @@ public class PostQueryServiceImpl implements PostQueryService {
             postSlice = postRepository.findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(search, cursor, postCategory, PageRequest.of(0, size));
         }
 
-        return buildPostPreviewListResponse(postSlice);
+        return buildPostPreviewListResponse(postSlice, member);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class PostQueryServiceImpl implements PostQueryService {
         cursor = normalizeCursor(cursor);
 
         Slice<Post> postSlice = postRepository.findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(member, cursor, PageRequest.of(0, size));
-        return buildPostPreviewListResponse(postSlice);
+        return buildPostPreviewListResponse(postSlice, member);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class PostQueryServiceImpl implements PostQueryService {
         cursor = normalizeCursor(cursor);
 
         Slice<Post> postSlice = postRepository.findMyLikePosts(member, cursor, PageRequest.of(0, size));
-        return buildPostPreviewListResponse(postSlice);
+        return buildPostPreviewListResponse(postSlice, member);
     }
 
     private Long normalizeCursor(Long cursor) {
@@ -82,7 +85,7 @@ public class PostQueryServiceImpl implements PostQueryService {
         return (search == null || search.isEmpty()) ? "" : search;
     }
 
-    private PostResponse.PostPreviewListResponse buildPostPreviewListResponse(Slice<Post> postSlice) {
+    private PostResponse.PostPreviewListResponse buildPostPreviewListResponse(Slice<Post> postSlice, Member member) {
         Long nextCursor = null;
         List<Post> posts = postSlice.toList();
 
@@ -90,11 +93,25 @@ public class PostQueryServiceImpl implements PostQueryService {
             nextCursor = posts.get(posts.size() - 1).getId();
         }
 
+        // ✅ 좋아요 여부를 한 번에 조회
+        List<PostLike> postLikes = postLikeRepository.findByPostInAndMember(posts, member);
+        Set<Long> likedPostIds = postLikes.stream()
+                .map(postLike -> postLike.getPost().getId())
+                .collect(Collectors.toSet());
+
         List<PostResponse.PostPreviewResponse> postPreviewResponses = posts.stream()
                 .map(post -> {
                     String postImageKey = post.getPostImageList().isEmpty() ? null :
                             s3Util.getUrlFromKey(post.getPostImageList().get(0).getPostImageKeyName());
-                    return PostConverter.toPostPreviewResponse(post, MemberConverter.toMemberInfoResponse(post.getMember(), s3Util), postImageKey);
+
+                    boolean isLiked = likedPostIds.contains(post.getId());
+
+                    return PostConverter.toPostPreviewResponse(
+                            post,
+                            MemberConverter.toMemberInfoResponse(post.getMember(), s3Util),
+                            postImageKey,
+                            isLiked
+                    );
                 })
                 .toList();
 

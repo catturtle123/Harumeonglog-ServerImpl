@@ -31,7 +31,7 @@ public class PostConverter {
                 .build();
     }
 
-    public static PostResponse.PostPreviewResponse toPostPreviewResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, String image) {
+    public static PostResponse.PostPreviewResponse toPostPreviewResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, String image, Boolean isLiked) {
 
         return PostResponse.PostPreviewResponse.builder()
                 .postId(post.getId())
@@ -39,6 +39,7 @@ public class PostConverter {
                 .postCategory(post.getCategory())
                 .createdAt(post.getCreatedAt())
                 .content(post.getContent())
+                .isLiked(isLiked)
                 .likeNum(post.getPostLikeNum())
                 .commentNum(post.getCommentNum())
                 .memberInfoResponse(memberInfoResponse)
