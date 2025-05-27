@@ -84,6 +84,10 @@ public class Post extends BaseEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
+    public void increaseCommentNum() {
+        this.commentNum++;
+    }
+
     // 연관 관계 편의 메서드
     public void addPostImage(PostImage postImage) {
         postImage.addPost(this);

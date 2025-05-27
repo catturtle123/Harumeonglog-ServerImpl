@@ -15,7 +15,7 @@ import java.util.List;
 
 public class PostConverter {
 
-    public static PostResponse.PostDetailResponse toPostDetailResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, List<String> imageList) {
+    public static PostResponse.PostDetailResponse toPostDetailResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, List<String> imageList, Boolean isLiked) {
 
         return PostResponse.PostDetailResponse.builder()
                 .postId(post.getId())
@@ -24,13 +24,14 @@ public class PostConverter {
                 .postCategory(post.getCategory())
                 .memberInfoResponse(memberInfoResponse)
                 .createdAt(post.getCreatedAt())
+                .isLiked(isLiked)
                 .likeNum(post.getPostLikeNum())
                 .commentNum(post.getCommentNum())
                 .postImageList(imageList)
                 .build();
     }
 
-    public static PostResponse.PostPreviewResponse toPostPreviewResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, String image) {
+    public static PostResponse.PostPreviewResponse toPostPreviewResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, String image, Boolean isLiked) {
 
         return PostResponse.PostPreviewResponse.builder()
                 .postId(post.getId())
@@ -38,6 +39,7 @@ public class PostConverter {
                 .postCategory(post.getCategory())
                 .createdAt(post.getCreatedAt())
                 .content(post.getContent())
+                .isLiked(isLiked)
                 .likeNum(post.getPostLikeNum())
                 .commentNum(post.getCommentNum())
                 .memberInfoResponse(memberInfoResponse)

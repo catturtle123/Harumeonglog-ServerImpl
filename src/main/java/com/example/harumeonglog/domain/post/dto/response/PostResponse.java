@@ -30,6 +30,7 @@ public class PostResponse {
         private String content;
         private Long likeNum;
         private Long commentNum;
+        private Boolean isLiked;
         private LocalDateTime createdAt;
         private PostCategory postCategory;
         private MemberInfoResponse memberInfoResponse;
@@ -47,6 +48,7 @@ public class PostResponse {
         private LocalDateTime createdAt;
         private Long likeNum;
         private Long commentNum;
+        private Boolean isLiked;
         private PostCategory postCategory;
         private MemberInfoResponse memberInfoResponse;
         private List<String> postImageList;
