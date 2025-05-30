@@ -37,7 +37,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build -x test -Dspring.profiles.active=dev
+        run: ./gradlew build -x test
 
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest
@@ -58,7 +58,7 @@ jobs:
       - name: Create .env file
         run: |
           cat <<EOF > .env
-          ${{ secrets.ENV }}  # ← 공백 없이
+          ${{ secrets.ENV }}
           EOF
 
       - name: SCP .env file to EC2
