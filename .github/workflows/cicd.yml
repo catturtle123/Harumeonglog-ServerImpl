@@ -55,9 +55,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create .env file # 각자 맞는 환경 변수 투입
+      - name: Create .env file
         run: |
-          echo "${{ secrets.ENV }}" >> .env
+          cat <<EOF > .env
+              ${{ secrets.ENV }}
+          EOF
 
       - name: SCP .env file to EC2
         uses: appleboy/scp-action@master
@@ -94,6 +96,5 @@ jobs:
             sudo docker run --name ${{ env.CONTAINER_NAME }} \
               -d \
               -p 80:8080 \
-              -p 443:8080 \
               --env-file /home/ubuntu/secrets/.env \
               ${{ env.DOCKER_IMAGE_NAME }}
