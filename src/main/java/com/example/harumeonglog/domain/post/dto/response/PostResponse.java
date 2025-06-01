@@ -77,4 +77,21 @@ public class PostResponse {
         private LocalDateTime updateAt;
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class HomePostListRequest {
+        private List<HomePostRequest> homePostRequestList;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class HomePostRequest {
+        private PostCategory postCategory;
+        private String title;
+    }
+
 }

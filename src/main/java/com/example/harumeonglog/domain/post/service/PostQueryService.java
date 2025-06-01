@@ -15,4 +15,6 @@ public interface PostQueryService {
     PostResponse.PostPreviewListResponse getMyPost(Long cursor, Integer size, Member member);
 
     PostResponse.PostPreviewListResponse getMyLikePost(Long cursor, Integer size, Member member);
+
+    PostResponse.HomePostListRequest getHomePosts();
 }

@@ -86,4 +86,21 @@ public class PostConverter {
                 .createAt(post.getCreatedAt())
                 .build();
     }
+
+    public static PostResponse.HomePostListRequest toHomePostListRequest(List<Post> postList) {
+
+        List<PostResponse.HomePostRequest> homePostList = postList.stream().map(PostConverter::toHomePostRequest).toList();
+
+        return PostResponse.HomePostListRequest.builder()
+                .homePostRequestList(homePostList)
+                .build();
+    }
+
+    private static PostResponse.HomePostRequest toHomePostRequest(Post post) {
+
+        return PostResponse.HomePostRequest.builder()
+                .postCategory(post.getCategory())
+                .title(post.getTitle())
+                .build();
+    }
 }

@@ -10,6 +10,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p " +
@@ -31,4 +33,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "from Post p join PostLike pl on pl.post = p join fetch p.member m " +
             "where pl.member = :member and p.deletedAt is null and p.id < :cursor order by p.id desc")
     Slice<Post> findMyLikePosts(Member member, Long cursor, Pageable pageable);
+
+    @Query(value = """
+        SELECT * FROM (
+            SELECT *, ROW_NUMBER() OVER (PARTITION BY category ORDER BY created_at DESC) as rn
+            FROM post
+        ) AS ranked
+        WHERE rn = 1
+    """, nativeQuery = true)
+    List<Post> findFirstPostsByAllCategory();
 }
