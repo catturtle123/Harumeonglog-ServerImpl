@@ -15,6 +15,7 @@ import com.example.harumeonglog.global.error.code.PostErrorCode;
 import com.example.harumeonglog.global.error.exception.PostException;
 import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -77,6 +78,7 @@ public class PostQueryServiceImpl implements PostQueryService {
         return buildPostPreviewListResponse(postSlice, member);
     }
 
+    @Cacheable(cacheNames = "getHomePosts", cacheManager = "homePostsCacheManager", key = "'posts:categories'")
     @Override
     public PostResponse.HomePostListRequest getHomePosts() {
         List<Post> firstPostsByAllCategory = postRepository.findFirstPostsByAllCategory();
