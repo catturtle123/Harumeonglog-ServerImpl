@@ -4,13 +4,17 @@ import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.SocialType;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.post.entity.Post;
+import com.example.harumeonglog.domain.post.entity.PostLike;
 import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
+import com.example.harumeonglog.domain.post.repository.PostLikeRepository;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,8 +33,83 @@ class PostCommandServiceImplTest {
 
     @Autowired
     private PostCommandService postCommandService;
+    @Autowired
+    private PostLikeRepository postLikeRepository;
 
     @Test
+    @DisplayName("게시글 좋아요 수가 정상적으로 증가한다")
+    void postLikeTest() {
+        // given
+        Member member = memberRepository.save(
+                Member.builder()
+                        .email("example@example.com")
+                        .nickname("example")
+                        .providerId("example")
+                        .socialType(SocialType.KAKAO)
+                        .build()
+        );
+
+        Post post = postRepository.save(
+                Post.builder()
+                        .category(PostCategory.INFO)
+                        .content("내용")
+                        .title("제목")
+                        .member(member)
+                        .postLikeNum(0L)
+                        .build()
+        );
+
+        // when
+        postCommandService.likePost(post.getId(), member);
+
+        // then
+        Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
+        assertEquals(1L, updatedPost.getPostLikeNum());
+
+        // 로그 확인용
+        System.out.println("최종 좋아요 수: " + updatedPost.getPostLikeNum());
+    }
+
+    @Test
+    @DisplayName("게시글 좋아요 수가 정상적으로 감소한다")
+    void postUnLikeTest() {
+        // given
+        Member member = memberRepository.save(
+                Member.builder()
+                        .email("example@example.com")
+                        .nickname("example")
+                        .providerId("example")
+                        .socialType(SocialType.KAKAO)
+                        .build()
+        );
+
+        Post post = postRepository.save(
+                Post.builder()
+                        .category(PostCategory.INFO)
+                        .content("내용")
+                        .title("제목")
+                        .member(member)
+                        .postLikeNum(1L)
+                        .build()
+        );
+
+        postLikeRepository.save(
+                PostLike.builder()
+                        .member(member)
+                        .post(post)
+                        .build()
+        );
+
+        // when
+        postCommandService.likePost(post.getId(), member);
+
+        // then
+        Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
+        assertEquals(0L, updatedPost.getPostLikeNum());
+    }
+
+    @Test
+    @DisplayName("한 명이 한번에 여러 번의 좋아요를 눌렀을 때 원자적으로 처리가 되는가")
     void concurrencyLikeTest() throws InterruptedException {
         // given
         Member member = Member.builder()
