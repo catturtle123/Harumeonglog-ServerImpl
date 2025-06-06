@@ -69,11 +69,11 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         PostLike postLike = postLikeRepository.findByPostAndMember(post, member);
         if (postLike != null) {
-            post.fixLikeNum(-1L);
             postLikeRepository.delete(postLike);
+            postRepository.updatePostUnLikeNumByPost(post);
         } else {
-            post.fixLikeNum(1L);
             postLikeRepository.save(PostLikeConverter.toPostLike(post, member));
+            postRepository.updatePostLikeNumByPost(post);
         }
     }
 

@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -42,4 +43,16 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         WHERE rn = 1
     """, nativeQuery = true)
     List<Post> findFirstPostsByAllCategory();
+
+    @Query(value = """
+        UPDATE Post p SET p.postLikeNum = p.postLikeNum + 1 WHERE p = :post
+    """)
+    @Modifying
+    void updatePostLikeNumByPost(Post post);
+
+    @Query(value = """
+        UPDATE Post p SET p.postLikeNum = p.postLikeNum - 1 WHERE p = :post
+    """)
+    @Modifying
+    void updatePostUnLikeNumByPost(Post post);
 }
