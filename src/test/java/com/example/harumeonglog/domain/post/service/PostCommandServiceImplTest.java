@@ -274,7 +274,11 @@ class PostCommandServiceImplTest {
         assertEquals(imageKeys.size(), savedImageKeys.size(), "이미지 개수가 일치해야 합니다.");
         assertTrue(savedImageKeys.containsAll(imageKeys), "모든 이미지 키가 저장되어야 합니다.");
 
+        assertNotNull(savedPost.getMember());
         assertEquals(savedPost.getMember().getNickname(), "example");
+        assertEquals(savedPost.getMember().getProviderId(), "example");
+        assertEquals(savedPost.getMember().getSocialType(), SocialType.KAKAO);
+        assertEquals(savedPost.getMember().getEmail(), "example@example.com");
     }
 
 }

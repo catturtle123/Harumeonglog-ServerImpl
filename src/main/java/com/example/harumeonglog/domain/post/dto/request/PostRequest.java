@@ -11,6 +11,7 @@ import java.util.List;
 public class PostRequest {
 
     @Getter
+    @Builder
     public static class PostCreateRequest {
         private PostCategory postCategory;
         @Schema(maxLength = 100)
