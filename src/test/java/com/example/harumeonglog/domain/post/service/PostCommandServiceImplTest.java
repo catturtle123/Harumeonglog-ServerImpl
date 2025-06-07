@@ -3,7 +3,10 @@ package com.example.harumeonglog.domain.post.service;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.SocialType;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
+import com.example.harumeonglog.domain.post.dto.request.PostRequest;
+import com.example.harumeonglog.domain.post.dto.response.PostResponse;
 import com.example.harumeonglog.domain.post.entity.Post;
+import com.example.harumeonglog.domain.post.entity.PostImage;
 import com.example.harumeonglog.domain.post.entity.PostLike;
 import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
 import com.example.harumeonglog.domain.post.repository.PostLikeRepository;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -215,6 +219,41 @@ class PostCommandServiceImplTest {
         System.out.println("최종 좋아요 수: " + updatedPost.getPostLikeNum());
 
         assertEquals(threadCount, updatedPost.getPostLikeNum());
+    }
+
+    @Test
+    @DisplayName("게시물 생성이 잘 되는 가")
+    void isPostCreate() {
+        // given
+        Member writer = Member.builder()
+                .email("example@example.com")
+                .nickname("example")
+                .providerId("example")
+                .socialType(SocialType.KAKAO).build();
+
+        memberRepository.save(writer);
+
+        PostRequest.PostCreateRequest postCreateRequest = PostRequest.PostCreateRequest.builder()
+                .postCategory(PostCategory.INFO)
+                .postImageList(List.of("test1", "test2"))
+                .content("내용")
+                .title("제목")
+                .build();
+
+        // when
+        PostResponse.PostCreateResponse post = postCommandService.createPost(postCreateRequest, writer);
+
+        // then
+        Post savedPost = postRepository.findById(post.getPostId()).orElseThrow();
+
+        assertNotNull(savedPost.getId());
+        assertEquals("제목", savedPost.getTitle());
+        assertEquals("내용", savedPost.getContent());
+        assertEquals(PostCategory.INFO, savedPost.getCategory());
+        assertEquals(0, savedPost.getPostLikeNum());
+        assertEquals(0, savedPost.getCommentNum());
+        assertEquals(0, savedPost.getPostReportNum());
+        assertNull(savedPost.getDeletedAt());
     }
 
 
