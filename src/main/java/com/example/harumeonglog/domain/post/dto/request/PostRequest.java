@@ -2,6 +2,8 @@ package com.example.harumeonglog.domain.post.dto.request;
 
 import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +14,7 @@ public class PostRequest {
 
     @Getter
     public static class PostCreateRequest {
+        @NotNull
         private PostCategory postCategory;
         @Schema(maxLength = 100)
         @Size(max = 100)
@@ -24,6 +27,7 @@ public class PostRequest {
 
     @Getter
     public static class PostUpdateRequest {
+        @NotNull
         private PostCategory postCategory;
         @Schema(maxLength = 100)
         @Size(max = 100)
