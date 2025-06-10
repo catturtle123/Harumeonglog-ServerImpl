@@ -13,6 +13,7 @@ import java.util.List;
 public class PostRequest {
 
     @Getter
+    @Builder
     public static class PostCreateRequest {
         @NotNull
         private PostCategory postCategory;
