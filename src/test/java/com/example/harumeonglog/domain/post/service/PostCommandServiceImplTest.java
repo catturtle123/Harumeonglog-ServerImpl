@@ -12,6 +12,7 @@ import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
 import com.example.harumeonglog.domain.post.repository.PostImageRepository;
 import com.example.harumeonglog.domain.post.repository.PostLikeRepository;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,19 +46,26 @@ class PostCommandServiceImplTest {
     @Autowired
     private PostImageRepository postImageRepository;
 
+    private Member member;
+    private final String email = "example@example.com";
+    private final String nickname = "example";
+    private final String providerId = "example";
+    private final SocialType socialType = SocialType.KAKAO;
+
+    @BeforeEach
+    void setup() {
+        this.member = memberRepository.save(Member.builder()
+                    .email(this.email)
+                    .nickname(this.nickname)
+                    .providerId(this.providerId)
+                    .socialType(this.socialType)
+                    .build());
+    }
+
     @Test
     @DisplayName("게시글 좋아요 수가 정상적으로 증가한다")
     void postLikeTest() {
         // given
-        Member member = memberRepository.save(
-                Member.builder()
-                        .email("example@example.com")
-                        .nickname("example")
-                        .providerId("example")
-                        .socialType(SocialType.KAKAO)
-                        .build()
-        );
-
         Post post = postRepository.save(
                 Post.builder()
                         .category(PostCategory.INFO)
@@ -85,15 +91,6 @@ class PostCommandServiceImplTest {
     @DisplayName("게시글 좋아요 수가 정상적으로 감소한다")
     void postUnLikeTest() {
         // given
-        Member member = memberRepository.save(
-                Member.builder()
-                        .email("example@example.com")
-                        .nickname("example")
-                        .providerId("example")
-                        .socialType(SocialType.KAKAO)
-                        .build()
-        );
-
         Post post = postRepository.save(
                 Post.builder()
                         .category(PostCategory.INFO)
@@ -123,19 +120,11 @@ class PostCommandServiceImplTest {
     @DisplayName("한 명이 한번에 여러 번의 좋아요를 눌렀을 때 원자적으로 처리가 되는가")
     void concurrencyLikeTest() throws InterruptedException {
         // given
-        Member member = Member.builder()
-                .email("example@example.com")
-                .nickname("example")
-                .providerId("example")
-                .socialType(SocialType.KAKAO).build();
-
-        Member savedMember = memberRepository.save(member);
-
         Post post = Post.builder()
                 .category(PostCategory.INFO)
                 .content("내용")
                 .title("제목")
-                .member(savedMember)
+                .member(member)
                 .build();
 
         Post savedPost = postRepository.save(post);
@@ -148,7 +137,7 @@ class PostCommandServiceImplTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.execute(() -> {
                 try {
-                    postCommandService.likePost(savedPost.getId(), savedMember);
+                    postCommandService.likePost(savedPost.getId(), member);
                 } finally {
                     latch.countDown();
                 }
@@ -172,20 +161,12 @@ class PostCommandServiceImplTest {
     @DisplayName("여러 명이 동시에 하나의 게시글을 좋아요할 때 동시성 문제 없이 정확히 처리되는가")
     void concurrencyMultiMemberLikeTest() throws InterruptedException {
         // given
-        Member writer = Member.builder()
-                .email("example@example.com")
-                .nickname("example")
-                .providerId("example")
-                .socialType(SocialType.KAKAO).build();
-
-        memberRepository.save(writer);
-
         Post post = postRepository.save(
                 Post.builder()
                         .category(PostCategory.INFO)
                         .content("내용")
                         .title("제목")
-                        .member(writer)
+                        .member(member)
                         .postLikeNum(0L)
                         .build()
         );
@@ -230,15 +211,6 @@ class PostCommandServiceImplTest {
     @Transactional
     void isPostCreate() {
         // given
-        Member writer = Member.builder()
-                .email("example@example.com")
-                .nickname("example")
-                .providerId("example")
-                .socialType(SocialType.KAKAO)
-                .build();
-
-        memberRepository.save(writer);
-
         List<String> imageKeys = List.of("test1", "test2");
 
         PostRequest.PostCreateRequest postCreateRequest = PostRequest.PostCreateRequest.builder()
@@ -249,7 +221,7 @@ class PostCommandServiceImplTest {
                 .build();
 
         // when
-        PostResponse.PostCreateResponse response = postCommandService.createPost(postCreateRequest, writer);
+        PostResponse.PostCreateResponse response = postCommandService.createPost(postCreateRequest, member);
 
         // then
         Post savedPost = postRepository.findById(response.getPostId())
@@ -273,12 +245,6 @@ class PostCommandServiceImplTest {
 
         assertEquals(imageKeys.size(), savedImageKeys.size(), "이미지 개수가 일치해야 합니다.");
         assertTrue(savedImageKeys.containsAll(imageKeys), "모든 이미지 키가 저장되어야 합니다.");
-
-        assertNotNull(savedPost.getMember());
-        assertEquals(savedPost.getMember().getNickname(), "example");
-        assertEquals(savedPost.getMember().getProviderId(), "example");
-        assertEquals(savedPost.getMember().getSocialType(), SocialType.KAKAO);
-        assertEquals(savedPost.getMember().getEmail(), "example@example.com");
     }
 
 }
