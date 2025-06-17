@@ -137,6 +137,7 @@ public class EventCommandServiceImpl implements EventCommandService {
     private Event recreateEventWithNewCategory(Event oldEvent, EventRequest.EventRequestDTO request, Member member) {
         // 기존 엔티티 삭제
         eventRepository.delete(oldEvent);
+        eventRepository.flush();
 
         // 새로운 카테고리의 엔티티 생성
         Event newEvent = EventConverter.toEvent(request, member, oldEvent.getPet());
