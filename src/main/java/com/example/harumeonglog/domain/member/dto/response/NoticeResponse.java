@@ -26,6 +26,7 @@ public class NoticeResponse {
         private String content;
         private NoticeType noticeType;
         private Long targetId;
+        private String senderName;
         private LocalDateTime createdAt;
     }
 }

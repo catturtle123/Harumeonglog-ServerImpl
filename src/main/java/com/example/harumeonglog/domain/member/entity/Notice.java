@@ -31,6 +31,8 @@ public class Notice extends BaseEntity {
     @Column(name = "target_id")
     private Long targetId;
 
+    private String senderName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

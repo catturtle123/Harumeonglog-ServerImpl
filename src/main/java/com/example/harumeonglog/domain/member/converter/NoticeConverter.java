@@ -23,6 +23,7 @@ public class NoticeConverter {
                 .content(notice.getContent())
                 .targetId(notice.getTargetId())
                 .createdAt(notice.getCreatedAt())
+                .senderName(notice.getSenderName())
                 .build();
     }
 }
