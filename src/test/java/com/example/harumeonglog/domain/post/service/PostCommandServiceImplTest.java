@@ -9,9 +9,11 @@ import com.example.harumeonglog.domain.post.dto.response.PostResponse.PostCreate
 import com.example.harumeonglog.domain.post.entity.Post;
 import com.example.harumeonglog.domain.post.entity.PostImage;
 import com.example.harumeonglog.domain.post.entity.PostLike;
+import com.example.harumeonglog.domain.post.entity.PostReport;
 import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
 import com.example.harumeonglog.domain.post.repository.PostImageRepository;
 import com.example.harumeonglog.domain.post.repository.PostLikeRepository;
+import com.example.harumeonglog.domain.post.repository.PostReportRepository;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
 import com.example.harumeonglog.global.error.exception.PostException;
 import org.junit.jupiter.api.AfterEach;
@@ -69,6 +71,8 @@ class PostCommandServiceImplTest {
     private final String TEST_NICKNAME = "example";
     private final String TEST_PROVIDERID = "example";
     private final SocialType TEST_SOCIALTYPE = SocialType.KAKAO;
+    @Autowired
+    private PostReportRepository postReportRepository;
 
     @BeforeEach
     void setup() {
@@ -83,6 +87,7 @@ class PostCommandServiceImplTest {
     @AfterEach
     void clean() {
         postLikeRepository.deleteAll();
+        postReportRepository.deleteAll();
         postRepository.deleteAll();
         memberRepository.deleteAll();
     }
@@ -386,6 +391,149 @@ class PostCommandServiceImplTest {
         log.info("최종 좋아요 수: " + updatedPost.getPostLikeNum());
 
         assertEquals(threadCount, updatedPost.getPostLikeNum());
+    }
+
+    @Test
+    @DisplayName("게시글 신고 수가 정상적으로 증가한다")
+    void postReportTest() {
+        // given
+        Post post = postRepository.save(
+                Post.builder()
+                        .category(PostCategory.INFO)
+                        .content("내용")
+                        .title("제목")
+                        .member(member)
+                        .postReportNum(0L)
+                        .build()
+        );
+
+        // when
+        postCommandService.reportPost(post.getId(), member);
+
+        // then
+        Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
+        assertEquals(1L, updatedPost.getPostReportNum());
+
+        log.info("최종 좋아요 수: " + updatedPost.getPostReportNum());
+    }
+
+    @Test
+    @DisplayName("게시글 신고 수가 정상적으로 감소한다")
+    void postUnReportTest() {
+        // given
+        Post post = postRepository.save(
+                Post.builder()
+                        .category(PostCategory.INFO)
+                        .content("내용")
+                        .title("제목")
+                        .member(member)
+                        .postReportNum(1L)
+                        .build()
+        );
+
+        postReportRepository.save(
+                PostReport.builder()
+                        .member(member)
+                        .post(post)
+                        .build()
+        );
+
+        // when
+        postCommandService.reportPost(post.getId(), member);
+
+        // then
+        Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
+        assertEquals(0L, updatedPost.getPostReportNum());
+    }
+
+    @Test
+    @DisplayName("한 명이 한번에 여러 번의 신고를 눌렀을 때 원자적으로 처리가 되는가")
+    void concurrencyReportTest() throws InterruptedException {
+        // given
+        Post post = Post.builder()
+                .category(PostCategory.INFO)
+                .content("내용")
+                .title("제목")
+                .member(member)
+                .build();
+
+        Post savedPost = postRepository.save(post);
+
+        int threadCount = 100;
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        // when
+        for (int i = 0; i < threadCount; i++) {
+            executorService.execute(() -> {
+                try {
+                    postCommandService.reportPost(savedPost.getId(), member);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        // then
+        Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
+        log.info("최종 신고 수: " + updatedPost.getPostReportNum());
+
+        // 신고 수가 0 또는 1이 아니면 동시성 문제 발생 가능
+        assertTrue(
+                updatedPost.getPostReportNum() == 0L || updatedPost.getPostReportNum() == 1L,
+                "신고 수가 비정상적으로 계산되었습니다."
+        );
+    }
+
+    @Test
+    @DisplayName("여러 명이 동시에 하나의 게시글을 신고할 때 동시성 문제 없이 정확히 처리되는가")
+    void concurrencyMultiMemberReportTest() throws InterruptedException {
+        // given
+        Post post = postRepository.save(
+                Post.builder()
+                        .category(PostCategory.INFO)
+                        .content("내용")
+                        .title("제목")
+                        .member(member)
+                        .postReportNum(0L)
+                        .build()
+        );
+
+        int threadCount = 100;
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        List<Member> members = IntStream.range(0, threadCount)
+                .mapToObj(i -> Member.builder()
+                        .email("user" + i + "@test.com")
+                        .nickname("user" + i)
+                        .providerId("provider" + i)
+                        .socialType(SocialType.KAKAO)
+                        .build())
+                .map(memberRepository::save)
+                .collect(Collectors.toList());
+
+        // when
+        for (int i = 0; i < threadCount; i++) {
+            final int idx = i;
+            executorService.execute(() -> {
+                try {
+                    postCommandService.reportPost(post.getId(), members.get(idx));
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        // then
+        Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
+        log.info("최종 신고 수: " + updatedPost.getPostReportNum());
+
+        assertEquals(threadCount, updatedPost.getPostReportNum());
     }
 
 }
