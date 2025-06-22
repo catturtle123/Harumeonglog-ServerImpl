@@ -253,32 +253,10 @@ class PostCommandServiceImplTest {
     @DisplayName("게시글 삭제 시 없는 존재하지 않는 게시글이면 에러가 잘 나나")
     void deletePostPostNullTest() {
         // given
-        Post rawPost = Post.builder()
-                .title("title")
-                .content("content")
-                .member(this.member)
-                .category(PostCategory.INFO)
-                .build();
-
-        PostImage postImage = PostImage.builder()
-                .postImageKeyName("testImage1")
-                .build();
-
-        rawPost.addPostImage(postImage);
-
-        postRepository.save(rawPost);
-
-        List<String> updateTestImageList = List.of("updateTestImage1");
-
-        PostRequest.PostUpdateRequest postUpdateRequest = PostRequest.PostUpdateRequest.builder()
-                .title("updateTitle")
-                .content("updateContent")
-                .postCategory(PostCategory.ETC)
-                .postImageList(updateTestImageList)
-                .build();
 
         // when + then
-        String message = assertThrows(PostException.class, () -> postCommandService.deletePost(2L, this.member)).getMessage();
+        log.info(postRepository.findAll().toString());
+        String message = assertThrows(PostException.class, () -> postCommandService.deletePost(1L, this.member)).getMessage();
         assertThat(message).isEqualTo("게시물을 찾지 못했습니다.");
     }
 
