@@ -112,6 +112,10 @@ class PostCommandServiceImplTest {
         assertThat(post.getTitle()).isEqualTo("title");
         assertThat(post.getContent()).isEqualTo("content");
         assertThat(post.getCategory()).isEqualTo(PostCategory.INFO);
+        assertThat(post.getPostReportNum()).isEqualTo(0L);
+        assertThat(post.getPostLikeNum()).isEqualTo(0L);
+        assertThat(post.getCommentNum()).isEqualTo(0L);
+        assertThat(post.getDeletedAt()).isNull();
         assertThat(post.getPostImageList().size()).isEqualTo(postImageList.size());
         assertThat(post.getPostImageList()).extracting("postImageKeyName")
                 .containsExactly("testImage1", "testImage2", "testImage3");
