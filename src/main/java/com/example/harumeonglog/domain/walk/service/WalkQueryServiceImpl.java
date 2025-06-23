@@ -15,6 +15,7 @@ import com.example.harumeonglog.domain.walk.repository.WalkLikeRepository;
 import com.example.harumeonglog.domain.walk.repository.WalkRepository;
 import com.example.harumeonglog.global.error.code.WalkErrorCode;
 import com.example.harumeonglog.global.error.exception.WalkException;
+import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,11 +34,12 @@ public class WalkQueryServiceImpl implements WalkQueryService {
     private final MemberPetRepository memberPetRepository;
     private final WalkLikeRepository walkLikeRepository;
     private final MemberWalkRepository memberWalkRepository;
+    private final S3Util s3Util;
 
     @Override
     public WalkResponse.WalkAvailablePetListResponse getAvailablePets(Member member) {
         List<Pet> availablePets = memberPetRepository.findByMember(member.getId()).stream().map(MemberPet::getPet).toList();
-        return WalkConverter.toWalkAvailablePetListResponse(availablePets);
+        return WalkConverter.toWalkAvailablePetListResponse(availablePets, s3Util);
     }
 
     @Override
@@ -46,7 +48,7 @@ public class WalkQueryServiceImpl implements WalkQueryService {
         dto.getPetId().forEach(petId ->
             members.addAll(memberPetRepository.findByPet(petId).stream().map(MemberPet::getMember).toList())
         );
-        return WalkConverter.toWalkAvailableMemberListResponse(members);
+        return WalkConverter.toWalkAvailableMemberListResponse(members, s3Util);
     }
 
     @Override
