@@ -21,6 +21,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,6 +47,8 @@ import static org.junit.jupiter.api.Assertions.*;
         "JWT_SECRET=testjwttestjwttestjwttestjwttestjwttestjwt"
 })
 class PostQueryServiceImplTest {
+
+    private static final Logger log = LoggerFactory.getLogger(PostQueryServiceImplTest.class);
 
     @Autowired
     private PostRepository postRepository;
@@ -206,5 +210,72 @@ class PostQueryServiceImplTest {
         });
     }
 
+    @Test
+    @DisplayName("내 게시물 조회 시 다른 사람의 게시물은 조회를 잘 막는가")
+    void getMyPostAnotherPostTest() {
+        // given
+        PostImage postImage = PostImage.builder()
+                .postImageKeyName("testImage")
+                .build();
 
+        Post post = Post.builder()
+                .title("post")
+                .content("content")
+                .member(member)
+                .category(PostCategory.INFO)
+                .build();
+
+        post.addPostImage(postImage);
+        Post myPost = postRepository.save(post);
+
+        Member other = memberRepository.save(Member.builder()
+                .email(this.TEST_EMAIL)
+                .nickname(this.TEST_NICKNAME)
+                .providerId(this.TEST_PROVIDERID)
+                .socialType(this.TEST_SOCIALTYPE)
+                .build());
+
+        PostImage otherPostImage = PostImage.builder()
+                .postImageKeyName("otherImage")
+                .build();
+
+        Post otherRawPost = Post.builder()
+                .title("otherPost")
+                .content("otherContent")
+                .member(other)
+                .category(PostCategory.INFO)
+                .build();
+
+        otherRawPost.addPostImage(otherPostImage);
+        postRepository.save(otherRawPost);
+
+        Long cursor = 0L;
+        Integer size = 20;
+
+        // then
+        PostPreviewListResponse myPostResponse = postQueryService.getMyPost(cursor, size, member);
+
+        // when
+        assertThat(myPostResponse.getItems().size()).isEqualTo(1);
+        PostPreviewResponse postPreviewResponse = myPostResponse.getItems().get(0);
+
+        // post
+        assertThat(postPreviewResponse.getPostId()).isEqualTo(myPost.getId());
+        assertThat(postPreviewResponse.getTitle()).isEqualTo(myPost.getTitle());
+        assertThat(postPreviewResponse.getContent()).isEqualTo(myPost.getContent());
+        assertThat(postPreviewResponse.getIsLiked()).isFalse();
+        assertThat(postPreviewResponse.getPostCategory()).isEqualTo(myPost.getCategory());
+        assertThat(postPreviewResponse.getCreatedAt()).isEqualTo(myPost.getCreatedAt());
+        assertThat(postPreviewResponse.getCommentNum()).isEqualTo(myPost.getCommentNum());
+        assertThat(postPreviewResponse.getLikeNum()).isEqualTo(myPost.getPostLikeNum());
+        assertThat(post.getPostImageList()).extracting("postImageKeyName")
+                .containsExactly("testImage");
+
+        // member
+        MemberInfoResponse memberInfoResponse = postPreviewResponse.getMemberInfoResponse();
+        assertThat(memberInfoResponse.getMemberId()).isEqualTo(member.getId());
+        assertThat(memberInfoResponse.getEmail()).isEqualTo(member.getEmail());
+        assertThat(memberInfoResponse.getNickname()).isEqualTo(member.getNickname());
+        assertThat(memberInfoResponse.getImage()).isEqualTo(member.getImage());
+    }
 }
