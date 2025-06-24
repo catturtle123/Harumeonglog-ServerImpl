@@ -44,8 +44,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 })
 class PostQueryServiceImplTest {
 
-    private static final Logger log = LoggerFactory.getLogger(PostQueryServiceImplTest.class);
-
     @Autowired
     private PostRepository postRepository;
 
