@@ -211,6 +211,39 @@ class PostCommandServiceImplTest {
     }
 
     @Test
+    @DisplayName("게시글 수정 시 자신이 아닌 게시글이면 에러가 잘 나나")
+    void updatePostPostNotOwnTest() {
+        // given
+        Member other = memberRepository.save(Member.builder()
+                .email(this.TEST_EMAIL)
+                .nickname(this.TEST_NICKNAME)
+                .providerId(this.TEST_PROVIDERID)
+                .socialType(this.TEST_SOCIALTYPE)
+                .build());
+
+        Post post = postRepository.save(Post.builder()
+                .title("title")
+                .content("content")
+                .member(member)
+                .category(PostCategory.INFO)
+                .build()
+        );
+
+        List<String> updateTestImageList = List.of("updateTestImage1");
+
+        PostRequest.PostUpdateRequest postUpdateRequest = PostRequest.PostUpdateRequest.builder()
+                .title("updateTitle")
+                .content("updateContent")
+                .postCategory(PostCategory.ETC)
+                .postImageList(updateTestImageList)
+                .build();
+
+        // when + then
+        String message = assertThrows(PostException.class, () -> postCommandService.updatePost(post.getId(), postUpdateRequest, other)).getMessage();
+        assertThat(message).isEqualTo("자신의 게시물이 아닙니다.");
+    }
+
+    @Test
     @DisplayName("게시글이 잘 삭제 되는가")
     void deletePostTest() {
         // given
@@ -248,6 +281,30 @@ class PostCommandServiceImplTest {
         log.info(postRepository.findAll().toString());
         String message = assertThrows(PostException.class, () -> postCommandService.deletePost(1L, this.member)).getMessage();
         assertThat(message).isEqualTo("게시물을 찾지 못했습니다.");
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 시 자신이 아닌 게시글이면 에러가 잘 나나")
+    void deletePostPostNotOwnTest() {
+        // given
+        Member other = memberRepository.save(Member.builder()
+                .email(this.TEST_EMAIL)
+                .nickname(this.TEST_NICKNAME)
+                .providerId(this.TEST_PROVIDERID)
+                .socialType(this.TEST_SOCIALTYPE)
+                .build());
+
+        Post post = postRepository.save(Post.builder()
+                .title("title")
+                .content("content")
+                .member(member)
+                .category(PostCategory.INFO)
+                .build()
+        );
+
+        // when + then
+        String message = assertThrows(PostException.class, () -> postCommandService.deletePost(post.getId(), other)).getMessage();
+        assertThat(message).isEqualTo("자신의 게시물이 아닙니다.");
     }
 
     @Test
