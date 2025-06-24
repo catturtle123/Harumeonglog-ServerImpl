@@ -16,10 +16,12 @@ import com.example.harumeonglog.domain.post.entity.PostLike;
 import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
 import com.example.harumeonglog.domain.post.repository.PostLikeRepository;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
+import com.example.harumeonglog.global.error.exception.PostException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +33,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -158,6 +159,24 @@ class PostQueryServiceImplTest {
         assertThat(memberInfoResponse.getEmail()).isEqualTo(member.getEmail());
         assertThat(memberInfoResponse.getNickname()).isEqualTo(member.getNickname());
         assertThat(memberInfoResponse.getImage()).isEqualTo(member.getImage());
+    }
+
+    @Test
+    @DisplayName("게시물 단건 조회 시 없는 post 면 에러로 잘 잡히는가")
+    void getPostExceptionTest() {
+        // given
+        postRepository.save(
+                Post.builder()
+                        .title("title")
+                        .content("content")
+                        .category(PostCategory.INFO)
+                        .member(member)
+                        .build()
+        );
+
+        // when * then
+        String message = assertThrows(PostException.class, () -> postQueryService.getPost(member, 2L)).getMessage();
+        assertThat(message).isEqualTo("게시물을 찾지 못했습니다.");
     }
 
     @Test
