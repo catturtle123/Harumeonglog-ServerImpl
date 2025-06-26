@@ -40,23 +40,20 @@ public class PostQueryServiceImpl implements PostQueryService {
         search = normalizeSearch(search);
 
         Slice<Post> postSlice;
-        if (postRequestCategory.equals(PostRequestCategory.ALL)) {
+        if (postRequestCategory.isAll()) {
             postSlice = postRepository.findByContentLikeAndIdLessThanOrderByIdDesc(search, cursor, PageRequest.of(0, size));
-        } else {
-            PostCategory postCategory = PostCategory.valueOf(postRequestCategory.name());
-            postSlice = postRepository.findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(search, cursor, postCategory, PageRequest.of(0, size));
+            return buildPostPreviewListResponse(postSlice, member);
         }
 
+        PostCategory postCategory = postRequestCategory.toPostCategory();
+        postSlice = postRepository.findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(search, cursor, postCategory, PageRequest.of(0, size));
         return buildPostPreviewListResponse(postSlice, member);
     }
 
     @Override
     public PostResponse.PostDetailResponse getPost(Member owner,Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
-        List<String> postImageList = post.getPostImageList().stream()
-                .map((p)->s3Util.getUrlFromKey(p.getPostImageKeyName()))
-                .toList();
-
+        List<String> postImageList = extractImageKeyName(post);
         Boolean isLiked = postLikeRepository.existsByPostAndMember(post, owner);
 
         return PostConverter.toPostDetailResponse(post, MemberConverter.toMemberInfoResponse(post.getMember(), s3Util), postImageList, isLiked);
@@ -98,7 +95,7 @@ public class PostQueryServiceImpl implements PostQueryService {
         Long nextCursor = null;
         List<Post> posts = postSlice.toList();
 
-        if (!postSlice.isLast() && !posts.isEmpty()) {
+        if (postSlice.hasNext() && posts.size() > 0) {
             nextCursor = posts.get(posts.size() - 1).getId();
         }
 
@@ -125,5 +122,11 @@ public class PostQueryServiceImpl implements PostQueryService {
                 .toList();
 
         return PostConverter.toPostPreviewListResponse(postPreviewResponses, nextCursor, postSlice.hasNext());
+    }
+
+    private List<String> extractImageKeyName(Post post) {
+        return post.getPostImageList().stream()
+                .map((p) -> s3Util.getUrlFromKey(p.getPostImageKeyName()))
+                .toList();
     }
 }
