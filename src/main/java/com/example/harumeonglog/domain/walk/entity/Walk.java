@@ -73,8 +73,8 @@ public class Walk extends BaseEntity {
         this.walkLikeNum += likeNum;
     }
 
-    public void addDistance(Double distance) {
-        this.distance += distance;
+    public void updateDistance(Double distance) {
+        this.distance = distance;
     }
 
     public void updateTime(long time) {

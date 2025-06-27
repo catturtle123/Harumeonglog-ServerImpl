@@ -56,7 +56,7 @@ public class WalkResponse {
         private Long id;
         private String title;
         private Long walkLikeNum;
-        private String distance;
+        private Double distance;
         private long time;
         private String memberNickname;
         private Boolean isLike;
@@ -77,7 +77,7 @@ public class WalkResponse {
         private Long id;
         private String title;
         private Long walkLikeNum;
-        private String distance;
+        private Double distance;
         private long time;
         private String memberNickname;
         private Boolean isLike;

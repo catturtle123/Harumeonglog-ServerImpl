@@ -90,7 +90,7 @@ public class WalkCommandServiceImpl implements WalkCommandService {
 
         walk.updateWalkStatus(WalkStatus.DONE);
         walk.updateTime(request.getTime());
-        walk.addDistance(request.getDistance());
+        walk.updateDistance(request.getDistance());
         return WalkConverter.toWalkEndResponse(walk);
     }
 
