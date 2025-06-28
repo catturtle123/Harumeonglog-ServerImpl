@@ -58,6 +58,12 @@ public class EventCommandServiceImpl implements EventCommandService {
         return EventConverter.toEventCreateResponse(savedOriginalEvent);
     }
 
+    @Override
+    public EventResponse.EventCreateResponse createEventAfterWalk(EventRequest.EventRequestDTO request, Member member, Pet pet) {
+        Event originalEvent = EventConverter.toEvent(request, member, pet);
+        Event savedOriginalEvent = eventRepository.save(originalEvent);
+        return EventConverter.toEventCreateResponse(savedOriginalEvent);
+    }
 
     @Override
     public EventResponse.BaseEventResponse updateEvent(Member member, Long eventId, EventRequest.EventRequestDTO request) {

@@ -2,6 +2,7 @@ package com.example.harumeonglog.domain.event.dto.request;
 
 import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
 import com.example.harumeonglog.domain.event.entity.enums.RepeatDay;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class EventRequest {
 
     @Getter
+    @Builder
     public static class EventRequestDTO {
         private String title;
         private LocalDate date;
