@@ -59,4 +59,9 @@ public class PetRequest {
     public static class SearchMemberRequest {
         private String nickname;
     }
+
+    @Getter
+    public static class InviteResponseRequest{
+        private String response;
+    }
 }

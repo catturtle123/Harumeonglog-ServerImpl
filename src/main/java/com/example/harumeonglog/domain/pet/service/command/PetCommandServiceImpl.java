@@ -1,7 +1,10 @@
 package com.example.harumeonglog.domain.pet.service.command;
 
+import com.example.harumeonglog.domain.member.converter.InvitationConverter;
+import com.example.harumeonglog.domain.member.entity.Invitation;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.MemberPetRole;
+import com.example.harumeonglog.domain.member.repository.InvitationRepository;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.pet.converter.MemberPetConverter;
 import com.example.harumeonglog.domain.pet.converter.PetConverter;
@@ -17,6 +20,7 @@ import com.example.harumeonglog.global.error.code.S3ErrorCode;
 import com.example.harumeonglog.global.error.exception.MemberException;
 import com.example.harumeonglog.global.error.exception.PetException;
 import com.example.harumeonglog.global.error.exception.S3Exception;
+import com.example.harumeonglog.global.firebase.service.FcmService;
 import com.example.harumeonglog.global.outbox.entity.enums.EventType;
 import com.example.harumeonglog.global.util.OutboxUtil;
 import com.example.harumeonglog.global.util.S3Util;
@@ -33,6 +37,8 @@ public class PetCommandServiceImpl implements PetCommandService {
     private final MemberRepository memberRepository;
     private final S3Util s3Util;
     private final OutboxUtil outboxUtil;
+    private final InvitationRepository invitationRepository;
+    private final FcmService fcmService;
 
 
     // ========== 외부 메서드 ==========
@@ -163,9 +169,39 @@ public class PetCommandServiceImpl implements PetCommandService {
                 throw new PetException(PetErrorCode.INVALID_ROLE);
             }
 
-            // MemberPet 생성 및 저장
-            MemberPet memberPet = MemberPetConverter.toMemberPet(invitedMember, pet, role);
+            Invitation invitation = InvitationConverter.toInvitation(pet, role, member, invitedMember);
+            invitationRepository.save(invitation);
+
+            // TODO : FCM 알림 여부
+        }
+    }
+
+    @Override
+    public void responseInvite(Long petId, PetRequest.InviteResponseRequest request, Member member) {
+        // 펫 존재 확인
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new PetException(PetErrorCode.NOT_FOUND));
+
+        // 초대 존재 확인
+        Invitation invitation = invitationRepository.findByPetAndReceiver(pet, member)
+                .orElseThrow(() -> new PetException(PetErrorCode.INVITATION_NOT_FOUND));
+
+        // 초대 응답 처리
+        if (request.getResponse().equalsIgnoreCase("ACCEPT")) {
+            // 수락: MemberPet 생성
+            MemberPet memberPet = MemberPetConverter.toMemberPet(
+                    invitation.getReceiver(),
+                    pet,
+                    invitation.getRole()
+            );
             memberPetRepository.save(memberPet);
+            invitationRepository.delete(invitation);
+        } else if (request.getResponse().equalsIgnoreCase("REJECT")) {
+            // 초대 삭제
+            invitationRepository.delete(invitation);
+        }
+        else{
+            throw new PetException(PetErrorCode.INVALID_RESPONSE_TYPE);
         }
     }
 
