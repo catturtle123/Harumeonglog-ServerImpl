@@ -1,6 +1,9 @@
 package com.example.harumeonglog.domain.pet.service.query;
 
+import com.example.harumeonglog.domain.member.dto.response.InvitationResponse;
+import com.example.harumeonglog.domain.member.entity.Invitation;
 import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.member.repository.InvitationRepository;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.pet.converter.MemberPetConverter;
 import com.example.harumeonglog.domain.pet.converter.PetConverter;
@@ -33,6 +36,7 @@ public class PetQueryServiceImpl implements PetQueryService {
     private final MemberRepository memberRepository;
     private final S3Util s3Util;
     private final PetRepository petRepository;
+    private final InvitationRepository invitationRepository;
 
 
     @Override
@@ -85,7 +89,19 @@ public class PetQueryServiceImpl implements PetQueryService {
         return PetConverter.toMainPetResponse(pet, mainImage);
     }
 
-    // 사용자에 대한 memberPet 페이지네이션
+    @Override
+    public InvitationResponse.InvitationListResponse getInvite(Long cursor, Integer size, Member member) {
+
+        if (cursor == 0) {
+            cursor = Long.MAX_VALUE;
+        }
+
+        Slice<Invitation> invitationSlice = invitationRepository.findByReceiverAndIdLessThanOrderByIdDesc(
+                member, cursor, PageRequest.of(0, size));
+
+        return PetConverter.toInvitationListResponse(invitationSlice, s3Util);
+    }
+
     private Slice<MemberPet> fetchMemberPetSliceWithCursor(Long cursor, int size, Member member) {
         Pageable pageable = PageRequest.of(0, size);
 

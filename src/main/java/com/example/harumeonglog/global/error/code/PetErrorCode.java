@@ -13,8 +13,9 @@ public enum PetErrorCode implements BaseErrorCode{
     NOT_ALLOWED_ROLE(HttpStatus.FORBIDDEN, "MEMBERPET403", "해당 기능을 수행할 권한이 없습니다."),
     ALREADY_INVITED(HttpStatus.BAD_REQUEST, "INVITE400", "해당 유저는 이미 초대된 상태입니다."),
     INVALID_ROLE(HttpStatus.BAD_REQUEST, "PETROLE400", "존재하지 않는 권한입니다."),
-    CURRENT_PET_NOT_FOUND(HttpStatus.NOT_FOUND, "PET404", "현재 선택된 반려견을 찾지 못했습니다.")
-    ;
+    CURRENT_PET_NOT_FOUND(HttpStatus.NOT_FOUND, "PET404", "현재 선택된 반려견을 찾지 못했습니다."),
+    INVITATION_NOT_FOUND(HttpStatus.NOT_FOUND, "INVITE404", "해당하는 초대를 찾지 못했습니다."),
+    INVALID_RESPONSE_TYPE(HttpStatus.BAD_REQUEST, "INVITE400", "잘못된 초대 응답입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
