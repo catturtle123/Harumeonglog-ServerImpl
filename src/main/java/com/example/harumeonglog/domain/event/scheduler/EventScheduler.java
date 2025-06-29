@@ -4,11 +4,11 @@ import com.example.harumeonglog.domain.event.entity.Event;
 import com.example.harumeonglog.domain.event.repository.EventRepository;
 import com.example.harumeonglog.domain.member.entity.Setting;
 import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
-import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.member.repository.SettingRepository;
 import com.example.harumeonglog.global.error.code.SettingErrorCode;
 import com.example.harumeonglog.global.error.exception.SettingException;
 import com.example.harumeonglog.global.firebase.service.FcmService;
+import com.example.harumeonglog.global.outbox.service.OutBoxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,19 +27,16 @@ public class EventScheduler {
     private final EventRepository eventRepository;
     private final FcmService fcmService;
     private final SettingRepository settingRepository;
+    private final OutBoxService outBoxService;
 
     // 매일 아침 8시에 오늘의 일정 요약을 전송
     @Scheduled(cron = "0 0 8 * * ?")
     public void sendDailyEventSummary() {
 
-
-
         log.info("오늘의 일정 요약 처리를 시작합니다: {}", LocalDateTime.now());
 
         LocalDate today = LocalDate.now();
         List<Event> todayEvents = eventRepository.findByDateAndDeletedAtIsNull(today);
-
-
 
         // 회원별로 일정을 그룹화
         todayEvents.stream()
@@ -55,6 +52,8 @@ public class EventScheduler {
                                     summaryMessage,
                                     NoticeType.EVENT
                             );
+                            String payload = createFcmPayload(member.getId(), "오늘의 알림", summaryMessage, NoticeType.EVENT, null);
+                            outBoxService.saveFCMEvent(payload);
                             log.info("회원 {}에게 {}개의 일정 요약을 전송했습니다.",
                                     member.getId(), events.size());
                         }
@@ -96,6 +95,9 @@ public class EventScheduler {
                             message,
                             NoticeType.EVENT
                     );
+                    String payload = createFcmPayload(event.getMember().getId(),
+                            "일정 알림: " + event.getTitle(), message, NoticeType.EVENT, event.getId());
+                    outBoxService.saveFCMEvent(payload);
                     log.info("일정 {}에 대한 알림을 회원 {}에게 전송했습니다.",
                             event.getId(), event.getMember().getId());
                 }
@@ -127,5 +129,17 @@ public class EventScheduler {
                 event.getTitle());
     }
 
-
+    private String createFcmPayload(Long memberId, String title, String body, NoticeType noticeType, Long eventId) {
+        // 간소화된 JSON 페이로드
+        StringBuilder payload = new StringBuilder("{");
+        payload.append(String.format("\"memberId\": %d", memberId));
+        payload.append(String.format(",\"title\": \"%s\"", title));
+        payload.append(String.format(",\"body\": \"%s\"", body));
+        payload.append(String.format(",\"noticeType\": \"%s\"", noticeType));
+        if (eventId != null) {
+            payload.append(String.format(",\"eventId\": %d", eventId));
+        }
+        payload.append("}");
+        return payload.toString();
+    }
 }
