@@ -75,7 +75,7 @@ public class EventScheduler {
 
     // 매분마다 다가오는 일정 확인
     @Scheduled(cron = "0 * * * * ?")
-    @Transactional(readOnly = true)
+    @Transactional // 읽기 전용 제거
     public void sendEventReminders() {
         log.info("다가오는 일정 알림을 확인합니다: {}", LocalDateTime.now());
 
@@ -83,8 +83,8 @@ public class EventScheduler {
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime reminderTime = now.plusMinutes(REMINDER_MINUTES);
 
-            // 다음 설정된 시간 내 알림 설정이 된 일정 조회
-            List<Event> upcomingEvents = eventRepository.findByDateAndTimeBetweenAndHasNoticeTrueAndDeletedAtIsNull(
+            // 다음 설정된 시간 내 알림 설정이 되고 아직 알림을 보내지 않은 일정 조회
+            List<Event> upcomingEvents = eventRepository.findByDateAndTimeBetweenAndHasNoticeTrueAndIsNoticedFalseAndDeletedAtIsNull(
                     now.toLocalDate(),
                     now.toLocalTime(),
                     reminderTime.toLocalTime()
@@ -148,10 +148,12 @@ public class EventScheduler {
             }
 
             if (!isValidForReminder(event, setting)) {
-                log.debug("일정 {} 알림 전송 조건 미충족 (회원 {}의 eventAlarm: {}, hasNotice: {})",
-                        event.getId(), event.getMember().getId(), setting.getEventAlarm(), event.getHasNotice());
+                log.debug("일정 {} 알림 전송 조건 미충족", event.getId());
                 return;
             }
+
+            // 알림 전송 처리
+            event.updateIsNoticed(Boolean.TRUE);
 
             String message = createReminderMessage(event);
             String title = "일정 알림: " + event.getTitle();
@@ -182,7 +184,8 @@ public class EventScheduler {
     private boolean isValidForReminder(Event event, Setting setting) {
         return event.getDeletedAt() == null
                 && Boolean.TRUE.equals(event.getHasNotice())
-                && Boolean.TRUE.equals(setting.getEventAlarm());
+                && Boolean.TRUE.equals(setting.getEventAlarm())
+                && !Boolean.TRUE.equals(event.getIsNoticed());
     }
 
     private String createDailySummaryMessage(List<Event> events) {
@@ -220,7 +223,6 @@ public class EventScheduler {
             return objectMapper.writeValueAsString(payload);
         } catch (JsonProcessingException e) {
             log.error("FCM 페이로드 생성 중 오류가 발생했습니다: {}", e.getMessage(), e);
-            // 페이로드 생성 실패 시 기본값 반환
             return String.format("{\"memberId\": %d, \"title\": \"%s\", \"body\": \"%s\", \"noticeType\": \"%s\"}",
                     memberId, title, body, noticeType);
         }

@@ -55,8 +55,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
 
     List<Event> findByDateAndDeletedAtIsNull(LocalDate date);
-    @Query("SELECT e FROM Event e WHERE e.date = :date AND e.time BETWEEN :startTime AND :endTime AND e.hasNotice = true AND e.deletedAt IS NULL")
-    List<Event> findByDateAndTimeBetweenAndHasNoticeTrueAndDeletedAtIsNull(
+    @Query("SELECT e FROM Event e " +
+            "WHERE e.date = :date " +
+            "AND e.time BETWEEN :startTime " +
+            "AND :endTime AND e.hasNotice = true " +
+            "AND e.isNoticed = false AND e.deletedAt IS NULL")
+    List<Event> findByDateAndTimeBetweenAndHasNoticeTrueAndIsNoticedFalseAndDeletedAtIsNull(
             @Param("date") LocalDate date,
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime

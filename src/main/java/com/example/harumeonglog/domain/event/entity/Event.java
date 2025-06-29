@@ -88,6 +88,9 @@ public class Event{
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_noticed")
+    private Boolean isNoticed;
+
 
     public void update(String title, LocalDate date, Boolean hasNotice, LocalTime time, EventCategory category){
         this.title = title;
@@ -118,4 +121,6 @@ public class Event{
     public void check(){
         this.done = !done;
     }
+
+    public void updateIsNoticed(Boolean isNoticed){this.isNoticed = isNoticed;}
 }
