@@ -130,7 +130,6 @@ public class EventScheduler {
     }
 
     private String createFcmPayload(Long memberId, String title, String body, NoticeType noticeType, Long eventId) {
-        // 간소화된 JSON 페이로드
         StringBuilder payload = new StringBuilder("{");
         payload.append(String.format("\"memberId\": %d", memberId));
         payload.append(String.format(",\"title\": \"%s\"", title));
