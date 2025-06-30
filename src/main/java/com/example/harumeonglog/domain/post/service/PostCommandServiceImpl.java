@@ -35,10 +35,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     public PostResponse.PostCreateResponse createPost(PostRequest.PostCreateRequest postCreateRequest, Member member) {
         Post post = PostConverter.toPost(postCreateRequest, member);
 
-        postCreateRequest.getPostImageList().forEach((s)->{
-            PostImage postImage = PostImageConverter.toPostImage(s);
-            post.addPostImage(postImage);
-        });
+        addImage(postCreateRequest, post);
 
         return PostConverter.toPostCreateResponse(postRepository.save(post));
     }
@@ -98,6 +95,13 @@ public class PostCommandServiceImpl implements PostCommandService {
                     postRepository.updatePostReportNumByPost(post);
                 }
         );
+    }
+
+    private static void addImage(PostRequest.PostCreateRequest postCreateRequest, Post post) {
+        postCreateRequest.getPostImageList().forEach((s)->{
+            PostImage postImage = PostImageConverter.toPostImage(s);
+            post.addPostImage(postImage);
+        });
     }
 
     private void isOwnPost(Member member, Post post) {
