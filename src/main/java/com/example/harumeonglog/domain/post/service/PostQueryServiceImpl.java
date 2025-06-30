@@ -99,7 +99,6 @@ public class PostQueryServiceImpl implements PostQueryService {
             nextCursor = posts.get(posts.size() - 1).getId();
         }
 
-        // ✅ 좋아요 여부를 한 번에 조회
         List<PostLike> postLikes = postLikeRepository.findByPostInAndMember(posts, member);
         Set<Long> likedPostIds = postLikes.stream()
                 .map(postLike -> postLike.getPost().getId())
