@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -67,14 +68,18 @@ public class PostCommandServiceImpl implements PostCommandService {
     public void likePost(Long postId, Member member) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
 
-        PostLike postLike = postLikeRepository.findByPostAndMember(post, member);
-        if (postLike != null) {
-            postLikeRepository.delete(postLike);
-            postRepository.updatePostUnLikeNumByPost(post);
-        } else {
-            postLikeRepository.save(PostLikeConverter.toPostLike(post, member));
-            postRepository.updatePostLikeNumByPost(post);
-        }
+        Optional<PostLike> postLike = postLikeRepository.findByPostAndMember(post, member);
+
+        postLike.ifPresentOrElse(
+                like -> {
+                    postLikeRepository.delete(like);
+                    postRepository.updatePostUnLikeNumByPost(post);
+                },
+                () -> {
+                    postLikeRepository.save(PostLikeConverter.toPostLike(post, member));
+                    postRepository.updatePostLikeNumByPost(post);
+                }
+        );
     }
 
     @Override
