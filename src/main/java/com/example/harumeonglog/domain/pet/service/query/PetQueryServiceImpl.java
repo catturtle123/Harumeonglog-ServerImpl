@@ -58,7 +58,7 @@ public class PetQueryServiceImpl implements PetQueryService {
 
     @Override
     public PetResponse.PetListPreviewResponse getChangePet(Long cursor, int size, Member member) {
-        // 페이징 처리된 멤버펫 관계 조회 (재사용)
+        // 페이징 처리된 멤버펫 관계 조회
         Slice<MemberPet> memberPetSlice = fetchMemberPetSliceWithCursor(cursor, size, member);
 
         return MemberPetConverter.toGetChangePetResponse(memberPetSlice, s3Util);

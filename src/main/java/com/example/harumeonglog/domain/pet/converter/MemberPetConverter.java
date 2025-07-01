@@ -93,6 +93,7 @@ public class MemberPetConverter {
                         .name(mp.getPet().getName())
                         .mainImage(mp.getPet().getMainImage() != null ?
                                 s3Util.getUrlFromKey(mp.getPet().getMainImage()) : null)
+                        .role(mp.getRole().name())
                         .build())
                 .collect(Collectors.toList());
 

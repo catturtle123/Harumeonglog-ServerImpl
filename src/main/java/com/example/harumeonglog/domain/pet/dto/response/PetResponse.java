@@ -70,6 +70,7 @@ public class PetResponse {
         private Long petId;
         private String name;
         private String mainImage;
+        private String role;
     }
 
     @Getter
