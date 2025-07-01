@@ -6,15 +6,12 @@ import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.Setting;
 import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import com.example.harumeonglog.domain.member.repository.SettingRepository;
-import com.example.harumeonglog.global.error.code.SettingErrorCode;
-import com.example.harumeonglog.global.error.exception.SettingException;
 import com.example.harumeonglog.global.firebase.service.FcmService;
 import com.example.harumeonglog.global.outbox.service.OutBoxService;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.example.harumeonglog.global.util.FcmUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +32,7 @@ public class EventScheduler {
     private final FcmService fcmService;
     private final SettingRepository settingRepository;
     private final OutBoxService outBoxService;
-    private final ObjectMapper objectMapper;
+    private final FcmUtil fcmUtil;
 
     private static final int REMINDER_MINUTES = 10;
 
@@ -130,7 +127,7 @@ public class EventScheduler {
 
             fcmService.sendPushNotification(member, title, summaryMessage, NoticeType.EVENT);
 
-            String payload = createFcmPayload(member.getId(), title, summaryMessage, NoticeType.EVENT, null);
+            String payload = fcmUtil.createFcmPayload(member.getId(), title, summaryMessage, NoticeType.EVENT, null);
             outBoxService.saveFCMEvent(payload);
 
             log.info("회원 {}에게 {}개의 일정 요약을 전송했습니다.", member.getId(), events.size());
@@ -160,7 +157,7 @@ public class EventScheduler {
 
             fcmService.sendPushNotification(event.getMember(), title, message, NoticeType.EVENT);
 
-            String payload = createFcmPayload(event.getMember().getId(), title, message, NoticeType.EVENT, event.getId());
+            String payload = fcmUtil.createFcmPayload(event.getMember().getId(), title, message, NoticeType.EVENT, event.getId());
             outBoxService.saveFCMEvent(payload);
 
             log.info("일정 {}에 대한 알림을 회원 {}에게 전송했습니다.", event.getId(), event.getMember().getId());
@@ -208,23 +205,5 @@ public class EventScheduler {
         return time != null ? time.toString() : "시간 미정";
     }
 
-    private String createFcmPayload(Long memberId, String title, String body, NoticeType noticeType, Long eventId) {
-        try {
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("memberId", memberId);
-            payload.put("title", title);
-            payload.put("body", body);
-            payload.put("noticeType", noticeType.toString());
 
-            if (eventId != null) {
-                payload.put("eventId", eventId);
-            }
-
-            return objectMapper.writeValueAsString(payload);
-        } catch (JsonProcessingException e) {
-            log.error("FCM 페이로드 생성 중 오류가 발생했습니다: {}", e.getMessage(), e);
-            return String.format("{\"memberId\": %d, \"title\": \"%s\", \"body\": \"%s\", \"noticeType\": \"%s\"}",
-                    memberId, title, body, noticeType);
-        }
-    }
 }

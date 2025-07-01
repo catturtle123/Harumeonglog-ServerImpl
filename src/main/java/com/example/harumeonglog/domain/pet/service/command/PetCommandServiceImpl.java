@@ -4,6 +4,7 @@ import com.example.harumeonglog.domain.member.converter.InvitationConverter;
 import com.example.harumeonglog.domain.member.entity.Invitation;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.MemberPetRole;
+import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import com.example.harumeonglog.domain.member.repository.InvitationRepository;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.pet.converter.MemberPetConverter;
@@ -22,6 +23,8 @@ import com.example.harumeonglog.global.error.exception.PetException;
 import com.example.harumeonglog.global.error.exception.S3Exception;
 import com.example.harumeonglog.global.firebase.service.FcmService;
 import com.example.harumeonglog.global.outbox.entity.enums.EventType;
+import com.example.harumeonglog.global.outbox.service.OutBoxService;
+import com.example.harumeonglog.global.util.FcmUtil;
 import com.example.harumeonglog.global.util.OutboxUtil;
 import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +42,8 @@ public class PetCommandServiceImpl implements PetCommandService {
     private final OutboxUtil outboxUtil;
     private final InvitationRepository invitationRepository;
     private final FcmService fcmService;
-
+    private final OutBoxService outBoxService;
+    private final FcmUtil fcmUtil;
 
     // ========== 외부 메서드 ==========
 
@@ -172,7 +176,12 @@ public class PetCommandServiceImpl implements PetCommandService {
             Invitation invitation = InvitationConverter.toInvitation(pet, role, member, invitedMember);
             invitationRepository.save(invitation);
 
-            // TODO : FCM 알림 여부
+            // 알림
+            String title = "[초대 알림]";
+            String body = String.format("%s에 초대되었습니다.", pet.getName());
+
+            fcmService.sendPushNotification(invitedMember, title, body, NoticeType.INVITATION);
+            outBoxService.saveFCMEvent(fcmUtil.createFcmPayload(invitedMember.getId(), title, body, NoticeType.INVITATION, invitation.getId()));
         }
     }
 
