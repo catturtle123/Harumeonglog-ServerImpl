@@ -32,8 +32,19 @@ public class S3ServiceImpl implements S3Service {
 
     @Override
     public S3ResponseDTO.S3ResponseListDTO generatePresignedUrls(S3RequestDTO.GeneratePresignedUrlsRequest request) {
-        List<S3ResponseDTO.EntityImageResponse> entityResponses = request.getEntities().stream()
+        List<S3RequestDTO.EntityImageRequest> entityImageRequests = request.getEntities();
+
+        if (entityImageRequests == null || entityImageRequests.isEmpty()) {
+            throw new S3Exception(S3ErrorCode.EMPTY_ENTITY_IMAGE_REQUEST);
+        }
+
+        List<S3ResponseDTO.EntityImageResponse> entityResponses = entityImageRequests.stream()
                 .map(entityRequest -> {
+
+                    if (entityRequest.getImages() == null || entityRequest.getImages().isEmpty()) {
+                        throw new S3Exception(S3ErrorCode.EMPTY_IMAGE_LIST);
+                    }
+
                     List<S3ResponseDTO.S3ResponsePreviewDTO> imageList = entityRequest.getImages().stream()
                             .map(image -> {
                                 // 이미지 타입 검증
@@ -51,7 +62,7 @@ public class S3ServiceImpl implements S3Service {
                                 // Presigned URL 생성
                                 String presignedUrl = generatePresignedUrl(imageKey, image.getContentType());
 
-                                // Outbox 생성
+                                // Outbox 저장
                                 OutBox outBox = OutBoxConverter.toS3OutBox(imageKey);
                                 outBoxRepository.save(outBox);
 
@@ -65,6 +76,7 @@ public class S3ServiceImpl implements S3Service {
 
         return S3Converter.toS3ResponseDTO(entityResponses);
     }
+
 
 
     private String generateImageKey(Long entityId, S3Domain domain, String filename) {
