@@ -92,13 +92,13 @@ public class Event{
     private Boolean isNoticed;
 
 
-    public void update(String title, LocalDate date, Boolean hasNotice, LocalTime time, EventCategory category){
+    public void update(String title, LocalDate date, Boolean hasNotice, LocalTime time){
         this.title = title;
         this.date = date;
         this.hasNotice = hasNotice;
         this.time = time;
-        this.category = category;
     }
+
 
     public void updateRepeat(Boolean isRepeated, LocalDate expiredDate, List<RepeatDay> repeatDays){
         this.isRepeated = isRepeated;
