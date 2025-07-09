@@ -3,7 +3,8 @@ package com.example.harumeonglog.domain.event.service.command;
 import com.example.harumeonglog.domain.event.converter.EventConverter;
 import com.example.harumeonglog.domain.event.dto.request.EventRequest;
 import com.example.harumeonglog.domain.event.dto.response.EventResponse;
-import com.example.harumeonglog.domain.event.entity.Event;
+import com.example.harumeonglog.domain.event.entity.*;
+import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
 import com.example.harumeonglog.domain.event.repository.EventRepository;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.MemberPetRole;
@@ -11,6 +12,7 @@ import com.example.harumeonglog.domain.pet.entity.MemberPet;
 import com.example.harumeonglog.domain.pet.entity.Pet;
 import com.example.harumeonglog.domain.pet.repository.MemberPetRepository;
 import com.example.harumeonglog.domain.pet.repository.PetRepository;
+import com.example.harumeonglog.global.error.code.EventErrorCode;
 import com.example.harumeonglog.global.error.code.PetErrorCode;
 import com.example.harumeonglog.global.error.exception.EventException;
 import com.example.harumeonglog.global.error.exception.PetException;
@@ -77,13 +79,13 @@ public class EventCommandServiceImpl implements EventCommandService {
             // 카테고리 변경이 있는 경우 - 엔티티 재생성
             event = recreateEventWithNewCategory(event, request, member);
         } else {
-            // 기본 정보 업데이트
-            event.update(request.getTitle(), request.getDate(), request.getHasNotice(), request.getTime(), request.getCategory());
+            // 카테고리가 같을 경우 - 카테고리별 update
+            event.update(request.getTitle(), request.getDate(), request.getHasNotice(), request.getTime());
+            updateCategorySpecificFields(event, request);
         }
 
         // 반복 설정 변경 처리
         handleRepeatSettingChange(event, request, member);
-
         return EventConverter.toBaseEventResponse(event);
     }
 
@@ -214,6 +216,71 @@ public class EventCommandServiceImpl implements EventCommandService {
 
         // 원본 일정의 반복 설정 제거
         event.updateRepeat(false, null, null);
+    }
+
+    private void updateCategorySpecificFields(Event event, EventRequest.EventRequestDTO request) {
+        switch (event.getCategory()) {
+            case GENERAL:
+                updateGeneralEvent(event, request);
+                break;
+            case WALK:
+                updateWalkEvent(event, request);
+                break;
+            case HOSPITAL:
+                updateHospitalEvent(event, request);
+                break;
+            case MEDICINE:
+                updateMedicineEvent(event, request);
+                break;
+            case BATH:
+                break;
+            default:
+                throw new EventException(EventErrorCode.INVALID_CATEGORY);
+        }
+    }
+
+    private void updateGeneralEvent(Event event, EventRequest.EventRequestDTO request) {
+        if (!(event instanceof GeneralEvent)) {
+            throw new EventException(EventErrorCode.INVALID_CATEGORY);
+        }
+        GeneralEvent generalEvent = (GeneralEvent) event;
+        generalEvent.updateDetails(request.getDetails());
+    }
+
+    private void updateWalkEvent(Event event, EventRequest.EventRequestDTO request) {
+        if (!(event instanceof WalkEvent)) {
+            throw new EventException(EventErrorCode.INVALID_CATEGORY);
+        }
+        WalkEvent walkEvent = (WalkEvent) event;
+        walkEvent.updateWalkDetails(
+                request.getDistance(),
+                request.getDuration(),
+                request.getDetails()
+        );
+    }
+
+    private void updateHospitalEvent(Event event, EventRequest.EventRequestDTO request) {
+        if (!(event instanceof HospitalEvent)) {
+            throw new EventException(EventErrorCode.INVALID_CATEGORY);
+        }
+        HospitalEvent hospitalEvent = (HospitalEvent) event;
+        hospitalEvent.updateHospitalDetails(
+                request.getHospitalName(),
+                request.getDepartment(),
+                request.getCost(),
+                request.getDetails()
+        );
+    }
+
+    private void updateMedicineEvent(Event event, EventRequest.EventRequestDTO request) {
+        if (!(event instanceof MedicineEvent)) {
+            throw new EventException(EventErrorCode.INVALID_CATEGORY);
+        }
+        MedicineEvent medicineEvent = (MedicineEvent) event;
+        medicineEvent.updateMedicineDetails(
+                request.getMedicineName(),
+                request.getDetails()
+        );
     }
 
 }
