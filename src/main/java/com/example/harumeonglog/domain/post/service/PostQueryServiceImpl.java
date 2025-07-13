@@ -110,12 +110,14 @@ public class PostQueryServiceImpl implements PostQueryService {
                             s3Util.getUrlFromKey(post.getPostImageList().get(0).getPostImageKeyName());
 
                     boolean isLiked = likedPostIds.contains(post.getId());
+                    boolean isOwn = member.getId().equals(post.getMember().getId());
 
                     return PostConverter.toPostPreviewResponse(
                             post,
                             MemberConverter.toMemberInfoResponse(post.getMember(), s3Util),
                             postImageKey,
-                            isLiked
+                            isLiked,
+                            isOwn
                     );
                 })
                 .toList();
