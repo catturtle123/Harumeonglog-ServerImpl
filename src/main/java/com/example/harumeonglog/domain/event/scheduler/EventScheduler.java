@@ -6,10 +6,8 @@ import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.Setting;
 import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import com.example.harumeonglog.domain.member.repository.SettingRepository;
+import com.example.harumeonglog.domain.member.service.NoticeCommandService;
 import com.example.harumeonglog.global.firebase.service.FcmService;
-import com.example.harumeonglog.global.outbox.service.OutBoxService;
-import com.example.harumeonglog.global.util.FcmUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,8 +29,7 @@ public class EventScheduler {
     private final EventRepository eventRepository;
     private final FcmService fcmService;
     private final SettingRepository settingRepository;
-    private final OutBoxService outBoxService;
-    private final FcmUtil fcmUtil;
+    private final NoticeCommandService noticeCommandService;
 
     private static final int REMINDER_MINUTES = 10;
 
@@ -127,8 +124,7 @@ public class EventScheduler {
 
             fcmService.sendPushNotification(member, title, summaryMessage, NoticeType.EVENT);
 
-            String payload = fcmUtil.createFcmPayload(member.getId(), title, summaryMessage, NoticeType.EVENT, null);
-            outBoxService.saveFCMEvent(payload);
+            noticeCommandService.createNotice(title, summaryMessage, NoticeType.EVENT, null, member);
 
             log.info("회원 {}에게 {}개의 일정 요약을 전송했습니다.", member.getId(), events.size());
 
@@ -157,8 +153,7 @@ public class EventScheduler {
 
             fcmService.sendPushNotification(event.getMember(), title, message, NoticeType.EVENT);
 
-            String payload = fcmUtil.createFcmPayload(event.getMember().getId(), title, message, NoticeType.EVENT, event.getId());
-            outBoxService.saveFCMEvent(payload);
+            noticeCommandService.createNotice(title, message, NoticeType.EVENT, null, event.getMember());
 
             log.info("일정 {}에 대한 알림을 회원 {}에게 전송했습니다.", event.getId(), event.getMember().getId());
 

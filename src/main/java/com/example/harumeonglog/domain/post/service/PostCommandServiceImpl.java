@@ -1,6 +1,8 @@
 package com.example.harumeonglog.domain.post.service;
 
 import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
+import com.example.harumeonglog.domain.member.service.NoticeCommandService;
 import com.example.harumeonglog.domain.post.converter.PostConverter;
 import com.example.harumeonglog.domain.post.converter.PostImageConverter;
 import com.example.harumeonglog.domain.post.converter.PostLikeConverter;
@@ -16,6 +18,7 @@ import com.example.harumeonglog.domain.post.repository.PostReportRepository;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
 import com.example.harumeonglog.global.error.code.PostErrorCode;
 import com.example.harumeonglog.global.error.exception.PostException;
+import com.example.harumeonglog.global.firebase.service.FcmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,8 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostReportRepository postReportRepository;
+    private final FcmService fcmService;
+    private final NoticeCommandService noticeCommandService;
 
     @Override
     public PostResponse.PostCreateResponse createPost(PostRequest.PostCreateRequest postCreateRequest, Member member) {
@@ -75,6 +80,11 @@ public class PostCommandServiceImpl implements PostCommandService {
                 () -> {
                     postLikeRepository.save(PostLikeConverter.toPostLike(post, member));
                     postRepository.updatePostLikeNumByPost(post);
+
+                    String title = "게시글 좋아요";
+                    String body = member.getNickname() + "님이 회원님의 게시글을 좋아합니다.";
+                    fcmService.sendPushNotification(post.getMember(), title, body, NoticeType.ARTICLE);
+                    noticeCommandService.createNotice(title, body, NoticeType.ARTICLE, member, post.getMember());
                 }
         );
     }

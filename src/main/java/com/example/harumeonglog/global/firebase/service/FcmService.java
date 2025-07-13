@@ -8,6 +8,7 @@ import com.example.harumeonglog.global.discord.dto.DiscordMessage;
 import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.PrintWriter;
@@ -22,6 +23,7 @@ public class FcmService {
     private final MemberCommandService memberCommandService;
     private final DiscordApiUtil discordApiUtil;
 
+    @Async
     public void sendPushNotification(Member receiver, String title, String body, NoticeType noticeType) {
         if (receiver.getDeviceId() == null) {
             return;

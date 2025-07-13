@@ -7,6 +7,7 @@ import com.example.harumeonglog.domain.member.entity.enums.MemberPetRole;
 import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import com.example.harumeonglog.domain.member.repository.InvitationRepository;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
+import com.example.harumeonglog.domain.member.service.NoticeCommandService;
 import com.example.harumeonglog.domain.pet.converter.MemberPetConverter;
 import com.example.harumeonglog.domain.pet.converter.PetConverter;
 import com.example.harumeonglog.domain.pet.dto.request.PetRequest;
@@ -22,8 +23,6 @@ import com.example.harumeonglog.global.error.exception.MemberException;
 import com.example.harumeonglog.global.error.exception.PetException;
 import com.example.harumeonglog.global.error.exception.S3Exception;
 import com.example.harumeonglog.global.firebase.service.FcmService;
-import com.example.harumeonglog.global.outbox.entity.enums.EventType;
-import com.example.harumeonglog.global.outbox.service.OutBoxService;
 import com.example.harumeonglog.global.util.FcmUtil;
 import com.example.harumeonglog.global.util.OutboxUtil;
 import com.example.harumeonglog.global.util.S3Util;
@@ -42,8 +41,7 @@ public class PetCommandServiceImpl implements PetCommandService {
     private final OutboxUtil outboxUtil;
     private final InvitationRepository invitationRepository;
     private final FcmService fcmService;
-    private final OutBoxService outBoxService;
-    private final FcmUtil fcmUtil;
+    private final NoticeCommandService noticeCommandService;
 
     // ========== 외부 메서드 ==========
 
@@ -181,7 +179,7 @@ public class PetCommandServiceImpl implements PetCommandService {
             String body = String.format("%s에 초대되었습니다.", pet.getName());
 
             fcmService.sendPushNotification(invitedMember, title, body, NoticeType.INVITATION);
-            outBoxService.saveFCMEvent(fcmUtil.createFcmPayload(invitedMember.getId(), title, body, NoticeType.INVITATION, invitation.getId()));
+            noticeCommandService.createNotice(title, body, NoticeType.INVITATION, member, invitedMember);
         }
     }
 
