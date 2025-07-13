@@ -55,7 +55,7 @@ public class PostQueryServiceImpl implements PostQueryService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
         List<String> postImageList = extractImageKeyName(post);
         Boolean isLiked = postLikeRepository.existsByPostAndMember(post, owner);
-        Boolean isOwn = owner.equals(post.getMember());
+        Boolean isOwn = owner.getId().equals(post.getMember().getId());
 
         return PostConverter.toPostDetailResponse(post, MemberConverter.toMemberInfoResponse(post.getMember(), s3Util), postImageList, isLiked, isOwn);
     }
