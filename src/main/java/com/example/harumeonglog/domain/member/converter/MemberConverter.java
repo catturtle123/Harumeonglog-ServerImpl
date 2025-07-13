@@ -9,7 +9,7 @@ public class MemberConverter {
     public static MemberResponse.MemberInfoResponse toMemberInfoResponse(Member member, S3Util s3Util) {
         return MemberResponse.MemberInfoResponse.builder()
                 .memberId(member.getId())
-                .image(s3Util.getUrlFromKey(member.getImage()))
+                .image(s3Util.getUrlFromKey(member.getImage() != null ? member.getImage() : null))
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .build();
@@ -18,7 +18,7 @@ public class MemberConverter {
     public static MemberResponse.MemberInfoUpdateResponse toMemberInfoUpdateResponse(Member member, S3Util s3Util) {
         return MemberResponse.MemberInfoUpdateResponse.builder()
                 .memberId(member.getId())
-                .image(s3Util.getUrlFromKey(member.getImage()))
+                .image(s3Util.getUrlFromKey(member.getImage() != null ? member.getImage() : null))
                 .nickname(member.getNickname())
                 .updatedAt(member.getUpdatedAt())
                 .build();
