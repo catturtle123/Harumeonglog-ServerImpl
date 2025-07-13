@@ -49,6 +49,7 @@ public class PostResponse {
         private Long likeNum;
         private Long commentNum;
         private Boolean isLiked;
+        private Boolean isOwn;
         private PostCategory postCategory;
         private MemberInfoResponse memberInfoResponse;
         private List<String> postImageList;

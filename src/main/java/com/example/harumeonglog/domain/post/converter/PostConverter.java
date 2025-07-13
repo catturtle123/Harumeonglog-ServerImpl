@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostConverter {
 
-    public static PostResponse.PostDetailResponse toPostDetailResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, List<String> imageList, Boolean isLiked) {
+    public static PostResponse.PostDetailResponse toPostDetailResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, List<String> imageList, Boolean isLiked, Boolean isOwn) {
 
         return PostResponse.PostDetailResponse.builder()
                 .postId(post.getId())
@@ -24,6 +24,7 @@ public class PostConverter {
                 .memberInfoResponse(memberInfoResponse)
                 .createdAt(post.getCreatedAt())
                 .isLiked(isLiked)
+                .isOwn(isOwn)
                 .likeNum(post.getPostLikeNum())
                 .commentNum(post.getCommentNum())
                 .postImageList(imageList)
