@@ -101,15 +101,15 @@ public class PetController {
     }
 
 
-    @Operation(summary = "펫 삭제 API by 백종우", description = "펫을 삭제합니다.")
+    @Operation(summary = "펫 나가기 API by 백종우", description = "해당 펫에서 나가거나 추방합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "COMMON200", description = "삭제 성공")
+            @ApiResponse(responseCode = "COMMON200", description = "나가기 성공")
     })
     @DeleteMapping("/{petId}")
     public CustomResponse<String> deletePet(@PathVariable Long petId,
-                                            @AuthenticatedMember Member member) {
-        petCommandService.deletePet(petId, member);
-        return CustomResponse.ok("펫 삭제 완료");
+                                            @RequestParam(required = false) Long memberId) {
+        petCommandService.deletePet(petId, memberId);
+        return CustomResponse.ok("펫 나가기 완료");
     }
 
     @Operation(summary = "펫 초대 API by 백종우", description = "다른 사용자에 대해 초대를 보냅니다.")
