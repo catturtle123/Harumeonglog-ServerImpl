@@ -108,7 +108,7 @@ public class WalkQueryServiceImpl implements WalkQueryService {
         for (MemberWalk memberWalk : memberWalkRepository.findMemberNicknameByWalks(walkIds)) {
             nicknames.put(memberWalk.getWalk().getId(), memberWalk.getMember().getNickname());
         }
-        List<Long> walkLikeIds = walkLikeRepository.findByWalks(walkIds)
+        List<Long> walkLikeIds = walkLikeRepository.findByWalksAndMemberId(walkIds, member.getId())
                 .stream().map(walkLike -> walkLike.getWalk().getId()).toList();
         walks.forEach(walk ->
                 responses.add(WalkConverter.toWalkSearchResponse(

@@ -15,7 +15,7 @@ public interface WalkLikeRepository extends JpaRepository<WalkLike, Long> {
     boolean existsByMemberAndWalk(Member member, Walk walk);
 
     @Query("""
-        SELECT wl FROM WalkLike wl JOIN FETCH wl.walk w WHERE wl.walk.id IN :walks
+        SELECT wl FROM WalkLike wl JOIN FETCH wl.walk w WHERE wl.walk.id IN :walks AND wl.member.id = :memberId
     """)
-    List<WalkLike> findByWalks(@Param("walks") List<Long> walks);
+    List<WalkLike> findByWalksAndMemberId(@Param("walks") List<Long> walks, @Param("memberId") Long memberId);
 }
