@@ -45,7 +45,7 @@ public class WalkQueryServiceImpl implements WalkQueryService {
 
     @Override
     public WalkResponse.WalkAvailableMemberListResponse getAvailableMembers(WalkRequest.AvailableMemberRequest dto) {
-        Set<Member> members = new HashSet<>();
+        Set<Member> members = new LinkedHashSet<>();
         dto.getPetId().forEach(petId ->
             members.addAll(memberPetRepository.findByPet(petId).stream().map(MemberPet::getMember).toList())
         );
