@@ -1,15 +1,23 @@
 package com.example.harumeonglog.domain.pet.repository;
 
 import com.example.harumeonglog.domain.pet.entity.Pet;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface PetRepository extends JpaRepository<Pet, Long> {
     @Query("SELECT p.mainImage FROM Pet p WHERE p.mainImage IS NOT NULL")
     List<String> findAllImageKeys();
 
     Optional<Pet> findByIdAndDeletedAtIsNull(Long petId);
+
+
+    @Modifying
+    @Query("UPDATE Pet p SET p.mainImage = NULL WHERE p.mainImage IN :imageKeys")
+    int updateImageKeyToNullByImageKeyIn(@Param("imageKeys") Set<String> imageKeys);
 }

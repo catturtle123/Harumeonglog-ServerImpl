@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByProviderIdAndSocialType(String providerId, SocialType socialType);
@@ -46,4 +47,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Modifying
     @Query("UPDATE Member m set m.deviceId = null where m = :member")
     void updateDeviceIdByMember(Member member);
+
+
+    @Modifying
+    @Query("UPDATE Member m SET m.image = NULL WHERE m.image IN :imageKeys")
+    int updateImageKeyToNullByImageKeyIn(@Param("imageKeys") Set<String> imageKeys);
 }

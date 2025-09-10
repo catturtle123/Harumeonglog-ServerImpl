@@ -47,7 +47,7 @@ public class S3Util {
 
     // S3 파일 삭제
     public void deleteFile(String key) {
-        if (key == null && key.trim().isEmpty()) {
+        if (key == null || key.trim().isEmpty()) {
             throw new S3Exception(S3ErrorCode.NOT_FOUND);
         }
         try {
