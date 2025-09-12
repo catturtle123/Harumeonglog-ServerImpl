@@ -190,8 +190,8 @@ public class PetCommandServiceImpl implements PetCommandService {
             String title = "[초대 알림]";
             String body = String.format("%s에 초대되었습니다.", pet.getName());
 
-            fcmService.sendPushNotification(invitedMember, title, body, NoticeType.INVITATION);
-            noticeCommandService.createNotice(title, body, NoticeType.INVITATION, member, invitedMember);
+            fcmService.sendPushNotification(invitedMember, title, body, NoticeType.NOTICE);
+            noticeCommandService.createNotice(title, body, NoticeType.NOTICE, member, invitedMember);
         }
     }
 
