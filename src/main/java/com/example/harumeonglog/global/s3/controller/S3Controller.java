@@ -4,6 +4,7 @@ import com.example.harumeonglog.global.common.response.CustomResponse;
 import com.example.harumeonglog.global.s3.dto.request.S3RequestDTO;
 import com.example.harumeonglog.global.s3.dto.response.S3ResponseDTO;
 import com.example.harumeonglog.global.s3.service.S3Service;
+import com.example.harumeonglog.global.s3.service.SyncService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class S3Controller {
 
     private final S3Service s3Service;
+    private final SyncService syncService;
 
     @Operation(summary = "S3 이미지 PresignedUrl 발급 by 백종우",
             description = "단일/복수 엔티티에 대한 단일/복수 이미지의 PresignedUrl을 발급합니다.")
@@ -28,5 +30,11 @@ public class S3Controller {
     public CustomResponse<S3ResponseDTO.S3ResponseListDTO> getPresignedUrls(
             @RequestBody S3RequestDTO.GeneratePresignedUrlsRequest request) {
         return CustomResponse.ok(s3Service.generatePresignedUrls(request));
+    }
+
+    @PostMapping("/sync/test")
+    public CustomResponse<String> dbSyncTest(){
+        syncService.cleanupDbKeysNotInS3();
+        return CustomResponse.ok("테스트 성공");
     }
 }
