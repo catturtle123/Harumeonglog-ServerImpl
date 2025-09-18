@@ -56,7 +56,8 @@ public class SecurityConfig {
 
     private final String[] allowUrl = {
             "/health",
-            "/api/v1/auth/**"
+            "/api/v1/auth/**",
+            "/api/v1/s3/sync/test"
     };
 
     private final String[] apiUrl = {
