@@ -5,11 +5,11 @@ import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.pet.repository.PetImageRepository;
 import com.example.harumeonglog.domain.pet.repository.PetRepository;
 import com.example.harumeonglog.domain.post.repository.PostImageRepository;
-import com.example.harumeonglog.global.data.S3ConfigData;
 import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +24,7 @@ public class SyncService {
     private final PostImageRepository postImageRepository;
     private final PetImageRepository petImageRepository;
 
+    @Transactional
     public void cleanupDbKeysNotInS3() {
         log.info("=== DB → S3 동기화 시작 ===");
 
