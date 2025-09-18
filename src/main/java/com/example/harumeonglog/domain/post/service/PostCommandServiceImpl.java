@@ -17,8 +17,12 @@ import com.example.harumeonglog.domain.post.repository.PostLikeRepository;
 import com.example.harumeonglog.domain.post.repository.PostReportRepository;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
 import com.example.harumeonglog.global.error.code.PostErrorCode;
+import com.example.harumeonglog.global.error.code.S3ErrorCode;
 import com.example.harumeonglog.global.error.exception.PostException;
+import com.example.harumeonglog.global.error.exception.S3Exception;
 import com.example.harumeonglog.global.firebase.service.FcmService;
+import com.example.harumeonglog.global.util.OutboxUtil;
+import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +41,25 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final PostReportRepository postReportRepository;
     private final FcmService fcmService;
     private final NoticeCommandService noticeCommandService;
+    private final S3Util s3Util;
+    private final OutboxUtil outboxUtil;
 
     @Override
     public PostResponse.PostCreateResponse createPost(PostRequest.PostCreateRequest postCreateRequest, Member member) {
         Post post = PostConverter.toPost(postCreateRequest, member);
 
         addImage(postCreateRequest, post);
+
+        // Outbox 상태 변경
+        if (postCreateRequest.getPostImageList() != null) {
+            postCreateRequest.getPostImageList()
+                    .forEach(imageKey -> {
+                        if (!s3Util.isObjectExists(imageKey)) {
+                            throw new S3Exception(S3ErrorCode.NOT_FOUND);
+                        }
+                        outboxUtil.changeS3OutboxStatus(imageKey);
+                    });
+        }
 
         return PostConverter.toPostCreateResponse(postRepository.save(post));
     }
@@ -55,6 +72,17 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         List<PostImage> postImageList = postUpdateRequest.getPostImageList().stream().map(PostImageConverter::toPostImage).toList();
         post.update(postUpdateRequest.getTitle(), postUpdateRequest.getContent(), postUpdateRequest.getPostCategory(), postImageList);
+
+        // Outbox 상태를 변경
+        if (postUpdateRequest.getPostImageList() != null) {
+            postUpdateRequest.getPostImageList()
+                    .forEach(imageKey -> {
+                        if (!s3Util.isObjectExists(imageKey)) {
+                            throw new S3Exception(S3ErrorCode.NOT_FOUND);
+                        }
+                        outboxUtil.changeS3OutboxStatus(imageKey);
+                    });
+        }
 
         return PostConverter.toPostUpdateResponse(post);
     }
