@@ -53,9 +53,13 @@ public class CommentQueryServiceImpl implements CommentQueryService {
                 .map(cb -> cb.getComment().getId())
                 .collect(Collectors.toSet());
 
+        Set<Long> blockedMemberIdSet = member.getMemberBlockList().stream()
+                .map(mb -> mb.getReported().getId())
+                .collect(Collectors.toSet());
+
         List<CommentResponse.CommentPreviewResponse> responses = commentList.stream()
                 .map(comment -> {
-                    return CommentConverter.toCommentPreviewResponse(comment, member, blockedCommentIdSet, s3Util);
+                    return CommentConverter.toCommentPreviewResponse(comment, member, blockedCommentIdSet, s3Util, blockedMemberIdSet);
                 })
                 .toList();
 
