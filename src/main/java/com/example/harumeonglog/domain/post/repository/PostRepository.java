@@ -17,23 +17,46 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p " +
             "from Post p join fetch p.member m " +
-            "where p.deletedAt is null and p.content like %:content% and p.id < :cursor order by p.id desc")
-    Slice<Post> findByContentLikeAndIdLessThanOrderByIdDesc(String content, Long cursor, Pageable pageable);
+            "left join PostReport pr on pr.post = p and pr.member.id = :memberId " +
+            "where p.deletedAt is null " +
+            "and pr.id is null " +
+            "and p.content like %:content% " +
+            "and p.id < :cursor " +
+            "order by p.id desc")
+    Slice<Post> findByContentLikeAndIdLessThanOrderByIdDesc(String content, Long memberId, Long cursor, Pageable pageable);
 
     @Query("select p " +
             "from Post p join fetch p.member m " +
-            "where p.category = :postCategory and p.deletedAt is null and p.content like %:content% and p.id < :cursor order by p.id desc")
-    Slice<Post> findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(String content, Long cursor, PostCategory postCategory, PageRequest of);
+            "left join PostReport pr on pr.post = p and pr.member.id = :memberId " +
+            "where p.category = :postCategory " +
+            "and p.deletedAt is null " +
+            "and pr.id is null " +
+            "and p.content like %:content% " +
+            "and p.id < :cursor " +
+            "order by p.id desc")
+    Slice<Post> findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(String content, Long memberId, Long cursor, PostCategory postCategory, PageRequest of);
 
     @Query("select p " +
             "from Post p join fetch p.member m " +
-            "where p.member = :member and p.deletedAt is null and p.id < :cursor order by p.id desc")
-    Slice<Post> findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(Member member, Long cursor, Pageable pageable);
+            "left join PostReport pr on pr.post = p and pr.member.id = :viewerId " +
+            "where p.member = :member " +
+            "and p.deletedAt is null " +
+            "and pr.id is null " +
+            "and p.id < :cursor " +
+            "order by p.id desc")
+    Slice<Post> findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(Member member, Long viewerId, Long cursor, Pageable pageable);
 
     @Query("select p " +
-            "from Post p join PostLike pl on pl.post = p join fetch p.member m " +
-            "where pl.member = :member and p.deletedAt is null and p.id < :cursor order by p.id desc")
-    Slice<Post> findMyLikePosts(Member member, Long cursor, Pageable pageable);
+            "from Post p " +
+            "join PostLike pl on pl.post = p " +
+            "join fetch p.member m " +
+            "left join PostReport pr on pr.post = p and pr.member = :viewer " +
+            "where pl.member = :member " +
+            "and p.deletedAt is null " +
+            "and pr.id is null " +
+            "and p.id < :cursor " +
+            "order by p.id desc")
+    Slice<Post> findMyLikePosts(Member member, Long memberId, Long cursor, Pageable pageable);
 
     @Query(value = """
         SELECT * FROM (

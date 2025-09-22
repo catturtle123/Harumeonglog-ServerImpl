@@ -41,12 +41,12 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         Slice<Post> postSlice;
         if (postRequestCategory.isAll()) {
-            postSlice = postRepository.findByContentLikeAndIdLessThanOrderByIdDesc(search, cursor, PageRequest.of(0, size));
+            postSlice = postRepository.findByContentLikeAndIdLessThanOrderByIdDesc(search, cursor, member.getId(), PageRequest.of(0, size));
             return buildPostPreviewListResponse(postSlice, member);
         }
 
         PostCategory postCategory = postRequestCategory.toPostCategory();
-        postSlice = postRepository.findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(search, cursor, postCategory, PageRequest.of(0, size));
+        postSlice = postRepository.findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(search, member.getId(), cursor, postCategory, PageRequest.of(0, size));
         return buildPostPreviewListResponse(postSlice, member);
     }
 
@@ -64,7 +64,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     public PostResponse.PostPreviewListResponse getMyPost(Long cursor, Integer size, Member member) {
         cursor = normalizeCursor(cursor);
 
-        Slice<Post> postSlice = postRepository.findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(member, cursor, PageRequest.of(0, size));
+        Slice<Post> postSlice = postRepository.findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(member, member.getId(), cursor, PageRequest.of(0, size));
         return buildPostPreviewListResponse(postSlice, member);
     }
 
@@ -72,7 +72,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     public PostResponse.PostPreviewListResponse getMyLikePost(Long cursor, Integer size, Member member) {
         cursor = normalizeCursor(cursor);
 
-        Slice<Post> postSlice = postRepository.findMyLikePosts(member, cursor, PageRequest.of(0, size));
+        Slice<Post> postSlice = postRepository.findMyLikePosts(member, member.getId(), cursor, PageRequest.of(0, size));
         return buildPostPreviewListResponse(postSlice, member);
     }
 
