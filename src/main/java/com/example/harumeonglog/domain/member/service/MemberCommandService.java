@@ -11,4 +11,6 @@ public interface MemberCommandService {
     void saveFCM(Member member, MemberRequest.FCMRequest fcmRequest);
 
     void notDeadLockFcmSignOut(Member member);
+
+    Member changeMemberTerms(Member member, MemberRequest.MemberTermsUpdateRequest request);
 }

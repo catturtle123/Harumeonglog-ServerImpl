@@ -49,6 +49,14 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
+    public Member changeMemberTerms(Member member, MemberRequest.MemberTermsUpdateRequest request) {
+        Member updatedMember = memberRepository.findById(member.getId()).orElseThrow(() ->
+                new MemberException(MemberErrorCode.NOT_FOUND));
+        updatedMember.updateTerms(request.getDidAgree());
+        return updatedMember;
+    }
+
+    @Override
     public void saveFCM(Member member, MemberRequest.FCMRequest fcmRequest) {
         member.updateFCMToken(fcmRequest.getFcmToken());
         memberRepository.save(member);

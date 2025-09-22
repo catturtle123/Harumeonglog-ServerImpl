@@ -42,6 +42,10 @@ public class Member extends BaseEntity {
     @Column(name = "current_pet_id")
     private Long currentPetId;
 
+    @Column(name = "terms")
+    @Builder.Default
+    private Boolean terms = false;
+
     private String deviceId;
 
     public void update(String nickname, String image) {
@@ -51,6 +55,9 @@ public class Member extends BaseEntity {
 
     public void updateCurrentPetId(Long currentPetId) {
         this.currentPetId = currentPetId;
+    }
+    public void updateTerms(Boolean terms) {
+        this.terms = terms;
     }
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();

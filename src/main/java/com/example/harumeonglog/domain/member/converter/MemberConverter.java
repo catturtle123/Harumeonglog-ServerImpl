@@ -24,4 +24,17 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponse.MemberTermsInfoResponse toMemberTermsInfoResponse(Member member) {
+        return MemberResponse.MemberTermsInfoResponse.builder()
+                .memberId(member.getId())
+                .didAgree(member.getTerms())
+                .build();
+    }
+
+    public static MemberResponse.MemberTermsUpdateResponse toMemberTermsUpdateResponse(Member member) {
+        return MemberResponse.MemberTermsUpdateResponse.builder()
+                .memberId(member.getId())
+                .didAgree(member.getTerms())
+                .build();
+    }
 }
