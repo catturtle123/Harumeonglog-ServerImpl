@@ -36,7 +36,7 @@ public abstract class AbstractOAuth2Service implements OAuth2Service {
     private final SettingRepository settingRepository;
 
     @Override
-    public CustomUserDetails login(String idToken) {
+    public OAuth2Response.OAuth2LoginSuccessResponse login(String idToken) {
         OAuth2Response.OAuth2IdTokenHeader tokenHeader = parseIdTokenHeader(idToken);
         OAuth2Response.OAuth2PublicKeyResponse keyInfo = getProperKeyInfo(tokenHeader);
         if (keyInfo == null) {
@@ -60,18 +60,23 @@ public abstract class AbstractOAuth2Service implements OAuth2Service {
 
     protected abstract boolean isValidLoginInfo(Claims claims);
 
-    protected CustomUserDetails successLogin(OAuth2Request.OAuth2LoginRequest request) {
+    protected OAuth2Response.OAuth2LoginSuccessResponse successLogin(OAuth2Request.OAuth2LoginRequest request) {
         Optional<Member> memberOptional = memberRepository.findByProviderIdAndSocialType(request.getProviderId(), request.getSocialType());
         Member member;
+        boolean isSignUp = false;
         if (memberOptional.isPresent()) {
             member = memberOptional.get();
         }
         else {
+            isSignUp = true;
             member = memberRepository.save(OAuth2Converter.toMember(request));
             createSetting(member);
         }
 
-        return new CustomUserDetails(member);
+        return OAuth2Response.OAuth2LoginSuccessResponse.builder()
+                .userDetails(new CustomUserDetails(member))
+                .isSignUp(isSignUp)
+                .build();
     }
 
     protected OAuth2Response.OAuth2IdTokenHeader parseIdTokenHeader(String idToken) {

@@ -3,6 +3,7 @@ package com.example.harumeonglog.domain.auth.service;
 import com.example.harumeonglog.domain.auth.converter.AuthConverter;
 import com.example.harumeonglog.domain.auth.dto.request.AuthRequest;
 import com.example.harumeonglog.domain.auth.dto.response.AuthResponse;
+import com.example.harumeonglog.domain.auth.dto.response.OAuth2Response;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.SocialType;
 import com.example.harumeonglog.global.error.code.AuthErrorCode;
@@ -28,17 +29,17 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
     @Override
     public AuthResponse.AuthLoginResponse login(String provider, AuthRequest.AuthLoginRequest request) {
-        CustomUserDetails userDetails;
+        OAuth2Response.OAuth2LoginSuccessResponse loginSuccessResponse;
         if (provider.equalsIgnoreCase(SocialType.KAKAO.name())) {
-            userDetails = kakaoOAuth2Service.login(request.getIdToken());
+            loginSuccessResponse = kakaoOAuth2Service.login(request.getIdToken());
         }
         else if (provider.equalsIgnoreCase(SocialType.APPLE.name())) {
-            userDetails = appleOAuth2Service.login(request.getIdToken());
+            loginSuccessResponse = appleOAuth2Service.login(request.getIdToken());
         }
         else {
             throw new AuthException(AuthErrorCode.UNSUPPORTED_PROVIDER);
         }
-        return tokenCommandService.createToken(userDetails);
+        return tokenCommandService.createToken(loginSuccessResponse.getUserDetails(), loginSuccessResponse.getIsSignUp());
     }
 
     @Override

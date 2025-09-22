@@ -17,11 +17,11 @@ public class TokenCommandServiceImpl implements TokenCommandService {
     private final RedisCommandService redisCommandService;
 
     @Override
-    public AuthResponse.AuthLoginResponse createToken(CustomUserDetails userDetails) {
+    public AuthResponse.AuthLoginResponse createToken(CustomUserDetails userDetails, Boolean isSignUp) {
         String accessToken = jwtUtil.createAccessToken(userDetails);
         String refreshToken = jwtUtil.createRefreshToken(userDetails);
         redisCommandService.addRefreshToken(userDetails.getLoginMember().getId(), refreshToken);
-        return AuthConverter.toAuthLoginResponse(userDetails.getLoginMember().getId(), accessToken, refreshToken);
+        return AuthConverter.toAuthLoginResponse(userDetails.getLoginMember().getId(), accessToken, refreshToken, isSignUp);
     }
 
     @Override

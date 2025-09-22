@@ -11,6 +11,7 @@ public class AuthResponse {
         private Long memberId;
         private String accessToken;
         private String refreshToken;
+        private Boolean isSignUp;
     }
 
     @Getter

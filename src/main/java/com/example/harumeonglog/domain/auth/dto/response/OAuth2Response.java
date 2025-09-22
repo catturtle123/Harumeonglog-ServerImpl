@@ -1,5 +1,7 @@
 package com.example.harumeonglog.domain.auth.dto.response;
 
+import com.example.harumeonglog.global.security.domain.CustomUserDetails;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
@@ -26,5 +28,12 @@ public class OAuth2Response {
         private String kid;
         private String typ;
         private String alg;
+    }
+
+    @Getter
+    @Builder
+    public static class OAuth2LoginSuccessResponse {
+        private CustomUserDetails userDetails;
+        private Boolean isSignUp;
     }
 }
