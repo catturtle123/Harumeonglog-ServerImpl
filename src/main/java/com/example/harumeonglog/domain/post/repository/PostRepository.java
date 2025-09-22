@@ -38,19 +38,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p " +
             "from Post p join fetch p.member m " +
-            "left join PostReport pr on pr.post = p and pr.member.id = :viewerId " +
-            "where p.member = :member " +
-            "and p.deletedAt is null " +
-            "and pr.id is null " +
-            "and p.id < :cursor " +
-            "order by p.id desc")
-    Slice<Post> findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(Member member, Long viewerId, Long cursor, Pageable pageable);
+            "where p.member = :member and p.deletedAt is null and p.id < :cursor order by p.id desc")
+    Slice<Post> findByMemberAndDeletedAtIsNullAndIdLessThanOrderByIdDesc(Member member, Long cursor, Pageable pageable);
 
     @Query("select p " +
             "from Post p " +
             "join PostLike pl on pl.post = p " +
             "join fetch p.member m " +
-            "left join PostReport pr on pr.post = p and pr.member = :viewer " +
+            "left join PostReport pr on pr.post = p and pr.member.id = :memberId " +
             "where pl.member = :member " +
             "and p.deletedAt is null " +
             "and pr.id is null " +
