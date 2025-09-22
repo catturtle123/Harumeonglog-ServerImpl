@@ -18,8 +18,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("select p " +
             "from Post p join fetch p.member m " +
             "left join PostReport pr on pr.post = p and pr.member.id = :memberId " +
+            "left join MemberBlock mb on mb.reporter.id = :memberId and mb.reported.id = m.id " +
             "where p.deletedAt is null " +
             "and pr.id is null " +
+            "and mb.id is null " +
             "and p.content like %:content% " +
             "and p.id < :cursor " +
             "order by p.id desc")
@@ -28,9 +30,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("select p " +
             "from Post p join fetch p.member m " +
             "left join PostReport pr on pr.post = p and pr.member.id = :memberId " +
+            "left join MemberBlock mb on mb.reporter.id = :memberId and mb.reported.id = m.id " +
             "where p.category = :postCategory " +
             "and p.deletedAt is null " +
             "and pr.id is null " +
+            "and mb.id is null " +
             "and p.content like %:content% " +
             "and p.id < :cursor " +
             "order by p.id desc")
@@ -46,9 +50,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "join PostLike pl on pl.post = p " +
             "join fetch p.member m " +
             "left join PostReport pr on pr.post = p and pr.member.id = :memberId " +
+            "left join MemberBlock mb on mb.reporter.id = :memberId and mb.reported.id = m.id " +
             "where pl.member = :member " +
             "and p.deletedAt is null " +
             "and pr.id is null " +
+            "and mb.id is null " +
             "and p.id < :cursor " +
             "order by p.id desc")
     Slice<Post> findMyLikePosts(Member member, Long memberId, Long cursor, Pageable pageable);
