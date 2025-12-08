@@ -19,10 +19,10 @@ public class AsyncConfig implements AsyncConfigurer {
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
-        executor.setCorePoolSize(5);           // 기본 스레드 수
-        executor.setMaxPoolSize(10);           // 최대 스레드 수
-        executor.setQueueCapacity(100);        // 대기열 크기
-        executor.setThreadNamePrefix("Async-"); // 스레드 이름 prefix
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(6);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("Async-FCM-");
 
         executor.initialize();
         return executor;
