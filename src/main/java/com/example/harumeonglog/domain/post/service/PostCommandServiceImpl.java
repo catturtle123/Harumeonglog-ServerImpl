@@ -20,6 +20,7 @@ import com.example.harumeonglog.global.error.code.PostErrorCode;
 import com.example.harumeonglog.global.error.code.S3ErrorCode;
 import com.example.harumeonglog.global.error.exception.PostException;
 import com.example.harumeonglog.global.error.exception.S3Exception;
+import com.example.harumeonglog.global.firebase.converter.FCMConverter;
 import com.example.harumeonglog.global.firebase.service.FcmService;
 import com.example.harumeonglog.global.util.OutboxUtil;
 import com.example.harumeonglog.global.util.S3Util;
@@ -117,7 +118,7 @@ public class PostCommandServiceImpl implements PostCommandService {
 
                     String title = "게시글 좋아요";
                     String body = member.getNickname() + "님이 회원님의 게시글을 좋아합니다.";
-                    fcmService.sendPushNotification(post.getMember(), title, body, NoticeType.ARTICLE);
+                    fcmService.sendPushNotification(FCMConverter.toReceiverRequest(post.getMember()), title, body, NoticeType.ARTICLE);
                     noticeCommandService.createNotice(title, body, NoticeType.ARTICLE, member, post.getMember());
                 }
         );

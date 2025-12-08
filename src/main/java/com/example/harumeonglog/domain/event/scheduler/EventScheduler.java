@@ -7,6 +7,7 @@ import com.example.harumeonglog.domain.member.entity.Setting;
 import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import com.example.harumeonglog.domain.member.repository.SettingRepository;
 import com.example.harumeonglog.domain.member.service.NoticeCommandService;
+import com.example.harumeonglog.global.firebase.converter.FCMConverter;
 import com.example.harumeonglog.global.firebase.service.FcmService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -122,7 +123,7 @@ public class EventScheduler {
             String summaryMessage = createDailySummaryMessage(events);
             String title = "오늘의 일정";
 
-            fcmService.sendPushNotification(member, title, summaryMessage, NoticeType.EVENT);
+            fcmService.sendPushNotification(FCMConverter.toReceiverRequest(member), title, summaryMessage, NoticeType.EVENT);
 
             noticeCommandService.createNotice(title, summaryMessage, NoticeType.EVENT, null, member);
 
@@ -151,7 +152,7 @@ public class EventScheduler {
             String message = createReminderMessage(event);
             String title = "일정 알림: " + event.getTitle();
 
-            fcmService.sendPushNotification(event.getMember(), title, message, NoticeType.EVENT);
+            fcmService.sendPushNotification(FCMConverter.toReceiverRequest(event.getMember()), title, message, NoticeType.EVENT);
 
             noticeCommandService.createNotice(title, message, NoticeType.EVENT, null, event.getMember());
 

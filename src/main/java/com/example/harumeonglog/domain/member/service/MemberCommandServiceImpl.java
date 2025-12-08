@@ -63,7 +63,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
-    public void notDeadLockFcmSignOut(Member member) {
-        memberRepository.updateDeviceIdByMember(member);
+    public void notDeadLockFcmSignOut(Long member) {
+        memberRepository.updateDeviceIdByMemberId(member);
     }
 }

@@ -22,6 +22,7 @@ import com.example.harumeonglog.global.error.code.S3ErrorCode;
 import com.example.harumeonglog.global.error.exception.MemberException;
 import com.example.harumeonglog.global.error.exception.PetException;
 import com.example.harumeonglog.global.error.exception.S3Exception;
+import com.example.harumeonglog.global.firebase.converter.FCMConverter;
 import com.example.harumeonglog.global.firebase.service.FcmService;
 import com.example.harumeonglog.global.util.OutboxUtil;
 import com.example.harumeonglog.global.util.S3Util;
@@ -195,7 +196,7 @@ public class PetCommandServiceImpl implements PetCommandService {
             String title = "[초대 알림]";
             String body = String.format("%s에 초대되었습니다.", pet.getName());
 
-            fcmService.sendPushNotification(invitedMember, title, body, NoticeType.NOTICE);
+            fcmService.sendPushNotification(FCMConverter.toReceiverRequest(invitedMember), title, body, NoticeType.NOTICE);
             noticeCommandService.createNotice(title, body, NoticeType.NOTICE, member, invitedMember);
         }
     }

@@ -45,8 +45,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<String> findAllImageKeys();
 
     @Modifying
-    @Query("UPDATE Member m set m.deviceId = null where m = :member")
-    void updateDeviceIdByMember(Member member);
+    @Query("UPDATE Member m set m.deviceId = null where m.id = :memberId")
+    void updateDeviceIdByMemberId(Long memberId);
 
 
     @Modifying

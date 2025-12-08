@@ -22,6 +22,7 @@ import com.example.harumeonglog.global.error.code.CommentErrorCode;
 import com.example.harumeonglog.global.error.code.PostErrorCode;
 import com.example.harumeonglog.global.error.exception.CommentException;
 import com.example.harumeonglog.global.error.exception.PostException;
+import com.example.harumeonglog.global.firebase.converter.FCMConverter;
 import com.example.harumeonglog.global.firebase.service.FcmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -121,7 +122,7 @@ public class CommentCommandServiceImpl implements CommentCommandService {
 
             String title = "댓글 좋아요";
             String body = member.getNickname() + "님이 회원님의 댓글을 좋아합니다.";
-            fcmService.sendPushNotification(comment.getMember(), title, body, NoticeType.COMMENT);
+            fcmService.sendPushNotification(FCMConverter.toReceiverRequest(comment.getMember()), title, body, NoticeType.COMMENT);
             noticeCommandService.createNotice(title, body, NoticeType.COMMENT, member, comment.getMember());
         }
 

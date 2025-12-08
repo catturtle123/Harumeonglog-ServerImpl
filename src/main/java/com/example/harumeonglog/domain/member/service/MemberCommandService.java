@@ -10,7 +10,7 @@ public interface MemberCommandService {
 
     void saveFCM(Member member, MemberRequest.FCMRequest fcmRequest);
 
-    void notDeadLockFcmSignOut(Member member);
+    void notDeadLockFcmSignOut(Long memberId);
 
     Member changeMemberTerms(Member member, MemberRequest.MemberTermsUpdateRequest request);
 }

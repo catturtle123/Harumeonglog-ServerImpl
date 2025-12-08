@@ -5,6 +5,9 @@ import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import com.example.harumeonglog.domain.member.service.MemberCommandService;
 import com.example.harumeonglog.global.discord.DiscordApiUtil;
 import com.example.harumeonglog.global.discord.dto.DiscordMessage;
+import com.example.harumeonglog.global.firebase.converter.FCMConverter;
+import com.example.harumeonglog.global.firebase.dto.request.FCMSendRequest;
+import com.example.harumeonglog.global.firebase.dto.request.FCMSendRequest.ReceiverRequest;
 import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -24,7 +27,7 @@ public class FcmService {
     private final DiscordApiUtil discordApiUtil;
 
     @Async
-    public void sendPushNotification(Member receiver, String title, String body, NoticeType noticeType) {
+    public void sendPushNotification(ReceiverRequest receiver, String title, String body, NoticeType noticeType) {
         if (receiver.getDeviceId() == null) {
             return;
         }
@@ -62,8 +65,8 @@ public class FcmService {
         }
     }
 
-    private void handleFcmSendFailure(Member receiver, String title, FirebaseMessagingException e) {
-        memberCommandService.notDeadLockFcmSignOut(receiver);
+    private void handleFcmSendFailure(ReceiverRequest receiver, String title, FirebaseMessagingException e) {
+        memberCommandService.notDeadLockFcmSignOut(receiver.getReceiverId());
 
         boolean isLocalProfile = List.of(environment.getActiveProfiles()).contains("local");
         if (!isLocalProfile) {
@@ -71,7 +74,7 @@ public class FcmService {
         }
     }
 
-    private DiscordMessage buildDiscordErrorMessage(Member receiver, String title, Exception e) {
+    private DiscordMessage buildDiscordErrorMessage(ReceiverRequest receiver, String title, Exception e) {
         return DiscordMessage.builder()
                 .content("# 🚨 FCM 알림 에러 발생")
                 .embeds(List.of(
@@ -79,7 +82,7 @@ public class FcmService {
                                 .title("ℹ️ 에러 정보")
                                 .description(String.format(
                                         "%d번 회원의 FCM 토큰이 유효하지 않습니다.\n제목: %s\n에러: %s",
-                                        receiver.getId(), title, getStackTrace(e).substring(0, Math.min(1000, getStackTrace(e).length()))
+                                        receiver.getReceiverId(), title, getStackTrace(e).substring(0, Math.min(1000, getStackTrace(e).length()))
                                 ))
                                 .build()
                 ))
