@@ -21,9 +21,12 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.example.harumeonglog.global.util.CacheKeyUtil.getYesterdayDate;
 
 @Service
 @Transactional(readOnly = true)
@@ -76,12 +79,14 @@ public class PostQueryServiceImpl implements PostQueryService {
         return buildPostPreviewListResponse(postSlice, member);
     }
 
-    @Cacheable(cacheNames = "getHomePosts", cacheManager = "homePostsCacheManager", key = "'posts:categories'")
+    @Cacheable(cacheNames = "getYesterdayGoodPosts", cacheManager = "yesterdayPostsCacheManager", 
+            key = "T(com.example.harumeonglog.global.util.CacheKeyUtil).getYesterdayPostsCacheKey()")
     @Override
-    public PostResponse.HomePostListRequest getHomePosts() {
-        List<Post> firstPostsByAllCategory = postRepository.findFirstPostsByAllCategory();
-
-        return PostConverter.toHomePostListRequest(firstPostsByAllCategory);
+    public PostResponse.PostYesterdayResponseList getYesterdayGoodPosts() {
+        LocalDate yesterday = getYesterdayDate();
+        List<Post> yesterdayTopPosts = postRepository.findTop5PostsByDateAndLikes(yesterday, PageRequest.of(0, 5));
+        
+        return PostConverter.toPostYesterdayResponseList(yesterdayTopPosts);
     }
 
     private Long normalizeCursor(Long cursor) {

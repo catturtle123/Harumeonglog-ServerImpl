@@ -103,4 +103,22 @@ public class PostConverter {
                 .title(post.getTitle())
                 .build();
     }
+
+    public static PostResponse.PostYesterdayResponseList toPostYesterdayResponseList(List<Post> postList) {
+        List<PostResponse.PostYesterdayResponse> postYesterdayResponseList = postList.stream().map(PostConverter::toPostYesterdayResponse).toList();
+
+        return PostResponse.PostYesterdayResponseList.builder()
+                .items(postYesterdayResponseList)
+                .build();
+    }
+
+    private static PostResponse.PostYesterdayResponse toPostYesterdayResponse(Post post) {
+
+        return PostResponse.PostYesterdayResponse.builder()
+                .postId(post.getId())
+                .title(post.getTitle())
+                .createAt(post.getCreatedAt())
+                .updateAt(post.getUpdatedAt())
+                .build();
+    }
 }

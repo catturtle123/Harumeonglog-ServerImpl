@@ -1,7 +1,6 @@
 package com.example.harumeonglog.domain.post.repository;
 
 import com.example.harumeonglog.domain.member.entity.Member;
-import com.example.harumeonglog.domain.post.controller.enums.PostRequestCategory;
 import com.example.harumeonglog.domain.post.entity.Post;
 import com.example.harumeonglog.domain.post.entity.enums.PostCategory;
 import org.springframework.data.domain.PageRequest;
@@ -10,7 +9,9 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -60,15 +61,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Slice<Post> findMyLikePosts(Member member, Long memberId, Long cursor, Pageable pageable);
 
     @Query(value = """
-        SELECT * FROM (
-            SELECT *, ROW_NUMBER() OVER (PARTITION BY category ORDER BY created_at DESC) as rn
-            FROM post
-        ) AS ranked
-        WHERE rn = 1
-    """, nativeQuery = true)
-    List<Post> findFirstPostsByAllCategory();
-
-    @Query(value = """
         UPDATE Post p SET p.postLikeNum = p.postLikeNum + 1 WHERE p = :post
     """)
     @Modifying
@@ -92,4 +84,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     """)
     @Modifying
     void updatePostUnReportNumByPost(Post post);
+
+    @Query("select p " +
+            "from Post p join fetch p.member " +
+            "where p.deletedAt is null " +
+            "and cast(p.createdAt as date) = :targetDate " +
+            "order by p.postLikeNum desc, p.id desc")
+    List<Post> findTop5PostsByDateAndLikes(@Param("targetDate") LocalDate targetDate, Pageable pageable);
 }

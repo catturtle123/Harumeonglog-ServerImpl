@@ -8,17 +8,17 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 
 @Configuration
-@EnableCaching // Spring Boot의 캐싱 설정을 활성화
+@EnableCaching
 public class RedisCacheConfig {
+
     @Bean
-    public CacheManager homePostsCacheManager(RedisConnectionFactory redisConnectionFactory) {
+    public CacheManager yesterdayPostsCacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
                 .defaultCacheConfig()
                 .serializeKeysWith(
@@ -29,7 +29,7 @@ public class RedisCacheConfig {
                                 new GenericJackson2JsonRedisSerializer()
                         )
                 )
-                .entryTtl(Duration.ofMinutes(2L));
+                .entryTtl(Duration.ofHours(24L)); // 24시간 TTL로 하루 동안 캐싱
 
         return RedisCacheManager
                 .RedisCacheManagerBuilder
