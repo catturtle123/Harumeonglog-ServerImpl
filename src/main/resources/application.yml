@@ -35,8 +35,13 @@ spring:
         public-key-url: ${KAKAO_PUBLIC_KEY_URL}
         iss: ${KAKAO_ISS}
         app-key: ${KAKAO_APP_KEY}
+      apple:
+        public-key-url: ${APPLE_PUBLIC_KEY_URL}
+        iss: ${APPLE_ISS}
+        app-key: ${APPLE_APP_KEY}
 
   firebase:
+    enabled: true
     config: ${FIRE_BASE_CONFIG}
 
 jwt:

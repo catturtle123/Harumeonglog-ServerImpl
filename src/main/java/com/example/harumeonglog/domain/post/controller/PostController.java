@@ -158,15 +158,14 @@ public class PostController {
         return CustomResponse.ok(postPreviewListResponse);
     }
 
-    @Operation(summary = "각 카테고리별 첫 번째 게시물 조회 (홈 화면) API by 김준환", description = "게시물 조회")
+    @Operation(summary = "어제 인기 게시물 by 김준환", description = "어제 인기 게시물 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
-    @GetMapping("/categories")
-    public CustomResponse<PostResponse.HomePostListRequest> getHomePosts(
+    @GetMapping("/yesterday")
+    public CustomResponse<PostResponse.PostYesterdayResponseList> getYesterdayGoodPosts(
     ) {
-        PostResponse.HomePostListRequest homePostListRequest = postQueryService.getHomePosts();
-        return CustomResponse.ok(homePostListRequest);
+        PostResponse.PostYesterdayResponseList postYesterdayResponseList = postQueryService.getYesterdayGoodPosts();
+        return CustomResponse.ok(postYesterdayResponseList);
     }
-
 }

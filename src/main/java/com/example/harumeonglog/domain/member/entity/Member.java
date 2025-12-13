@@ -1,11 +1,14 @@
 package com.example.harumeonglog.domain.member.entity;
 
+import com.example.harumeonglog.domain.comment.entity.Comment;
 import com.example.harumeonglog.global.common.entity.BaseEntity;
 import com.example.harumeonglog.domain.member.entity.enums.SocialType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -42,6 +45,13 @@ public class Member extends BaseEntity {
     @Column(name = "current_pet_id")
     private Long currentPetId;
 
+    @Column(name = "terms")
+    @Builder.Default
+    private Boolean terms = false;
+
+    @OneToMany(mappedBy = "reporter", fetch = FetchType.EAGER)
+    private List<MemberBlock> memberBlockList = new ArrayList<>();
+
     private String deviceId;
 
     public void update(String nickname, String image) {
@@ -51,6 +61,9 @@ public class Member extends BaseEntity {
 
     public void updateCurrentPetId(Long currentPetId) {
         this.currentPetId = currentPetId;
+    }
+    public void updateTerms(Boolean terms) {
+        this.terms = terms;
     }
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();

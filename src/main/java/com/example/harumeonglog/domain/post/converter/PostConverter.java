@@ -6,16 +6,15 @@ import com.example.harumeonglog.domain.post.dto.request.PostRequest;
 import com.example.harumeonglog.domain.post.dto.response.PostResponse;
 import com.example.harumeonglog.domain.post.entity.Post;
 import com.example.harumeonglog.domain.post.entity.PostImage;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostConverter {
 
-    public static PostResponse.PostDetailResponse toPostDetailResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, List<String> imageList, Boolean isLiked) {
+    public static PostResponse.PostDetailResponse toPostDetailResponse(Post post, MemberResponse.MemberInfoResponse memberInfoResponse, List<String> imageList, Boolean isLiked, Boolean isOwn) {
 
         return PostResponse.PostDetailResponse.builder()
                 .postId(post.getId())
@@ -25,6 +24,7 @@ public class PostConverter {
                 .memberInfoResponse(memberInfoResponse)
                 .createdAt(post.getCreatedAt())
                 .isLiked(isLiked)
+                .isOwn(isOwn)
                 .likeNum(post.getPostLikeNum())
                 .commentNum(post.getCommentNum())
                 .postImageList(imageList)
@@ -101,6 +101,24 @@ public class PostConverter {
         return PostResponse.HomePostRequest.builder()
                 .postCategory(post.getCategory())
                 .title(post.getTitle())
+                .build();
+    }
+
+    public static PostResponse.PostYesterdayResponseList toPostYesterdayResponseList(List<Post> postList) {
+        List<PostResponse.PostYesterdayResponse> postYesterdayResponseList = postList.stream().map(PostConverter::toPostYesterdayResponse).toList();
+
+        return PostResponse.PostYesterdayResponseList.builder()
+                .items(postYesterdayResponseList)
+                .build();
+    }
+
+    private static PostResponse.PostYesterdayResponse toPostYesterdayResponse(Post post) {
+
+        return PostResponse.PostYesterdayResponse.builder()
+                .postId(post.getId())
+                .title(post.getTitle())
+                .createAt(post.getCreatedAt())
+                .updateAt(post.getUpdatedAt())
                 .build();
     }
 }

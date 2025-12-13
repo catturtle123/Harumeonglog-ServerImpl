@@ -25,14 +25,15 @@ public class CommentConverter {
                 .build();
     }
 
-    public static CommentPreviewResponse toCommentPreviewResponse(Comment comment, Set<Long> isBlocked, S3Util s3Util) {
+    public static CommentPreviewResponse toCommentPreviewResponse(Comment comment, Member member, Set<Long> isBlocked, S3Util s3Util, Set<Long> isBlockedMember) {
 
-        List<CommentCommentPreviewResponse> commentcommentReponseList = comment.getCommentList().stream().map((c)->toCommentCommentPreviewResponse(c, isBlocked, s3Util)).toList();
+        List<CommentCommentPreviewResponse> commentcommentReponseList = comment.getCommentList().stream().map((c)->toCommentCommentPreviewResponse(c, member, isBlocked, s3Util, isBlockedMember)).toList();
 
         return CommentPreviewResponse.builder()
                 .commentId(comment.getId())
                 .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember(), s3Util))
-                .content(isBlockOrDeletedComment(comment, isBlocked))
+                .content(isBlockOrDeletedComment(comment, isBlocked, isBlockedMember))
+                .isOwn(comment.getMember().getId().equals(member.getId()))
                 .createdAt(comment.getCreatedAt())
                 .commentcommentResponseList(commentcommentReponseList)
                 .build();
@@ -53,12 +54,13 @@ public class CommentConverter {
                 .build();
     }
 
-    private static CommentCommentPreviewResponse toCommentCommentPreviewResponse(Comment comment, Set<Long> isBlocked, S3Util s3Util) {
+    private static CommentCommentPreviewResponse toCommentCommentPreviewResponse(Comment comment, Member member, Set<Long> isBlocked, S3Util s3Util, Set<Long> isBlockedMember) {
 
         return CommentCommentPreviewResponse.builder()
                 .commentId(comment.getId())
                 .memberInfoResponse(MemberConverter.toMemberInfoResponse(comment.getMember(), s3Util))
-                .content(isBlockOrDeletedComment(comment, isBlocked))
+                .content(isBlockOrDeletedComment(comment, isBlocked, isBlockedMember))
+                .isOwn(comment.getMember().getId().equals(member.getId()))
                 .createdAt(comment.getCreatedAt())
                 .build();
     }
@@ -72,15 +74,21 @@ public class CommentConverter {
     }
 
 
-    public static CommentMyPreviewResponse toCommentMyPreviewResponse(Comment comment) {
+    public static CommentMyPreviewResponse toCommentMyPreviewResponse(Comment comment, Member member) {
         return CommentMyPreviewResponse.builder()
                 .commentId(comment.getId())
                 .content(comment.getContent())
+                .isOwn(comment.getMember().getId().equals(member.getId()))
                 .createdAt(comment.getCreatedAt())
                 .build();
     }
 
-    private static String isBlockOrDeletedComment(Comment comment, Set<Long> isBlocked) {
-        return comment.getDeletedAt() != null || isBlocked.contains(comment.getId()) ? "차단 혹은 삭제된 댓글 입니다.": comment.getContent();
+    private static String isBlockOrDeletedComment(Comment comment, Set<Long> blockedCommentIds, Set<Long> blockedMemberIds) {
+        if (comment.getDeletedAt() != null
+                || blockedCommentIds.contains(comment.getId())
+                || blockedMemberIds.contains(comment.getMember().getId())) {
+            return "차단 혹은 삭제된 댓글 입니다.";
+        }
+        return comment.getContent();
     }
 }

@@ -25,4 +25,10 @@ public class WalkEvent extends Event {
 
     @Column(name = "details")
     private String details;
+
+    public void updateWalkDetails(String distance, String duration, String details) {
+        this.distance = distance;
+        this.duration = duration;
+        this.details = details;
+    }
 }

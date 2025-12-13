@@ -41,3 +41,6 @@ src/main/resources/static/docs/**
 
 ### querydsl ###
 src/main/generated
+
+### test env ###
+.env.test

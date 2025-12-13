@@ -7,12 +7,15 @@ import com.example.harumeonglog.global.error.code.GeneralErrorCode;
 import com.example.harumeonglog.global.error.exception.GeneralException;
 import com.example.harumeonglog.global.data.ProfileConfigData;
 import com.example.harumeonglog.global.discord.service.DiscordService;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -58,6 +61,33 @@ public class ExceptionAdvice {
 
         log.error("Exception Advice(MethodArgumentNotValidException): {}", error);
         return ResponseEntity.status(code.getHttpStatus()).body(CustomResponse.fail(code, error));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<CustomResponse<Map<String, String>>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        BaseErrorCode errorCode = GeneralErrorCode._BAD_REQUEST;
+
+        if (ex.getCause() instanceof InvalidFormatException ife &&
+                ife.getTargetType().isEnum()) {
+
+            String fieldName = ife.getPath().get(0).getFieldName();
+            String invalidValue = ife.getValue().toString();
+            errorCode = GeneralErrorCode._ENUM_ERROR;
+
+            Map<String, String> error = new HashMap<>();
+            error.put(fieldName, "'" + invalidValue + "'은(는) 허용되지 않는 enum 값입니다.");
+
+            log.error("Enum 변환 에러 발생: field={}, value={}", fieldName, invalidValue);
+
+            return ResponseEntity
+                    .status(errorCode.getHttpStatus())
+                    .body(CustomResponse.fail(errorCode, error));
+        }
+
+        log.error("HttpMessageNotReadableException 발생", ex);
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(CustomResponse.fail(errorCode, Map.of("error", "JSON 파싱 오류 또는 형식이 잘못되었습니다.")));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

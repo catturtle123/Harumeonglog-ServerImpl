@@ -1,5 +1,8 @@
 package com.example.harumeonglog.domain.walk.service;
 
+import com.example.harumeonglog.domain.event.dto.request.EventRequest;
+import com.example.harumeonglog.domain.event.entity.enums.EventCategory;
+import com.example.harumeonglog.domain.event.service.command.EventCommandService;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
 import com.example.harumeonglog.domain.pet.entity.Pet;
@@ -8,9 +11,7 @@ import com.example.harumeonglog.domain.pet.repository.PetRepository;
 import com.example.harumeonglog.domain.walk.converter.WalkConverter;
 import com.example.harumeonglog.domain.walk.dto.request.WalkRequest;
 import com.example.harumeonglog.domain.walk.dto.response.WalkResponse;
-import com.example.harumeonglog.domain.walk.entity.Track;
-import com.example.harumeonglog.domain.walk.entity.Walk;
-import com.example.harumeonglog.domain.walk.entity.WalkPosition;
+import com.example.harumeonglog.domain.walk.entity.*;
 import com.example.harumeonglog.domain.walk.entity.enums.WalkStatus;
 import com.example.harumeonglog.domain.walk.repository.WalkLikeRepository;
 import com.example.harumeonglog.domain.walk.repository.WalkRepository;
@@ -24,12 +25,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class WalkCommandServiceImpl implements WalkCommandService {
+
+    private static final String DEFAULT_TITLE_FORMAT = "%s시 산책";
+    private static final String DEFAULT_DETAILS = "%s시 %s분 시작, %s시 %s분 종료";
 
     private final WalkRepository walkRepository;
     private final PetRepository petRepository;
@@ -40,6 +47,10 @@ public class WalkCommandServiceImpl implements WalkCommandService {
     private final WalkQueryService walkQueryService;
     private final TrackQueryService trackQueryService;
     private final WalkPositionQueryService walkPositionQueryService;
+    private final MemberWalkQueryService memberWalkQueryService;
+    private final WalkPetQueryService walkPetQueryService;
+
+    private final EventCommandService eventCommandService;
     private final TrackCommandService trackCommandService;
     private final WalkPositionCommandService walkPositionCommandService;
     private final MemberWalkCommandService memberWalkCommandService;
@@ -90,7 +101,8 @@ public class WalkCommandServiceImpl implements WalkCommandService {
 
         walk.updateWalkStatus(WalkStatus.DONE);
         walk.updateTime(request.getTime());
-        walk.addDistance(request.getDistance());
+        walk.updateDistance(request.getDistance());
+        createEventAfterWalk(walk, request);
         return WalkConverter.toWalkEndResponse(walk);
     }
 
@@ -190,5 +202,42 @@ public class WalkCommandServiceImpl implements WalkCommandService {
                     new MemberException(MemberErrorCode.NOT_FOUND));
             memberWalkCommandService.createMemberWalk(foundMember, walk);
         });
+    }
+
+    private void createEventAfterWalk(Walk walk, WalkRequest.WalkEndRequest request) {
+        EventRequest.EventRequestDTO dto = createEventRequest(request, walk);
+        List<Member> members = memberWalkQueryService.findByWalk(walk.getId()).stream().map(MemberWalk::getMember).toList();
+        List<Pet> pets = walkPetQueryService.findByWalk(walk.getId()).stream().map(WalkPet::getPet).toList();
+
+        for (Pet pet : pets) {
+            for (Member member : members) {
+                if (checkOwnPet(member, pet)) {
+                    eventCommandService.createEventAfterWalk(dto, member, pet);
+                    break;
+                }
+            }
+        }
+    }
+
+    private EventRequest.EventRequestDTO createEventRequest(WalkRequest.WalkEndRequest request, Walk walk) {
+        LocalDate today = LocalDate.now();
+        LocalTime time = LocalTime.now();
+        return EventRequest.EventRequestDTO.builder()
+                .title(String.format(DEFAULT_TITLE_FORMAT, walk.getCreatedAt().getHour()))
+                .date(today)
+                .isRepeated(false)
+                .expiredDate(null)
+                .repeatDays(null)
+                .hasNotice(false)
+                .time(time)
+                .category(EventCategory.WALK)
+                .details(String.format(DEFAULT_DETAILS, walk.getCreatedAt().getHour(), walk.getCreatedAt().getMinute(), time.getHour(), time.getMinute()))
+                .distance(String.valueOf(request.getDistance()))
+                .duration(String.valueOf(request.getTime()))
+                .build();
+    }
+
+    private boolean checkOwnPet(Member member, Pet pet) {
+        return memberPetRepository.existsByMemberAndPet(member, pet);
     }
 }

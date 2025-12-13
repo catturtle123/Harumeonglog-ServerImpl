@@ -22,6 +22,7 @@ public class CommentResponse {
     public static class CommentPreviewResponse {
         private Long commentId;
         private String content;
+        private Boolean isOwn;
         private MemberResponse.MemberInfoResponse memberInfoResponse;
         private LocalDateTime createdAt;
         private List<CommentCommentPreviewResponse> commentcommentResponseList;
@@ -40,6 +41,7 @@ public class CommentResponse {
     public static class CommentCommentPreviewResponse {
         private Long commentId;
         private String content;
+        private Boolean isOwn;
         private LocalDateTime createdAt;
         private MemberResponse.MemberInfoResponse memberInfoResponse;
     }
@@ -57,6 +59,7 @@ public class CommentResponse {
     public static class CommentMyPreviewResponse {
         private Long commentId;
         private String content;
+        private Boolean isOwn;
         private LocalDateTime createdAt;
     }
 }

@@ -24,4 +24,18 @@ public class MemberResponse {
         private String nickname;
         private LocalDateTime updatedAt;
     }
+
+    @Getter
+    @Builder
+    public static class MemberTermsInfoResponse {
+        private Long memberId;
+        private Boolean didAgree;
+    }
+
+    @Getter
+    @Builder
+    public static class MemberTermsUpdateResponse {
+        private Long memberId;
+        private Boolean didAgree;
+    }
 }

@@ -21,17 +21,10 @@ public class S3Controller {
 
     private final S3Service s3Service;
 
-    @Operation(summary = "S3 단일 이미지 PresignedUrl 발급 by 백종우", description = "domain에 해당하는 S3 단일 이미지의 PresignedUrl을 발급합니다.")
+    @Operation(summary = "S3 이미지 PresignedUrl 발급 by 백종우",
+            description = "단일/복수 엔티티에 대한 단일/복수 이미지의 PresignedUrl을 발급합니다.")
     @ApiResponse(responseCode = "COMMON200", description = "발급성공")
     @PostMapping("/presigned-urls")
-    public CustomResponse<S3ResponseDTO.S3ResponsePreviewDTO> getPresignedUrl(
-            @RequestBody S3RequestDTO.GeneratePresignedUrlRequest request) {
-        return CustomResponse.ok(s3Service.generatePresignedUrl(request));
-    }
-
-    @Operation(summary = "S3 복수 이미지 PresignedUrl 발급 by 백종우", description = "domain에 해당하는 S3 복수 이미지의 PresignedUrl을 발급합니다.")
-    @ApiResponse(responseCode = "COMMON200", description = "발급성공")
-    @PostMapping("/presigned-urls/batch")
     public CustomResponse<S3ResponseDTO.S3ResponseListDTO> getPresignedUrls(
             @RequestBody S3RequestDTO.GeneratePresignedUrlsRequest request) {
         return CustomResponse.ok(s3Service.generatePresignedUrls(request));

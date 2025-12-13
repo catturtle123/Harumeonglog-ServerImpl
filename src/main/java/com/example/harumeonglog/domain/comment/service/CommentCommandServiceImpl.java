@@ -14,15 +14,21 @@ import com.example.harumeonglog.domain.comment.repository.CommentLikeRepository;
 import com.example.harumeonglog.domain.comment.repository.CommentReportRepository;
 import com.example.harumeonglog.domain.comment.repository.CommentRepository;
 import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
+import com.example.harumeonglog.domain.member.service.NoticeCommandService;
 import com.example.harumeonglog.domain.post.entity.Post;
 import com.example.harumeonglog.domain.post.repository.PostRepository;
 import com.example.harumeonglog.global.error.code.CommentErrorCode;
 import com.example.harumeonglog.global.error.code.PostErrorCode;
 import com.example.harumeonglog.global.error.exception.CommentException;
 import com.example.harumeonglog.global.error.exception.PostException;
+import com.example.harumeonglog.global.firebase.converter.FCMConverter;
+import com.example.harumeonglog.global.firebase.service.FcmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.harumeonglog.global.error.code.CommentErrorCode.OWN_COMMENT_LIKE;
 
 @Service
 @Transactional
@@ -34,6 +40,8 @@ public class CommentCommandServiceImpl implements CommentCommandService {
     private final CommentBlockRepository commentBlockRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final PostRepository postRepository;
+    private final FcmService fcmService;
+    private final NoticeCommandService noticeCommandService;
 
     @Override
     public void reportComment(Long commentId, Member member) {
@@ -99,6 +107,10 @@ public class CommentCommandServiceImpl implements CommentCommandService {
     public void likeComment(Long commentId, Member member) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(CommentErrorCode.NOT_FOUND));
 
+        if (comment.getMember().equals(member)) {
+            throw new CommentException(OWN_COMMENT_LIKE);
+        }
+
         CommentLike commentLike = commentLikeRepository.findByCommentAndMember(comment, member);
 
         if (commentLike != null) {
@@ -107,6 +119,11 @@ public class CommentCommandServiceImpl implements CommentCommandService {
         } else {
             comment.fixLikeNum(1L);
             commentLikeRepository.save(CommentLikeConverter.toCommentLike(comment, member));
+
+            String title = "댓글 좋아요";
+            String body = member.getNickname() + "님이 회원님의 댓글을 좋아합니다.";
+            fcmService.sendPushNotification(FCMConverter.toReceiverRequest(comment.getMember()), title, body, NoticeType.COMMENT);
+            noticeCommandService.createNotice(title, body, NoticeType.COMMENT, member, comment.getMember());
         }
 
     }

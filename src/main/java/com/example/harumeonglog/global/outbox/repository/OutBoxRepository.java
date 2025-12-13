@@ -26,5 +26,4 @@ public interface OutBoxRepository extends JpaRepository<OutBox, Long> {
 
     Optional<OutBox> findByPayloadAndEventType(String payload, EventType eventType);
 
-    List<OutBox> findByEventTypeAndProcessedFalse(EventType eventType);
-}
+    List<OutBox> findByEventTypeAndProcessedFalseAndRetryCountLessThan(EventType eventType, int maxRetryCount);}

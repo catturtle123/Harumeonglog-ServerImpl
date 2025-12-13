@@ -13,8 +13,19 @@ public class S3Converter {
                 .build();
     }
 
-    public static S3ResponseDTO.S3ResponseListDTO toS3ResponseListDTO(List<S3ResponseDTO.S3ResponsePreviewDTO> images) {
-        return S3ResponseDTO.S3ResponseListDTO.builder()
+
+    public static S3ResponseDTO.EntityImageResponse toEntityImageResponse(Long entityId, List<S3ResponseDTO.S3ResponsePreviewDTO> images) {
+        return S3ResponseDTO.EntityImageResponse.builder()
+                .entityId(entityId)
                 .images(images)
                 .build();
-    }}
+    }
+
+    public static S3ResponseDTO.S3ResponseListDTO toS3ResponseDTO(List<S3ResponseDTO.EntityImageResponse> entities) {
+        return S3ResponseDTO.S3ResponseListDTO.builder()
+                .entities(entities)
+                .build();
+    }
+}
+
+

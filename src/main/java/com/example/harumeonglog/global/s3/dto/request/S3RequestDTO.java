@@ -13,9 +13,16 @@ public class S3RequestDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class GeneratePresignedUrlsRequest {
-        private List<GeneratePresignedUrlPreview> images;
         private S3Domain domain;
+        private List<EntityImageRequest> entities;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class EntityImageRequest {
         private Long entityId;
+        private List<GeneratePresignedUrlPreview> images;
     }
 
     @Getter
@@ -26,12 +33,4 @@ public class S3RequestDTO {
         private String contentType;
     }
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class GeneratePresignedUrlRequest {
-        private GeneratePresignedUrlPreview image;
-        private S3Domain domain;
-        private Long entityId;
-    }
 }

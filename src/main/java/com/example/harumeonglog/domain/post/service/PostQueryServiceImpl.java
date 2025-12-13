@@ -21,9 +21,12 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.example.harumeonglog.global.util.CacheKeyUtil.getYesterdayDate;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,26 +43,24 @@ public class PostQueryServiceImpl implements PostQueryService {
         search = normalizeSearch(search);
 
         Slice<Post> postSlice;
-        if (postRequestCategory.equals(PostRequestCategory.ALL)) {
-            postSlice = postRepository.findByContentLikeAndIdLessThanOrderByIdDesc(search, cursor, PageRequest.of(0, size));
-        } else {
-            PostCategory postCategory = PostCategory.valueOf(postRequestCategory.name());
-            postSlice = postRepository.findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(search, cursor, postCategory, PageRequest.of(0, size));
+        if (postRequestCategory.isAll()) {
+            postSlice = postRepository.findByContentLikeAndIdLessThanOrderByIdDesc(search, member.getId(), cursor, PageRequest.of(0, size));
+            return buildPostPreviewListResponse(postSlice, member);
         }
 
+        PostCategory postCategory = postRequestCategory.toPostCategory();
+        postSlice = postRepository.findByPostCategoryAndContentLikeAndIdLessThanOrderByIdDesc(search, member.getId(), cursor, postCategory, PageRequest.of(0, size));
         return buildPostPreviewListResponse(postSlice, member);
     }
 
     @Override
     public PostResponse.PostDetailResponse getPost(Member owner,Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(PostErrorCode.NOT_FOUND));
-        List<String> postImageList = post.getPostImageList().stream()
-                .map((p)->s3Util.getUrlFromKey(p.getPostImageKeyName()))
-                .toList();
-
+        List<String> postImageList = extractImageKeyName(post);
         Boolean isLiked = postLikeRepository.existsByPostAndMember(post, owner);
+        Boolean isOwn = owner.getId().equals(post.getMember().getId());
 
-        return PostConverter.toPostDetailResponse(post, MemberConverter.toMemberInfoResponse(post.getMember(), s3Util), postImageList, isLiked);
+        return PostConverter.toPostDetailResponse(post, MemberConverter.toMemberInfoResponse(post.getMember(), s3Util), postImageList, isLiked, isOwn);
     }
 
     @Override
@@ -74,16 +75,18 @@ public class PostQueryServiceImpl implements PostQueryService {
     public PostResponse.PostPreviewListResponse getMyLikePost(Long cursor, Integer size, Member member) {
         cursor = normalizeCursor(cursor);
 
-        Slice<Post> postSlice = postRepository.findMyLikePosts(member, cursor, PageRequest.of(0, size));
+        Slice<Post> postSlice = postRepository.findMyLikePosts(member, member.getId(), cursor, PageRequest.of(0, size));
         return buildPostPreviewListResponse(postSlice, member);
     }
 
-    @Cacheable(cacheNames = "getHomePosts", cacheManager = "homePostsCacheManager", key = "'posts:categories'")
+    @Cacheable(cacheNames = "getYesterdayGoodPosts", cacheManager = "yesterdayPostsCacheManager", 
+            key = "T(com.example.harumeonglog.global.util.CacheKeyUtil).getYesterdayPostsCacheKey()")
     @Override
-    public PostResponse.HomePostListRequest getHomePosts() {
-        List<Post> firstPostsByAllCategory = postRepository.findFirstPostsByAllCategory();
-
-        return PostConverter.toHomePostListRequest(firstPostsByAllCategory);
+    public PostResponse.PostYesterdayResponseList getYesterdayGoodPosts() {
+        LocalDate yesterday = getYesterdayDate();
+        List<Post> yesterdayTopPosts = postRepository.findTop5PostsByDateAndLikes(yesterday, PageRequest.of(0, 5));
+        
+        return PostConverter.toPostYesterdayResponseList(yesterdayTopPosts);
     }
 
     private Long normalizeCursor(Long cursor) {
@@ -98,11 +101,10 @@ public class PostQueryServiceImpl implements PostQueryService {
         Long nextCursor = null;
         List<Post> posts = postSlice.toList();
 
-        if (!postSlice.isLast() && !posts.isEmpty()) {
+        if (hasNextCursor(postSlice, posts)) {
             nextCursor = posts.get(posts.size() - 1).getId();
         }
 
-        // ✅ 좋아요 여부를 한 번에 조회
         List<PostLike> postLikes = postLikeRepository.findByPostInAndMember(posts, member);
         Set<Long> likedPostIds = postLikes.stream()
                 .map(postLike -> postLike.getPost().getId())
@@ -125,5 +127,15 @@ public class PostQueryServiceImpl implements PostQueryService {
                 .toList();
 
         return PostConverter.toPostPreviewListResponse(postPreviewResponses, nextCursor, postSlice.hasNext());
+    }
+
+    private boolean hasNextCursor(Slice<Post> postSlice, List<Post> posts) {
+        return postSlice.hasNext() && !posts.isEmpty();
+    }
+
+    private List<String> extractImageKeyName(Post post) {
+        return post.getPostImageList().stream()
+                .map(postImage -> s3Util.getUrlFromKey(postImage.getPostImageKeyName()))
+                .toList();
     }
 }

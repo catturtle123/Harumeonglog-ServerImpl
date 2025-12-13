@@ -1,6 +1,7 @@
 package com.example.harumeonglog.domain.pet.repository;
 
 import com.example.harumeonglog.domain.member.entity.Member;
+import com.example.harumeonglog.domain.member.entity.enums.MemberPetRole;
 import com.example.harumeonglog.domain.pet.entity.MemberPet;
 import com.example.harumeonglog.domain.pet.entity.Pet;
 import io.lettuce.core.dynamic.annotation.Param;
@@ -62,5 +63,10 @@ public interface MemberPetRepository extends JpaRepository<MemberPet, Long> {
     @Query("SELECT mp FROM MemberPet mp LEFT JOIN FETCH mp.member WHERE mp.pet.id IN :petIds AND mp.member.id != :memberId")
     List<MemberPet> findByPetIdsAndNotMemberId(@Param("petIds") List<Long> petIds, @Param("memberId") Long memberId);
 
-    void deleteByPet(Pet pet);
+    void deleteAllByPet(Pet pet);
+
+    long countByPet(Pet pet);
+
+
+    long countByPetAndRole(Pet pet, MemberPetRole role);
 }

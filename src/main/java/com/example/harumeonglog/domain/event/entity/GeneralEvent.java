@@ -20,4 +20,8 @@ public class GeneralEvent extends Event {
 
     @Column(name = "details")
     private String details;
+
+    public void updateDetails(String details) {
+        this.details = details;
+    }
 }

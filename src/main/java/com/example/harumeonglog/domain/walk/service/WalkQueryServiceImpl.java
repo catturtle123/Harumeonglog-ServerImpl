@@ -7,6 +7,7 @@ import com.example.harumeonglog.domain.pet.repository.MemberPetRepository;
 import com.example.harumeonglog.domain.walk.converter.WalkConverter;
 import com.example.harumeonglog.domain.walk.dto.request.WalkRequest;
 import com.example.harumeonglog.domain.walk.dto.response.WalkResponse;
+import com.example.harumeonglog.domain.walk.entity.MemberWalk;
 import com.example.harumeonglog.domain.walk.entity.Walk;
 import com.example.harumeonglog.domain.walk.entity.enums.WalkStatus;
 import com.example.harumeonglog.domain.walk.enums.WalkSort;
@@ -15,6 +16,7 @@ import com.example.harumeonglog.domain.walk.repository.WalkLikeRepository;
 import com.example.harumeonglog.domain.walk.repository.WalkRepository;
 import com.example.harumeonglog.global.error.code.WalkErrorCode;
 import com.example.harumeonglog.global.error.exception.WalkException;
+import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,20 +35,21 @@ public class WalkQueryServiceImpl implements WalkQueryService {
     private final MemberPetRepository memberPetRepository;
     private final WalkLikeRepository walkLikeRepository;
     private final MemberWalkRepository memberWalkRepository;
+    private final S3Util s3Util;
 
     @Override
     public WalkResponse.WalkAvailablePetListResponse getAvailablePets(Member member) {
         List<Pet> availablePets = memberPetRepository.findByMember(member.getId()).stream().map(MemberPet::getPet).toList();
-        return WalkConverter.toWalkAvailablePetListResponse(availablePets);
+        return WalkConverter.toWalkAvailablePetListResponse(availablePets, s3Util);
     }
 
     @Override
     public WalkResponse.WalkAvailableMemberListResponse getAvailableMembers(WalkRequest.AvailableMemberRequest dto) {
-        Set<Member> members = new HashSet<>();
+        Set<Member> members = new LinkedHashSet<>();
         dto.getPetId().forEach(petId ->
             members.addAll(memberPetRepository.findByPet(petId).stream().map(MemberPet::getMember).toList())
         );
-        return WalkConverter.toWalkAvailableMemberListResponse(members);
+        return WalkConverter.toWalkAvailableMemberListResponse(members, s3Util);
     }
 
     @Override
@@ -99,14 +102,20 @@ public class WalkQueryServiceImpl implements WalkQueryService {
             cursor = walks.get(walks.size() - 1).getId();
         }
 
+        List<Long> walkIds = walks.stream().map(Walk::getId).toList();
         List<WalkResponse.WalkSearchResponse> responses = new ArrayList<>();
-        // FIXME: 쿼리 수정 필요 offset 만큼 쿼리 생성
+        Map<Long, String> nicknames = new HashMap<>();
+        for (MemberWalk memberWalk : memberWalkRepository.findMemberNicknameByWalks(walkIds)) {
+            nicknames.put(memberWalk.getWalk().getId(), memberWalk.getMember().getNickname());
+        }
+        List<Long> walkLikeIds = walkLikeRepository.findByWalksAndMemberId(walkIds, member.getId())
+                .stream().map(walkLike -> walkLike.getWalk().getId()).toList();
         walks.forEach(walk ->
-            responses.add(WalkConverter.toWalkSearchResponse(
-                    walk,
-                    memberWalkRepository.findTopByWalkOrderByCreatedAtAsc(walk).getMember().getNickname(),
-                    walkLikeRepository.existsByMemberAndWalk(member, walk)
-            ))
+                responses.add(WalkConverter.toWalkSearchResponse(
+                        walk,
+                        nicknames.getOrDefault(walk.getId(), "알 수 없음"),
+                        walkLikeIds.contains(walk.getId())
+                ))
         );
 
         return WalkConverter.toWalkSearchListResponse(responses, cursor, hasNext);

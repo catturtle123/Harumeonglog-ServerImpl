@@ -5,6 +5,7 @@ import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class NoticeResponse {
@@ -25,5 +26,7 @@ public class NoticeResponse {
         private String content;
         private NoticeType noticeType;
         private Long targetId;
+        private String senderName;
+        private LocalDateTime createdAt;
     }
 }

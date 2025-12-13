@@ -49,6 +49,7 @@ public class PostResponse {
         private Long likeNum;
         private Long commentNum;
         private Boolean isLiked;
+        private Boolean isOwn;
         private PostCategory postCategory;
         private MemberInfoResponse memberInfoResponse;
         private List<String> postImageList;
@@ -94,4 +95,22 @@ public class PostResponse {
         private String title;
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class PostYesterdayResponseList {
+        private List<PostYesterdayResponse> items;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class PostYesterdayResponse {
+        private Long postId;
+        private String title;
+        private LocalDateTime createAt;
+        private LocalDateTime updateAt;
+    }
 }

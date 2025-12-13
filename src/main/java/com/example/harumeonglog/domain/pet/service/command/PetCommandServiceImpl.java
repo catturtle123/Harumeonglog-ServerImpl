@@ -1,8 +1,13 @@
 package com.example.harumeonglog.domain.pet.service.command;
 
+import com.example.harumeonglog.domain.member.converter.InvitationConverter;
+import com.example.harumeonglog.domain.member.entity.Invitation;
 import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.enums.MemberPetRole;
+import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
+import com.example.harumeonglog.domain.member.repository.InvitationRepository;
 import com.example.harumeonglog.domain.member.repository.MemberRepository;
+import com.example.harumeonglog.domain.member.service.NoticeCommandService;
 import com.example.harumeonglog.domain.pet.converter.MemberPetConverter;
 import com.example.harumeonglog.domain.pet.converter.PetConverter;
 import com.example.harumeonglog.domain.pet.dto.request.PetRequest;
@@ -17,7 +22,8 @@ import com.example.harumeonglog.global.error.code.S3ErrorCode;
 import com.example.harumeonglog.global.error.exception.MemberException;
 import com.example.harumeonglog.global.error.exception.PetException;
 import com.example.harumeonglog.global.error.exception.S3Exception;
-import com.example.harumeonglog.global.outbox.entity.enums.EventType;
+import com.example.harumeonglog.global.firebase.converter.FCMConverter;
+import com.example.harumeonglog.global.firebase.service.FcmService;
 import com.example.harumeonglog.global.util.OutboxUtil;
 import com.example.harumeonglog.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +39,9 @@ public class PetCommandServiceImpl implements PetCommandService {
     private final MemberRepository memberRepository;
     private final S3Util s3Util;
     private final OutboxUtil outboxUtil;
-
+    private final InvitationRepository invitationRepository;
+    private final FcmService fcmService;
+    private final NoticeCommandService noticeCommandService;
 
     // ========== 외부 메서드 ==========
 
@@ -100,10 +108,13 @@ public class PetCommandServiceImpl implements PetCommandService {
             String imageUrl = s3Util.getUrlFromKey(newMainImageKey);
 
             // Outbox 상태 변경
-            if(!s3Util.isObjectExists(request.getNewMainImageKey())) {
-                throw new S3Exception(S3ErrorCode.NOT_FOUND);
+            if (request.getNewMainImageKey() != null && !request.getNewMainImageKey().isEmpty()) {
+                if (!s3Util.isObjectExists(request.getNewMainImageKey())) {
+                    throw new S3Exception(S3ErrorCode.NOT_FOUND);
+                }
+                outboxUtil.changeS3OutboxStatus(request.getNewMainImageKey());
             }
-            outboxUtil.changeS3OutboxStatus(request.getNewMainImageKey());
+
 
             // 응답 DTO 반환
             return PetConverter.toChangePetInfoResponse(pet, imageUrl);
@@ -125,17 +136,27 @@ public class PetCommandServiceImpl implements PetCommandService {
     }
 
     @Override
-    public void deletePet(Long petId, Member member) {
+    public void deletePet(Long petId, Long memberId) {
         Pet pet = findPetById(petId);
 
-        // 권한 검증
-        validateOwnerAccess(member, pet);
+        //삭제할 member
+        Member deleteMember = memberRepository.findById(memberId).orElseThrow(
+                () -> new MemberException(MemberErrorCode.NOT_FOUND));
 
-        // Pet soft delete
-        pet.softDelete();
+        MemberPet deleteMemberPet = memberPetRepository.findByMemberAndPet(deleteMember, pet).orElseThrow(
+                () -> new PetException(PetErrorCode.NOT_IN_GROUP));
 
-        // MemberPet hard delete
-        memberPetRepository.deleteByPet(pet);
+        // 펫에 아무도 없을 경우 조건 확인
+        boolean lastMember = memberPetRepository.countByPet(pet) == 1;
+        boolean noOwner = memberPetRepository.countByPetAndRole(pet, MemberPetRole.OWNER) == 0;
+
+        // 아무도 없을 경우 분기
+        if (lastMember || noOwner) {
+            pet.softDelete();
+            memberPetRepository.deleteAllByPet(pet);
+        } else {
+            memberPetRepository.delete(deleteMemberPet);
+        }
     }
 
     @Override
@@ -150,8 +171,13 @@ public class PetCommandServiceImpl implements PetCommandService {
             Member invitedMember = memberRepository.findById(invite.getMemberId())
                     .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
-            // 이미 초대된 상태인지 확인
+            // 1. 이미 멤버로 가입된 상태인지 확인
             if (memberPetRepository.findByMemberAndPet(invitedMember, pet).isPresent()) {
+                throw new PetException(PetErrorCode.ALREADY_MEMBER);
+            }
+
+            // 2. 이미 초대가 발송된 상태인지 확인
+            if (invitationRepository.findByPetAndReceiver(pet, invitedMember).isPresent()) {
                 throw new PetException(PetErrorCode.ALREADY_INVITED);
             }
 
@@ -163,9 +189,43 @@ public class PetCommandServiceImpl implements PetCommandService {
                 throw new PetException(PetErrorCode.INVALID_ROLE);
             }
 
-            // MemberPet 생성 및 저장
-            MemberPet memberPet = MemberPetConverter.toMemberPet(invitedMember, pet, role);
+            Invitation invitation = InvitationConverter.toInvitation(pet, role, member, invitedMember);
+            invitationRepository.save(invitation);
+
+            // 알림
+            String title = "[초대 알림]";
+            String body = String.format("%s에 초대되었습니다.", pet.getName());
+
+            fcmService.sendPushNotification(FCMConverter.toReceiverRequest(invitedMember), title, body, NoticeType.NOTICE);
+            noticeCommandService.createNotice(title, body, NoticeType.NOTICE, member, invitedMember);
+        }
+    }
+
+    @Override
+    public void responseInvite(Long petId, PetRequest.InviteResponseRequest request, Member member) {
+        // 펫 존재 확인
+        Pet pet = findPetById(petId);
+
+        // 초대 존재 확인
+        Invitation invitation = invitationRepository.findByPetAndReceiver(pet, member)
+                .orElseThrow(() -> new PetException(PetErrorCode.INVITATION_NOT_FOUND));
+
+        // 초대 응답 처리
+        if (request.getResponse().equalsIgnoreCase("ACCEPT")) {
+            // 수락: MemberPet 생성
+            MemberPet memberPet = MemberPetConverter.toMemberPet(
+                    invitation.getReceiver(),
+                    pet,
+                    invitation.getRole()
+            );
             memberPetRepository.save(memberPet);
+            invitationRepository.delete(invitation);
+        } else if (request.getResponse().equalsIgnoreCase("REJECT")) {
+            // 초대 삭제
+            invitationRepository.delete(invitation);
+        }
+        else{
+            throw new PetException(PetErrorCode.INVALID_RESPONSE_TYPE);
         }
     }
 
@@ -173,7 +233,7 @@ public class PetCommandServiceImpl implements PetCommandService {
 
     // Pet 엔티티 조회
     private Pet findPetById(Long petId) {
-        return petRepository.findById(petId)
+        return petRepository.findByIdAndDeletedAtIsNull(petId)
                 .orElseThrow(() -> new PetException(PetErrorCode.NOT_FOUND));
     }
 

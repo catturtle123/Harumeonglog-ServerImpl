@@ -23,4 +23,9 @@ public class MedicineEvent extends Event {
 
     @Column(name = "details")
     private String details;
+
+    public void updateMedicineDetails(String medicineName, String details) {
+        this.medicineName = medicineName;
+        this.details = details;
+    }
 }

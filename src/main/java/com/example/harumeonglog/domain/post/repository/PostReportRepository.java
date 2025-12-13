@@ -6,6 +6,8 @@ import com.example.harumeonglog.domain.post.entity.PostLike;
 import com.example.harumeonglog.domain.post.entity.PostReport;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface PostReportRepository extends JpaRepository<PostReport, Long> {
-    PostReport findByPostAndMember(Post post, Member member);
+    Optional<PostReport> findByPostAndMember(Post post, Member member);
 }

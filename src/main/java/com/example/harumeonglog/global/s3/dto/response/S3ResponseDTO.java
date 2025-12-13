@@ -17,6 +17,14 @@ public class S3ResponseDTO {
     @Getter
     @Builder
     public static class S3ResponseListDTO{
-        public List<S3ResponsePreviewDTO> images;
+        public List<EntityImageResponse> entities;
+    }
+
+
+    @Getter
+    @Builder
+    public static class EntityImageResponse {
+        private Long entityId;
+        private List<S3ResponsePreviewDTO> images;
     }
 }

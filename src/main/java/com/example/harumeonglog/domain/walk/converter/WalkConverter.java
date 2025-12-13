@@ -8,6 +8,7 @@ import com.example.harumeonglog.domain.walk.entity.Walk;
 import com.example.harumeonglog.domain.walk.entity.WalkPosition;
 import com.example.harumeonglog.domain.walk.entity.enums.WalkStatus;
 import com.example.harumeonglog.global.util.DistanceUtil;
+import com.example.harumeonglog.global.util.S3Util;
 
 import java.util.Collection;
 import java.util.List;
@@ -75,33 +76,33 @@ public class WalkConverter {
                 .build();
     }
 
-    public static WalkResponse.WalkAvailablePetListResponse toWalkAvailablePetListResponse(List<Pet> pets) {
+    public static WalkResponse.WalkAvailablePetListResponse toWalkAvailablePetListResponse(List<Pet> pets, S3Util s3Util) {
         return WalkResponse.WalkAvailablePetListResponse.builder()
-                .pets(pets.stream().map(WalkConverter::toWalkAvailablePetInfoResponse).toList())
+                .pets(pets.stream().map(pet -> toWalkAvailablePetInfoResponse(pet, s3Util)).toList())
                 .size(pets.size())
                 .build();
     }
 
-    public static WalkResponse.WalkAvailablePetInfoResponse toWalkAvailablePetInfoResponse(Pet pet) {
+    public static WalkResponse.WalkAvailablePetInfoResponse toWalkAvailablePetInfoResponse(Pet pet, S3Util s3Util) {
         return WalkResponse.WalkAvailablePetInfoResponse.builder()
                 .petId(pet.getId())
                 .name(pet.getName())
-                .image(pet.getMainImage())
+                .image(pet.getMainImage() == null ? null : s3Util.getUrlFromKey(pet.getMainImage()))
                 .build();
     }
 
-    public static WalkResponse.WalkAvailableMemberListResponse toWalkAvailableMemberListResponse(Collection<Member> members) {
+    public static WalkResponse.WalkAvailableMemberListResponse toWalkAvailableMemberListResponse(Collection<Member> members, S3Util s3Util) {
         return WalkResponse.WalkAvailableMemberListResponse.builder()
-                .members(members.stream().map(WalkConverter::toWalkAvailableMemberResponse).toList())
+                .members(members.stream().map(member -> toWalkAvailableMemberResponse(member, s3Util)).toList())
                 .size(members.size())
                 .build();
     }
 
-    public static WalkResponse.WalkAvailableMemberResponse toWalkAvailableMemberResponse(Member member) {
+    public static WalkResponse.WalkAvailableMemberResponse toWalkAvailableMemberResponse(Member member, S3Util s3Util) {
             return WalkResponse.WalkAvailableMemberResponse.builder()
                     .memberId(member.getId())
                     .nickname(member.getNickname())
-                    .image(member.getImage())
+                    .image(member.getImage() == null ? null : s3Util.getUrlFromKey(member.getImage()))
                     .build();
     }
 
@@ -118,7 +119,7 @@ public class WalkConverter {
                 .id(walk.getId())
                 .title(walk.getTitle())
                 .time(walk.getTime())
-                .distance(DistanceUtil.getDistanceWithString(walk.getDistance()))
+                .distance(walk.getDistance())
                 .walkLikeNum(walk.getWalkLikeNum())
                 .isLike(isLike)
                 .memberNickname(nickname)
@@ -130,7 +131,7 @@ public class WalkConverter {
                 .id(walk.getId())
                 .title(walk.getTitle())
                 .walkLikeNum(walk.getWalkLikeNum())
-                .distance(DistanceUtil.getDistanceWithString(walk.getDistance()))
+                .distance(walk.getDistance())
                 .time(walk.getTime())
                 .memberNickname(nickname)
                 .isLike(isLike)

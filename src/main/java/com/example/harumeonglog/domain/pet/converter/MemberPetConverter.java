@@ -61,8 +61,8 @@ public class MemberPetConverter {
                         .id(mp.getMember().getId())
                         .name(mp.getMember().getNickname())
                         .role(mp.getRole().name())
-                        .image(memberPet.getMember().getImage() != null ?
-                                s3Util.getUrlFromKey(memberPet.getMember().getImage()) : null)
+                        .image(mp.getMember().getImage() != null ?
+                                s3Util.getUrlFromKey(mp.getMember().getImage()) : null)
                         .build())
                 .toList();
 
@@ -93,6 +93,7 @@ public class MemberPetConverter {
                         .name(mp.getPet().getName())
                         .mainImage(mp.getPet().getMainImage() != null ?
                                 s3Util.getUrlFromKey(mp.getPet().getMainImage()) : null)
+                        .role(mp.getRole().name())
                         .build())
                 .collect(Collectors.toList());
 

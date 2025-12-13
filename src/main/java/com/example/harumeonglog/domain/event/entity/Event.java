@@ -88,14 +88,17 @@ public class Event{
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_noticed")
+    private Boolean isNoticed;
 
-    public void update(String title, LocalDate date, Boolean hasNotice, LocalTime time, EventCategory category){
+
+    public void update(String title, LocalDate date, Boolean hasNotice, LocalTime time){
         this.title = title;
         this.date = date;
         this.hasNotice = hasNotice;
         this.time = time;
-        this.category = category;
     }
+
 
     public void updateRepeat(Boolean isRepeated, LocalDate expiredDate, List<RepeatDay> repeatDays){
         this.isRepeated = isRepeated;
@@ -118,4 +121,6 @@ public class Event{
     public void check(){
         this.done = !done;
     }
+
+    public void updateIsNoticed(Boolean isNoticed){this.isNoticed = isNoticed;}
 }

@@ -17,6 +17,7 @@ public enum GeneralErrorCode implements BaseErrorCode {
     NOT_VALID_CURSOR(HttpStatus.BAD_REQUEST, "PAGE_001", "커서 값이 유효하지 않습니다."),
     NOT_VALID_SIZE(HttpStatus.BAD_REQUEST, "PAGE_004", "size 값이 유효하지 않습니다."),
     _DB_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "DB 에러, 관리자에게 문의 바랍니다."),
+    _ENUM_ERROR(HttpStatus.BAD_REQUEST, "COMMON400", "해당되는 enum 값이 들어있지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;

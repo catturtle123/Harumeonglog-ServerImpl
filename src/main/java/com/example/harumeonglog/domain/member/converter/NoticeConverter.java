@@ -1,7 +1,9 @@
 package com.example.harumeonglog.domain.member.converter;
 
 import com.example.harumeonglog.domain.member.dto.response.NoticeResponse;
+import com.example.harumeonglog.domain.member.entity.Member;
 import com.example.harumeonglog.domain.member.entity.Notice;
+import com.example.harumeonglog.domain.member.entity.enums.NoticeType;
 
 import java.util.List;
 
@@ -18,10 +20,22 @@ public class NoticeConverter {
     public static NoticeResponse.NoticePreviewResponse toNoticePreviewResponse(Notice notice) {
         return NoticeResponse.NoticePreviewResponse.builder()
                 .noticeId(notice.getId())
-                .noticeType(notice.getNoticeType())
                 .title(notice.getTitle())
                 .content(notice.getContent())
-                .targetId(notice.getTargetId())
+                .createdAt(notice.getCreatedAt())
+                .senderName(notice.getSenderName())
+                .noticeType(notice.getNoticeType())
+                .build();
+    }
+
+    public static Notice toNotice(String title, String content, NoticeType noticeType, Member sender, Member receiver) {
+        return Notice.builder()
+                .title(title)
+                .content(content)
+                .noticeType(noticeType)
+                .senderId(sender.getDeviceId())
+                .senderName(sender.getNickname())
+                .member(receiver)
                 .build();
     }
 }

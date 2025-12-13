@@ -28,8 +28,9 @@ public class Notice extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NoticeType noticeType;
 
-    @Column(name = "target_id")
-    private Long targetId;
+    private String senderId;
+
+    private String senderName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

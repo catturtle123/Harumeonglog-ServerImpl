@@ -29,4 +29,11 @@ public class HospitalEvent extends Event {
 
     @Column(name = "details")
     private String details;
+
+    public void updateHospitalDetails(String hospitalName, String department, Integer cost, String details) {
+        this.hospitalName = hospitalName;
+        this.department = department;
+        this.cost = cost;
+        this.details = details;
+    }
 }

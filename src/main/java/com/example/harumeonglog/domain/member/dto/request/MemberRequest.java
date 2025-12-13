@@ -23,6 +23,12 @@ public class MemberRequest {
 
     @Getter
     @Builder
+    public static class MemberTermsUpdateRequest {
+        private final Boolean didAgree;
+    }
+
+    @Getter
+    @Builder
     public static class FCMRequest {
         private String fcmToken;
     }

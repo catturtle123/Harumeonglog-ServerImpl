@@ -38,6 +38,14 @@ public class MemberController {
     public CustomResponse<MemberResponse.MemberInfoResponse> getInfo(@AuthenticatedMember Member member) {
         return CustomResponse.ok(MemberConverter.toMemberInfoResponse(member, s3Util));
     }
+    @Operation(summary = "약관 동의 정보 조회 API by 서정모", description = "약관 동의 정보 가져오는 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @GetMapping("/terms")
+    public CustomResponse<MemberResponse.MemberTermsInfoResponse> getTerms(@AuthenticatedMember Member member) {
+        return CustomResponse.ok(MemberConverter.toMemberTermsInfoResponse(member));
+    }
 
     @Operation(summary = "환경 설정 정보 API by 서정모", description = "환경 설정 정보 가져오는 API")
     @ApiResponses(value = {
@@ -66,6 +74,17 @@ public class MemberController {
     public CustomResponse<MemberResponse.MemberInfoUpdateResponse> updateInfo(@AuthenticatedMember Member member, @RequestBody MemberRequest.MemberInfoUpdateRequest request) {
         MemberResponse.MemberInfoUpdateResponse response = memberCommandService.updateInfo(member, request);
         return CustomResponse.ok(response);
+    }
+
+    @Operation(summary = "약관 동의 변경 API by 서정모", description = "약관 동의 정보 변경하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @PatchMapping("/terms")
+    public CustomResponse<MemberResponse.MemberTermsUpdateResponse> updateTerms(@AuthenticatedMember Member member,
+                                                                                @RequestBody MemberRequest.MemberTermsUpdateRequest request) {
+        Member updatedMember = memberCommandService.changeMemberTerms(member, request);
+        return CustomResponse.ok(MemberConverter.toMemberTermsUpdateResponse(updatedMember));
     }
 
     @Operation(summary = "환경 설정 수정하는 API by 서정모", description = "환경 설정 수정하는 API")
